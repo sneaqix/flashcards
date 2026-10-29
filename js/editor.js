@@ -1,13 +1,13 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261029233129';
-import { retrievability } from './scheduler.js?v=20261029233129';
+import * as S from './store.js?v=20261029235805';
+import { retrievability } from './scheduler.js?v=20261029235805';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
   showView, route, firstLine, imageUrl, faceContent,
-} from './ui.js?v=20261029233129';
-import { updateChapterFile } from './sync.js?v=20261029233129';
-import { resumeSession } from './review.js?v=20261029233129';
-import { startPractice } from './practice.js?v=20261029233129';
+} from './ui.js?v=20261029235805';
+import { updateChapterFile, createChapterFile } from './sync.js?v=20261029235805';
+import { resumeSession } from './review.js?v=20261029235805';
+import { startPractice } from './practice.js?v=20261029235805';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
@@ -456,48 +456,32 @@ async function deleteCard() {
   }
 }
 
-function slugify(s) {
-  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
-}
 async function createChapter() {
   const mat = $('ncMatiere').value;
   const nom = $('ncNom').value.trim();
-  const slug = slugify(nom);
-  if (!nom || !slug) { toast('Donne un nom au chapitre.'); return; }
-  const id = mat + '-' + slug;
-  if (state.byId.has(id)) { toast('Ce chapitre existe déjà.'); return; }
-  const file = mat + '/' + slug + '.json';
-  const { gh, config } = state;
+  if (!nom) { toast('Donne un nom au chapitre.'); return; }
   $('ncCreate').disabled = true;
   try {
-    const sha = await gh.putFile(config.contentRepo, 'decks/' + file,
-      JSON.stringify({ id, nom, cartes: [] }, null, 2) + '\n', null, 'Ajoute le chapitre ' + nom);
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const f = await gh.getFile(config.contentRepo, 'decks/index.json');
-      const index = JSON.parse(f.text);
-      const m = index.matieres.find((x) => x.id === mat);
-      if (!m.chapitres.includes(file)) m.chapitres.push(file);
-      try {
-        await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f.sha, 'Ajoute le chapitre ' + nom + ' à l\'index');
-        break;
-      } catch (e) { if (!(e.status === 409 || e.status === 422) || attempt === 1) throw e; }
-    }
-    const m = state.matieres.find((x) => x.id === mat);
-    const ch = { id, nom, cartes: [], matiere: mat, matiereNom: m.nom, file, sha };
-    m.chapitres.push(ch);
-    state.chapters = state.matieres.flatMap((x) => x.chapitres);
-    state.byId.set(id, ch);
+    const ch = await createChapterFile(mat, nom);
     filters.mat = mat;
-    filters.chap = id;
+    filters.chap = ch.id;
     $('ncNom').value = '';
     $('newChapterForm').hidden = true;
     toast('Chapitre créé.');
     renderCartes();
   } catch (e) {
-    toast('Échec de la création : ' + e.message);
+    toast(e.message.startsWith('Ce chapitre') ? e.message : 'Échec de la création : ' + e.message);
   } finally {
     $('ncCreate').disabled = false;
   }
+}
+
+// Affiche les cartes d'un chapitre dans l'onglet Cartes (après un import, par exemple).
+export function showChapterCards(ch) {
+  Object.assign(filters, { text: '', mat: ch.matiere, chap: ch.id, etat: '', type: '' });
+  state.editReturn = null;
+  if (location.hash.slice(1) !== 'cartes') location.hash = 'cartes';
+  else route();
 }
 
 export function bindEditor() {

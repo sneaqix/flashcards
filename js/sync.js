@@ -1,7 +1,7 @@
 // Synchronisation de la progression avec le dépôt privé, et chargement des cartes.
-import { isConflict } from './github.js?v=20261029233129';
-import * as S from './store.js?v=20261029233129';
-import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261029233129';
+import { isConflict } from './github.js?v=20261029235805';
+import * as S from './store.js?v=20261029235805';
+import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261029235805';
 
 export function setChip(kind, detail) {
   const chip = $('syncChip');
@@ -115,4 +115,35 @@ export async function updateChapterFile(ch, mutate, message, retry = true) {
     }
     throw e;
   }
+}
+
+function slugify(s) {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+}
+// Crée un chapitre vide dans le dépôt et l'ajoute à index.json. Renvoie le chapitre.
+export async function createChapterFile(mat, nom) {
+  const slug = slugify(nom);
+  if (!slug) throw new Error('Donne un nom au chapitre.');
+  const id = mat + '-' + slug;
+  if (state.byId.has(id)) throw new Error('Ce chapitre existe déjà.');
+  const file = mat + '/' + slug + '.json';
+  const { gh, config } = state;
+  const sha = await gh.putFile(config.contentRepo, 'decks/' + file,
+    JSON.stringify({ id, nom, cartes: [] }, null, 2) + '\n', null, 'Ajoute le chapitre ' + nom);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const f = await gh.getFile(config.contentRepo, 'decks/index.json');
+    const index = JSON.parse(f.text);
+    const m = index.matieres.find((x) => x.id === mat);
+    if (!m.chapitres.includes(file)) m.chapitres.push(file);
+    try {
+      await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f.sha, 'Ajoute le chapitre ' + nom + ' à l\'index');
+      break;
+    } catch (e) { if (!isConflict(e) || attempt === 1) throw e; }
+  }
+  const m = state.matieres.find((x) => x.id === mat);
+  const ch = { id, nom, cartes: [], matiere: mat, matiereNom: m.nom, file, sha };
+  m.chapitres.push(ch);
+  state.chapters = state.matieres.flatMap((x) => x.chapitres);
+  state.byId.set(id, ch);
+  return ch;
 }

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261029233129">
+<link rel="stylesheet" href="css/app.css?v=20261029235805">
 </head>
 <body>
 <div class="app">
@@ -149,6 +149,7 @@
       </div>
       <div class="row">
         <button id="newCard" class="primary" type="button">Ajouter une carte</button>
+        <button id="importBtn" class="primary" type="button">Importer un cours (PDF)</button>
         <button id="practiceSel" class="ghost" type="button">Réviser la sélection</button>
         <button id="newChapter" class="ghost" type="button">Nouveau chapitre</button>
       </div>
@@ -165,6 +166,106 @@
       </div>
     </div>
     <ul id="cardList" class="card-list"></ul>
+  </section>
+
+  <section id="view-import" class="view" hidden>
+    <div class="bar-top">
+      <button id="impBack" class="ghost" type="button">Retour</button>
+      <span class="mode-label">Importer un cours</span>
+      <span></span>
+    </div>
+    <div id="impLocked" class="panel" hidden>
+      <p id="impLockedText"></p>
+      <a class="button ghost" href="#parametres">Ouvrir les réglages</a>
+    </div>
+
+    <div id="impSetup" class="stack-col">
+      <div class="panel form">
+        <h2>Cours en PDF</h2>
+        <div class="file-row">
+          <label class="button ghost file"><span id="impPick">Choisir un PDF</span><input id="impFile" type="file" accept="application/pdf,.pdf"></label>
+          <span class="sub" id="impFileName">Aucun fichier choisi</span>
+        </div>
+        <p class="sub">PDF tapé (LaTeX, Word…), jusqu'à 30 Mo. Gemini lit le texte et les formules.</p>
+      </div>
+      <div class="panel form">
+        <h2>Où ranger les cartes</h2>
+        <label for="impMat">Matière</label>
+        <select id="impMat"></select>
+        <div class="radio-row">
+          <label class="check"><input type="radio" name="impDest" id="impDestNew" checked> Nouveau chapitre</label>
+          <label class="check"><input type="radio" name="impDest" id="impDestOld"> Chapitre existant</label>
+        </div>
+        <div id="impNewBox" class="field">
+          <label for="impNewName">Nom du chapitre</label>
+          <input id="impNewName" type="text" autocomplete="off" placeholder="Par défaut : titre proposé par Gemini">
+        </div>
+        <div id="impChapBox" class="field" hidden>
+          <label for="impChap">Chapitre</label>
+          <select id="impChap"></select>
+        </div>
+      </div>
+      <div class="panel form">
+        <h2>Cartes à générer</h2>
+        <label for="impCount">Nombre de cartes</label>
+        <select id="impCount">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="40">40</option>
+          <option value="0">Selon la longueur du cours</option>
+        </select>
+        <fieldset class="checks">
+          <legend>Types de cartes</legend>
+          <label class="check"><input type="checkbox" id="impT-classique" checked> Classiques (question / réponse)</label>
+          <label class="check"><input type="checkbox" id="impT-qcm" checked> QCM</label>
+          <label class="check"><input type="checkbox" id="impT-trou" checked> Textes à trous</label>
+          <label class="check"><input type="checkbox" id="impT-saisie" checked> Réponses à taper</label>
+        </fieldset>
+        <fieldset class="checks">
+          <legend>Contenu à privilégier</legend>
+          <label class="check"><input type="checkbox" id="impF-definitions" checked> Définitions et théorèmes</label>
+          <label class="check"><input type="checkbox" id="impF-formules" checked> Formules à connaître</label>
+          <label class="check"><input type="checkbox" id="impF-methodes" checked> Méthodes et raisonnements</label>
+          <label class="check"><input type="checkbox" id="impF-pieges" checked> Pièges et erreurs classiques</label>
+        </fieldset>
+        <label for="impConsignes">Consignes supplémentaires (facultatif)</label>
+        <textarea id="impConsignes" rows="2" placeholder="Par exemple : seulement la partie II, pas de démonstrations, insiste sur les unités"></textarea>
+        <button id="impGo" class="primary" type="button" disabled>Générer les cartes</button>
+        <p class="status" id="impStatus" role="status"></p>
+      </div>
+    </div>
+
+    <div id="impWait" class="panel wait" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <h2>Génération en cours</h2>
+      <p class="sub" id="impWaitText"></p>
+      <button id="impCancel" class="ghost" type="button">Annuler</button>
+    </div>
+
+    <div id="impReview" class="stack-col" hidden>
+      <div class="panel">
+        <h2>Relis les cartes</h2>
+        <p class="sub" id="impCount2"></p>
+        <p class="sub">Décoche celles à ne pas garder. « Modifier » permet de corriger une carte ou de changer son type.</p>
+        <div class="row">
+          <button id="impAll" class="ghost small" type="button">Tout cocher</button>
+          <button id="impNone" class="ghost small" type="button">Tout décocher</button>
+          <button id="impDiscard" class="ghost small" type="button">Tout abandonner</button>
+        </div>
+        <div id="impDiscardConfirm" class="confirm-inline" hidden>
+          <p>Abandonner toutes les cartes proposées ?</p>
+          <div class="row">
+            <button id="impDiscardYes" class="again small" type="button">Oui, abandonner</button>
+            <button id="impDiscardNo" class="ghost small" type="button">Non</button>
+          </div>
+        </div>
+      </div>
+      <ul id="impList" class="ir-list"></ul>
+      <div class="save-bar">
+        <button id="impSave" class="primary" type="button">Ajouter les cartes</button>
+        <p class="status" id="impSaveStatus" role="status"></p>
+      </div>
+    </div>
   </section>
 
   <section id="view-carte" class="view" hidden>
@@ -332,6 +433,17 @@
       <p class="status" id="gStatus" role="status"></p>
     </div>
     <div class="panel form">
+      <h2>Import de cours (Gemini)</h2>
+      <p class="sub">Pour générer des cartes à partir d'un PDF, crée une clé API gratuite sur Google AI Studio (connexion avec un compte Google, puis « Create API key »).</p>
+      <a class="button ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Ouvrir Google AI Studio</a>
+      <label for="gemKey">Clé API Gemini</label>
+      <input id="gemKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…">
+      <label for="gemModel">Modèle</label>
+      <select id="gemModel"></select>
+      <p class="sub">La clé reste sur cet appareil. Avec l'offre gratuite, Google peut utiliser les documents envoyés pour améliorer ses modèles : n'envoie que des cours, rien de personnel.</p>
+      <p class="status" id="gemStatus" role="status"></p>
+    </div>
+    <div class="panel form">
       <h2>Sauvegarde manuelle</h2>
       <div class="row">
         <button id="exportBtn" class="ghost" type="button">Exporter la progression</button>
@@ -366,6 +478,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261029233129"></script>
+<script type="module" src="js/app.js?v=20261029235805"></script>
 </body>
 </html>

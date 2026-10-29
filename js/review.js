@@ -1,11 +1,11 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261029233129';
+import * as S from './store.js?v=20261029235805';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261029233129';
-import { scheduleSync } from './sync.js?v=20261029233129';
-import { openEditor } from './editor.js?v=20261029233129';
+} from './ui.js?v=20261029235805';
+import { scheduleSync } from './sync.js?v=20261029235805';
+import { openEditor } from './editor.js?v=20261029235805';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 

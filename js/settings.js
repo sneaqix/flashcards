@@ -1,9 +1,10 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261029233129';
-import * as S from './store.js?v=20261029233129';
-import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261029233129';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261029233129';
-import { buildChecklist } from './practice.js?v=20261029233129';
+import { GitHub } from './github.js?v=20261029235805';
+import * as S from './store.js?v=20261029235805';
+import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261029235805';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261029235805';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261029235805';
+import { buildChecklist } from './practice.js?v=20261029235805';
 
 export function renderSettings() {
   const s = state.progress.settings;
@@ -18,6 +19,9 @@ export function renderSettings() {
     chs.forEach((ch) => (on ? set.delete(ch.id) : set.add(ch.id)));
     updateSettings({ inactive: [...set] });
   });
+  $('gemKey').value = state.config.geminiKey || '';
+  $('gemModel').innerHTML = MODELS.map(([v, l]) => '<option value="' + v + '">' + l + '</option>').join('');
+  $('gemModel').value = state.config.geminiModel || DEFAULT_MODEL;
   $('gToken').value = state.config.token ? state.config.token : '';
   $('gContent').value = state.config.contentRepo || guessContentRepo();
   $('gData').value = state.config.dataRepo || ($('gContent').value ? $('gContent').value + '-data' : '');
@@ -178,6 +182,13 @@ export function bindSettings() {
     $('sRelearn').value = v.join(' ');
     updateSettings({ relearnSteps: v }, 'algoStatus');
   });
+  const saveGemini = () => {
+    state.config = { ...state.config, geminiKey: $('gemKey').value.trim(), geminiModel: $('gemModel').value };
+    S.saveConfig(state.config);
+    setStatus('gemStatus', state.config.geminiKey ? 'Clé enregistrée sur cet appareil.' : 'Clé supprimée de cet appareil.', 'ok');
+  };
+  $('gemKey').addEventListener('change', saveGemini);
+  $('gemModel').addEventListener('change', saveGemini);
   $('gSave').addEventListener('click', saveGitHubConfig);
   $('gForget').addEventListener('click', forgetToken);
   $('exportBtn').addEventListener('click', exportProgress);

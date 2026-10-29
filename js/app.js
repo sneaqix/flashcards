@@ -1,12 +1,13 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261029233129';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261029233129';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261029233129';
-import { renderHome, bindReview } from './review.js?v=20261029233129';
-import { renderCartes, bindEditor } from './editor.js?v=20261029233129';
-import { renderCram, bindPractice } from './practice.js?v=20261029233129';
-import { renderStats } from './stats.js?v=20261029233129';
-import { renderSettings, bindSettings } from './settings.js?v=20261029233129';
+import { GitHub } from './github.js?v=20261029235805';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261029235805';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261029235805';
+import { renderHome, bindReview } from './review.js?v=20261029235805';
+import { renderCartes, bindEditor } from './editor.js?v=20261029235805';
+import { renderCram, bindPractice } from './practice.js?v=20261029235805';
+import { bindImport } from './importer.js?v=20261029235805';
+import { renderStats } from './stats.js?v=20261029235805';
+import { renderSettings, bindSettings } from './settings.js?v=20261029235805';
 
 state.views = {
   reviser: renderHome,
@@ -29,6 +30,7 @@ function bindEvents() {
   bindEditor();
   bindPractice();
   bindSettings();
+  bindImport();
 
   // Sauvegarde quand on quitte l'appli, récupération des changements de l'autre appareil au retour.
   document.addEventListener('visibilitychange', () => {

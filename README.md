@@ -7,6 +7,7 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 - Cartes inversées, réponses à taper et choix multiples, au choix pour chaque carte.
 - Bachotage (cartes, QCM ou associations), sans toucher à la progression.
 - Éditeur de cartes intégré (formules LaTeX, images), utilisable pendant la révision, avec recherche globale et filtres.
+- Import d'un cours en PDF : Gemini génère des cartes (classiques, QCM, textes à trous, à taper) à relire avant ajout.
 - Statistiques détaillées et réglages par matière.
 - Progression synchronisée dans un dépôt privé GitHub.
 
@@ -25,6 +26,8 @@ js/stats.js           statistiques
 js/settings.js        réglages
 js/sync.js            synchronisation et chargement des cartes
 js/github.js          accès à l'API GitHub
+js/gemini.js          génération de cartes depuis un PDF (API Gemini)
+js/importer.js        écran d'import et de relecture
 tools/bump_version.py numéro de version anti-cache, à lancer avant chaque publication
 decks/index.json      liste des matières et de leurs chapitres
 decks/<matière>/*.json  un fichier par chapitre
@@ -55,3 +58,11 @@ Champs facultatifs : `inverse: true` (crée aussi la carte réponse → question
 3. Dans l'appli, onglet Réglages : coller le jeton et les deux noms de dépôts, puis « Enregistrer et synchroniser ». À refaire une fois sur chaque appareil.
 
 La progression est stockée dans `progress.json` du dépôt privé. Le jeton reste dans le navigateur de l'appareil.
+
+## Import de cours (Gemini)
+
+1. Créer une clé API gratuite sur https://aistudio.google.com/apikey.
+2. Dans l'appli, onglet Réglages, section « Import de cours » : coller la clé (une fois par appareil).
+3. Onglet Cartes, « Importer un cours (PDF) » : choisir le PDF, la destination, le nombre et les types de cartes, puis relire.
+
+La clé reste dans le navigateur de l'appareil. Avec l'offre gratuite, Google peut utiliser les documents envoyés pour améliorer ses modèles.
