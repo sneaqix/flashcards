@@ -117,8 +117,12 @@
     <div class="bar-top">
       <button id="editBack" class="ghost" type="button">Retour</button>
       <span class="mode-label" id="editTitle">Nouvelle carte</span>
-      <span></span>
+      <span class="card-nav">
+        <button id="editPrev" class="ghost nav-btn" type="button" aria-label="Carte précédente">‹</button>
+        <button id="editNext" class="ghost nav-btn" type="button" aria-label="Carte suivante">›</button>
+      </span>
     </div>
+    <div id="editBody" class="edit-body">
     <div class="panel form">
       <label for="fQ">Question</label>
       <textarea id="fQ" rows="3" placeholder="Formules entre $ $, par exemple $\omega_0 = \sqrt{k/m}$"></textarea>
@@ -140,6 +144,8 @@
       <div class="face" id="pQ"></div>
       <div class="face answer" id="pR"></div>
     </article>
+    </div>
+    <p class="sub swipe-hint" id="swipeHint">Glisse vers la gauche ou la droite pour passer d'une carte à l'autre.</p>
     <div class="row">
       <button id="fSave" class="primary" type="button">Enregistrer</button>
       <button id="fDelete" class="again" type="button">Supprimer</button>

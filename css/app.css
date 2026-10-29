@@ -185,6 +185,15 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .img-field { display: flex; flex-direction: column; gap: 8px; }
 .img-preview img { display: block; max-height: 160px; border-radius: 6px; border: 1px solid var(--line); background: #fff; }
 .preview-label { margin-top: 4px; }
+.card-nav { display: flex; gap: 6px; }
+.nav-btn { min-width: 44px; padding: 6px 0; font-size: 1.5rem; line-height: 1; }
+.edit-body { display: flex; flex-direction: column; gap: 14px; }
+.edit-body.from-right { animation: slide-from-right 0.22s ease-out; }
+.edit-body.from-left { animation: slide-from-left 0.22s ease-out; }
+@keyframes slide-from-right { from { transform: translateX(40px); opacity: 0.2; } to { transform: none; opacity: 1; } }
+@keyframes slide-from-left { from { transform: translateX(-40px); opacity: 0.2; } to { transform: none; opacity: 1; } }
+.swipe-hint { font-size: 0.85rem; text-align: center; }
+@media (hover: hover) and (pointer: fine) { .swipe-hint { display: none; } }
 .confirm { border-color: var(--again); }
 .confirm p { margin: 0; }
 
@@ -232,4 +241,4 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 }
 
 @media (min-width: 560px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (prefers-reduced-motion: reduce) { .progress div { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .progress div { transition: none; } .edit-body.from-right, .edit-body.from-left { animation: none; } }

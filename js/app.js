@@ -19,6 +19,7 @@ const state = {
   editChapterId: null,
   edit: null,
   cramSel: new Set(),
+  discardUntil: 0,       // délai pendant lequel on peut abandonner des modifications non enregistrées
 };
 
 // =====================================================================
@@ -384,8 +385,8 @@ function renderCardList() {
   ul.innerHTML = '';
   const ch = state.byId.get(state.editChapterId);
   if (!ch) return;
-  const term = $('cardSearch').value.trim().toLowerCase();
-  const cards = ch.cartes.filter((c) => !term || (c.q + ' ' + c.r).toLowerCase().includes(term));
+  const term = $('cardSearch').value.trim();
+  const cards = visibleCards(ch);
   if (!cards.length) {
     ul.innerHTML = '<li class="empty">' + (term ? 'Aucune carte ne correspond.' : 'Ce chapitre est vide. Ajoute ta première carte.') + '</li>';
     return;
@@ -404,16 +405,25 @@ function renderCardList() {
   typeset(ul);
 }
 
-function openEditor(ch, card) {
+// Cartes du chapitre affichées dans la liste (filtrées par la recherche) : c'est l'ordre de défilement.
+function visibleCards(ch) {
+  const term = $('cardSearch').value.trim().toLowerCase();
+  return ch.cartes.filter((c) => !term || (c.q + ' ' + c.r).toLowerCase().includes(term));
+}
+
+// slide : 'from-right' (carte suivante), 'from-left' (carte précédente) ou rien.
+function openEditor(ch, card, slide) {
   state.edit = {
     chId: ch.id,
     cardId: card ? card.id : null,
     img_q: card ? card.img_q || null : null,
     img_r: card ? card.img_r || null : null,
+    orig: { q: card ? card.q : '', r: card ? card.r : '', img_q: card ? card.img_q || null : null, img_r: card ? card.img_r || null : null },
     uploads: {}, // côté ('q' ou 'r') -> { path, base64 }
     busy: false,
   };
-  $('editTitle').textContent = card ? 'Modifier la carte' : 'Nouvelle carte';
+  state.discardUntil = 0;
+  setEditorBusy(false);
   $('fQ').value = card ? card.q : '';
   $('fR').value = card ? card.r : '';
   $('fDelete').hidden = !card;
@@ -421,8 +431,68 @@ function openEditor(ch, card) {
   setStatus('fStatus', ch.matiereNom + ' · ' + ch.nom);
   renderImgPreview('q');
   renderImgPreview('r');
-  updatePreview();
-  showView('carte');
+  updateEditorNav();
+  const body = $('editBody');
+  body.classList.remove('from-right', 'from-left');
+  if (slide) { void body.offsetWidth; body.classList.add(slide); }
+  if ($('view-carte').hidden) showView('carte');
+  // Aperçu immédiat (sans attendre la temporisation de saisie).
+  clearTimeout(previewTimer);
+  renderFace($('pQ'), $('fQ').value, state.edit.img_q);
+  renderFace($('pR'), $('fR').value, state.edit.img_r);
+}
+
+function updateEditorNav() {
+  const ed = state.edit;
+  const ch = state.byId.get(ed.chId);
+  const list = visibleCards(ch);
+  const i = ed.cardId ? list.findIndex((c) => c.id === ed.cardId) : -1;
+  $('editTitle').textContent = i >= 0 ? 'Carte ' + (i + 1) + ' / ' + list.length : (ed.cardId ? 'Modifier la carte' : 'Nouvelle carte');
+  $('editPrev').disabled = ed.busy || i <= 0;
+  $('editNext').disabled = ed.busy || i < 0 || i >= list.length - 1;
+  $('swipeHint').hidden = i < 0 || list.length < 2;
+}
+
+function isEditorDirty() {
+  const ed = state.edit;
+  if (!ed) return false;
+  return $('fQ').value !== ed.orig.q || $('fR').value !== ed.orig.r ||
+    ed.img_q !== ed.orig.img_q || ed.img_r !== ed.orig.img_r;
+}
+
+// Passe à la carte voisine (dir = +1 suivante, -1 précédente).
+function goToCard(dir) {
+  const ed = state.edit;
+  if (!ed || ed.busy || !ed.cardId) return;
+  const ch = state.byId.get(ed.chId);
+  const list = visibleCards(ch);
+  const i = list.findIndex((c) => c.id === ed.cardId);
+  const target = list[i + dir];
+  if (i < 0 || !target) return;
+  if (isEditorDirty() && Date.now() > state.discardUntil) {
+    state.discardUntil = Date.now() + 4000;
+    toast('Modifications non enregistrées. Enregistre-les, ou recommence pour les abandonner.');
+    return;
+  }
+  openEditor(ch, target, dir > 0 ? 'from-right' : 'from-left');
+}
+
+function bindSwipe() {
+  const view = $('view-carte');
+  let start = null;
+  view.addEventListener('touchstart', (e) => {
+    // Pas de défilement depuis un champ de saisie (sélection de texte, curseur).
+    if (e.touches.length !== 1 || e.target.closest('textarea, input, select, mjx-container[display="true"]')) { start = null; return; }
+    start = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+  }, { passive: true });
+  view.addEventListener('touchend', (e) => {
+    if (!start) return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    const fast = Date.now() - start.t < 600;
+    start = null;
+    if (fast && Math.abs(dx) > 60 && Math.abs(dx) > 1.8 * Math.abs(dy)) goToCard(dx < 0 ? 1 : -1);
+  }, { passive: true });
 }
 function renderImgPreview(side) {
   const path = state.edit['img_' + side];
@@ -510,8 +580,9 @@ async function updateChapterFile(ch, mutate, message, retry = true) {
   }
 }
 function setEditorBusy(busy) {
-  state.edit.busy = busy;
+  if (state.edit) state.edit.busy = busy;
   ['fSave', 'fDelete', 'fDeleteYes', 'editBack'].forEach((id) => { $(id).disabled = busy; });
+  if (busy) { $('editPrev').disabled = true; $('editNext').disabled = true; }
 }
 async function saveCard() {
   const ed = state.edit;
@@ -539,9 +610,9 @@ async function saveCard() {
       if (i >= 0) list[i] = card; else list.push(card);
       return list;
     }, (isNew ? 'Ajoute' : 'Modifie') + ' une carte : ' + ch.nom);
-    state.edit = null;
     toast(isNew ? 'Carte ajoutée.' : 'Carte enregistrée.');
-    location.hash === '#cartes' ? route() : (location.hash = 'cartes');
+    // On reste sur la carte enregistrée pour pouvoir continuer à défiler.
+    openEditor(ch, ch.cartes.find((c) => c.id === card.id) || card);
   } catch (e) {
     setStatus('fStatus', 'Échec de l\'enregistrement : ' + e.message, 'error');
     setEditorBusy(false);
@@ -553,11 +624,16 @@ async function deleteCard() {
   const ch = state.byId.get(ed.chId);
   setEditorBusy(true);
   setStatus('fStatus', 'Suppression…');
+  const before = visibleCards(ch);
+  const pos = before.findIndex((c) => c.id === ed.cardId);
   try {
     await updateChapterFile(ch, (list) => list.filter((c) => c.id !== ed.cardId), 'Supprime une carte : ' + ch.nom);
-    state.edit = null;
     toast('Carte supprimée.');
-    location.hash === '#cartes' ? route() : (location.hash = 'cartes');
+    // Affiche la carte suivante (ou la précédente s'il s'agissait de la dernière).
+    const after = visibleCards(ch);
+    const next = after[Math.min(Math.max(pos, 0), after.length - 1)];
+    if (next) openEditor(ch, next, 'from-right');
+    else { state.edit = null; location.hash === '#cartes' ? route() : (location.hash = 'cartes'); }
   } catch (e) {
     setStatus('fStatus', 'Échec de la suppression : ' + e.message, 'error');
     setEditorBusy(false);
@@ -907,7 +983,23 @@ function bindEvents() {
   $('newChapter').addEventListener('click', () => { $('newChapterForm').hidden = false; $('ncNom').focus(); });
   $('ncCancel').addEventListener('click', () => { $('newChapterForm').hidden = true; });
   $('ncCreate').addEventListener('click', createChapter);
-  $('editBack').addEventListener('click', () => { state.edit = null; route(); });
+  $('editBack').addEventListener('click', () => {
+    if (isEditorDirty() && Date.now() > state.discardUntil) {
+      state.discardUntil = Date.now() + 4000;
+      toast('Modifications non enregistrées. Appuie à nouveau sur Retour pour les abandonner.');
+      return;
+    }
+    state.edit = null;
+    route();
+  });
+  $('editPrev').addEventListener('click', () => goToCard(-1));
+  $('editNext').addEventListener('click', () => goToCard(1));
+  bindSwipe();
+  document.addEventListener('keydown', (e) => {
+    if ($('view-carte').hidden || e.target.matches('input, textarea, select')) return;
+    if (e.key === 'ArrowRight') goToCard(1);
+    else if (e.key === 'ArrowLeft') goToCard(-1);
+  });
   $('fQ').addEventListener('input', updatePreview);
   $('fR').addEventListener('input', updatePreview);
   $('fImgQ').addEventListener('change', (e) => pickImage('q', e.target));
