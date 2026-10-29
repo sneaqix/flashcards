@@ -1,0 +1,166 @@
+{
+  "id": "anglais-tourisme",
+  "nom": "Tourisme",
+  "cartes": [
+    {
+      "id": "tourisme-masse",
+      "q": "le tourisme de masse",
+      "r": "mass tourism\nMass tourism puts pressure on fragile ecosystems."
+    },
+    {
+      "id": "surtourisme",
+      "q": "le surtourisme",
+      "r": "overtourism\nVenice has been struggling with overtourism for years."
+    },
+    {
+      "id": "ecotourisme",
+      "q": "l'écotourisme",
+      "r": "ecotourism\nEcotourism aims to protect nature while supporting local communities."
+    },
+    {
+      "id": "tourisme-durable",
+      "q": "le tourisme durable",
+      "r": "sustainable tourism"
+    },
+    {
+      "id": "destination",
+      "q": "une destination touristique",
+      "r": "a tourist destination / a holiday destination"
+    },
+    {
+      "id": "vacancier",
+      "q": "un vacancier",
+      "r": "a holidaymaker (UK) / a vacationer (US)"
+    },
+    {
+      "id": "voyageur-sac",
+      "q": "un routard, un voyageur sac au dos",
+      "r": "a backpacker\nto go backpacking"
+    },
+    {
+      "id": "hors-saison",
+      "q": "la haute saison / la basse saison",
+      "r": "the peak season / the off-season (low season)"
+    },
+    {
+      "id": "forfait",
+      "q": "un voyage organisé, un forfait tout compris",
+      "r": "a package holiday / an all-inclusive package"
+    },
+    {
+      "id": "hebergement",
+      "q": "l'hébergement",
+      "r": "accommodation (indénombrable en anglais britannique)\nWe booked our accommodation online."
+    },
+    {
+      "id": "auberge",
+      "q": "une auberge de jeunesse",
+      "r": "a youth hostel"
+    },
+    {
+      "id": "location-courte",
+      "q": "la location de courte durée (type Airbnb)",
+      "r": "short-term rentals / holiday lets\nShort-term rentals drive up housing prices for locals."
+    },
+    {
+      "id": "reserver",
+      "q": "réserver (un hôtel, un vol)",
+      "r": "to book (a hotel, a flight)\na booking / a reservation"
+    },
+    {
+      "id": "vol-correspondance",
+      "q": "un vol avec correspondance / un vol direct",
+      "r": "a connecting flight / a direct (non-stop) flight"
+    },
+    {
+      "id": "compagnie-low-cost",
+      "q": "une compagnie aérienne à bas prix",
+      "r": "a low-cost airline / a budget airline"
+    },
+    {
+      "id": "croisiere",
+      "q": "un paquebot de croisière",
+      "r": "a cruise ship\nCruise ships release huge amounts of pollution in ports."
+    },
+    {
+      "id": "empreinte-carbone",
+      "q": "l'empreinte carbone",
+      "r": "the carbon footprint\nFlying increases your carbon footprint."
+    },
+    {
+      "id": "honte-avion",
+      "q": "la honte de prendre l'avion",
+      "r": "flight shame (flygskam)"
+    },
+    {
+      "id": "habitants",
+      "q": "les habitants, la population locale",
+      "r": "the locals / local residents"
+    },
+    {
+      "id": "gentrification",
+      "q": "la hausse des loyers chassant les habitants",
+      "r": "rising rents pushing locals out / gentrification\nLocals are being priced out of the city centre."
+    },
+    {
+      "id": "taxe-sejour",
+      "q": "la taxe de séjour",
+      "r": "the tourist tax\nAmsterdam has raised its tourist tax to curb overtourism."
+    },
+    {
+      "id": "limiter",
+      "q": "limiter, freiner (un phénomène)",
+      "r": "to curb / to limit / to rein in\nThe city wants to curb the number of visitors."
+    },
+    {
+      "id": "quotas",
+      "q": "des quotas de visiteurs, un droit d'entrée",
+      "r": "visitor caps / an entry fee\nVenice introduced an entry fee for day-trippers."
+    },
+    {
+      "id": "excursionniste",
+      "q": "un visiteur à la journée",
+      "r": "a day-tripper"
+    },
+    {
+      "id": "patrimoine",
+      "q": "le patrimoine mondial de l'UNESCO",
+      "r": "a UNESCO World Heritage Site"
+    },
+    {
+      "id": "retombees",
+      "q": "les retombées économiques",
+      "r": "the economic benefits / the economic spin-offs\nTourism accounts for a large share of the country's GDP."
+    },
+    {
+      "id": "emplois-saisonniers",
+      "q": "les emplois saisonniers",
+      "r": "seasonal jobs"
+    },
+    {
+      "id": "degrader",
+      "q": "dégrader, abîmer un site",
+      "r": "to damage / to spoil / to degrade a site\nwear and tear on historic monuments"
+    },
+    {
+      "id": "authenticite",
+      "q": "perdre son authenticité",
+      "r": "to lose its authenticity / its soul\nThe old town has turned into a theme park."
+    },
+    {
+      "id": "bucket-list",
+      "q": "la liste des choses à faire avant de mourir",
+      "r": "a bucket list\nInstagram turns destinations into bucket-list spots."
+    },
+    {
+      "id": "traduction-1",
+      "q": "Traduire : « Le tourisme fait vivre la région, mais il menace aussi ce qui la rend unique. »",
+      "r": "Tourism keeps the region alive, but it also threatens what makes it unique."
+    },
+    {
+      "id": "traduction-2",
+      "q": "Traduire : « Il faudrait encourager les voyageurs à visiter des destinations moins connues. »",
+      "r": "Travellers should be encouraged to visit lesser-known destinations."
+    }
+  ]
+}

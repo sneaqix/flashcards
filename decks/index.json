@@ -41,6 +41,14 @@
         "si/cinematique.json",
         "si/statique.json"
       ]
+    },
+    {
+      "id": "anglais",
+      "nom": "Anglais",
+      "chapitres": [
+        "anglais/tourisme.json",
+        "anglais/manifestations.json"
+      ]
     }
   ]
 }

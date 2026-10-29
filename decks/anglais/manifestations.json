@@ -1,0 +1,176 @@
+{
+  "id": "anglais-manifestations",
+  "nom": "Manifestations",
+  "cartes": [
+    {
+      "id": "manifestation",
+      "q": "une manifestation",
+      "r": "a demonstration / a protest\nThousands took to the streets."
+    },
+    {
+      "id": "manifestant",
+      "q": "un manifestant",
+      "r": "a demonstrator / a protester"
+    },
+    {
+      "id": "manifester",
+      "q": "manifester (contre)",
+      "r": "to demonstrate / to protest (against)\nAttention : en anglais américain, « to protest something » sans préposition."
+    },
+    {
+      "id": "descendre-rue",
+      "q": "descendre dans la rue",
+      "r": "to take to the streets"
+    },
+    {
+      "id": "defiler",
+      "q": "défiler, marcher",
+      "r": "to march\na march / a protest march"
+    },
+    {
+      "id": "rassemblement",
+      "q": "un rassemblement",
+      "r": "a rally / a gathering"
+    },
+    {
+      "id": "sit-in",
+      "q": "un sit-in, une occupation",
+      "r": "a sit-in / an occupation"
+    },
+    {
+      "id": "greve",
+      "q": "une grève, faire grève",
+      "r": "a strike / to go on strike / to be on strike\na general strike"
+    },
+    {
+      "id": "greviste",
+      "q": "un gréviste",
+      "r": "a striker"
+    },
+    {
+      "id": "piquet",
+      "q": "un piquet de grève",
+      "r": "a picket line\nto picket a factory"
+    },
+    {
+      "id": "syndicat",
+      "q": "un syndicat",
+      "r": "a trade union (UK) / a labor union (US)\na union leader"
+    },
+    {
+      "id": "pancarte",
+      "q": "une pancarte, une banderole",
+      "r": "a placard, a sign / a banner"
+    },
+    {
+      "id": "slogan",
+      "q": "scander des slogans",
+      "r": "to chant slogans"
+    },
+    {
+      "id": "petition",
+      "q": "signer une pétition",
+      "r": "to sign a petition"
+    },
+    {
+      "id": "revendication",
+      "q": "les revendications",
+      "r": "the demands\nThe protesters' demands were ignored."
+    },
+    {
+      "id": "reforme-retraites",
+      "q": "la réforme des retraites",
+      "r": "the pension reform\nto raise the retirement age"
+    },
+    {
+      "id": "pouvoir-achat",
+      "q": "le pouvoir d'achat, le coût de la vie",
+      "r": "purchasing power / the cost of living\nthe cost-of-living crisis"
+    },
+    {
+      "id": "pacifique",
+      "q": "une manifestation pacifique",
+      "r": "a peaceful protest\nnon-violent protest"
+    },
+    {
+      "id": "desobeissance",
+      "q": "la désobéissance civile",
+      "r": "civil disobedience"
+    },
+    {
+      "id": "emeute",
+      "q": "une émeute, un émeutier",
+      "r": "a riot / a rioter"
+    },
+    {
+      "id": "forces-ordre",
+      "q": "les forces de l'ordre, la police anti-émeute",
+      "r": "law enforcement / riot police"
+    },
+    {
+      "id": "gaz",
+      "q": "le gaz lacrymogène",
+      "r": "tear gas\nPolice fired tear gas to disperse the crowd."
+    },
+    {
+      "id": "disperser",
+      "q": "disperser la foule",
+      "r": "to disperse the crowd / to break up a protest"
+    },
+    {
+      "id": "repression",
+      "q": "la répression, réprimer",
+      "r": "a crackdown / to crack down on\nThe government cracked down on dissent."
+    },
+    {
+      "id": "arrestation",
+      "q": "arrêter, une arrestation",
+      "r": "to arrest / an arrest\nDozens of people were taken into custody."
+    },
+    {
+      "id": "violences-policieres",
+      "q": "les violences policières",
+      "r": "police brutality"
+    },
+    {
+      "id": "mouvement-citoyen",
+      "q": "un mouvement de base, citoyen",
+      "r": "a grassroots movement"
+    },
+    {
+      "id": "militant",
+      "q": "un militant, militer",
+      "r": "an activist / to campaign (for, against)\nclimate activists"
+    },
+    {
+      "id": "liberte-expression",
+      "q": "la liberté d'expression, de réunion",
+      "r": "freedom of speech / freedom of assembly\nthe right to protest"
+    },
+    {
+      "id": "ceder",
+      "q": "céder aux pressions, faire marche arrière",
+      "r": "to give in to pressure / to back down / to make a U-turn"
+    },
+    {
+      "id": "negocier",
+      "q": "entamer des négociations",
+      "r": "to enter into talks / to hold negotiations"
+    },
+    {
+      "id": "mobiliser",
+      "q": "mobiliser, la mobilisation",
+      "r": "to mobilise / mobilisation\nturnout: le nombre de participants"
+    },
+    {
+      "id": "traduction-1",
+      "q": "Traduire : « Les manifestants exigent le retrait de la réforme. »",
+      "r": "The protesters are demanding that the reform be withdrawn."
+    },
+    {
+      "id": "traduction-2",
+      "q": "Traduire : « Le droit de manifester est un pilier de la démocratie, mais il ne justifie pas la violence. »",
+      "r": "The right to protest is a cornerstone of democracy, but it does not justify violence."
+    }
+  ]
+}
