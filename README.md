@@ -2,10 +2,12 @@
 
 Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : https://sneaqix.github.io/flashcards/
 
-- Révision du jour par boîtes de Leitner, avec des cartes mélangées entre les chapitres actifs.
-- Bachotage : chapitres au choix, ordre aléatoire, sans toucher à la progression.
-- Éditeur de cartes intégré (formules LaTeX, images), qui enregistre directement dans ce dépôt.
-- Statistiques et réglages (nouvelles cartes et révisions par jour, chapitres actifs).
+- Révision du jour planifiée par l'algorithme FSRS (comme Anki) : 4 boutons (À revoir, Difficile, Correct, Facile),
+  étapes d'apprentissage dans la journée, intervalles qui grandissent jusqu'à l'intervalle maximum.
+- Cartes inversées, réponses à taper et choix multiples, au choix pour chaque carte.
+- Bachotage (cartes, QCM ou associations), sans toucher à la progression.
+- Éditeur de cartes intégré (formules LaTeX, images), utilisable pendant la révision, avec recherche globale et filtres.
+- Statistiques détaillées et réglages par matière.
 - Progression synchronisée dans un dépôt privé GitHub.
 
 ## Organisation
@@ -13,9 +15,17 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 ```
 index.html            page de l'appli
 css/app.css           styles
-js/app.js             interface
-js/store.js           progression, fusion entre appareils, logique Leitner
+js/app.js             point d'entrée et navigation
+js/scheduler.js       algorithme de planification (FSRS + étapes d'apprentissage)
+js/store.js           progression, journal quotidien, fusion entre appareils, file du jour
+js/review.js          accueil et session de révision
+js/editor.js          onglet Cartes : recherche, filtres, éditeur
+js/practice.js        bachotage et associations
+js/stats.js           statistiques
+js/settings.js        réglages
+js/sync.js            synchronisation et chargement des cartes
 js/github.js          accès à l'API GitHub
+tools/bump_version.py numéro de version anti-cache, à lancer avant chaque publication
 decks/index.json      liste des matières et de leurs chapitres
 decks/<matière>/*.json  un fichier par chapitre
 images/               images ajoutées aux cartes
@@ -33,7 +43,10 @@ images/               images ajoutées aux cartes
 }
 ```
 
-`q` est la question, `r` la réponse, `img_q` et `img_r` des images facultatives. Les formules s'écrivent entre `$...$` (dans le texte) ou `$$...$$` (centrées).
+`q` est la question, `r` la réponse, `img_q` et `img_r` des images facultatives.
+Champs facultatifs : `inverse: true` (crée aussi la carte réponse → question), `mode: "saisie"` ou `"qcm"`,
+`attendu` (réponse courte attendue, par défaut la première ligne de `r`, alternatives séparées par `/`),
+`choix` (liste de mauvaises réponses pour le QCM, sinon tirées des autres cartes du chapitre). Les formules s'écrivent entre `$...$` (dans le texte) ou `$$...$$` (centrées).
 
 ## Synchronisation
 

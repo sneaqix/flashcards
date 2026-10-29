@@ -1,13 +1,18 @@
-// Progression, paramètres et logique de répétition espacée (boîtes de Leitner).
+// Progression, paramètres, journal quotidien et file de révision.
+import * as F from './scheduler.js?v=20261029224717';
 
-export const INTERVALS = [1, 2, 4, 8, 16]; // jours d'attente après une réussite, boîtes 1 à 5
+export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261029224717';
+
 const LS_PROGRESS = 'fc.progress.v2';
 const LS_CONFIG = 'fc.config.v1';
 const LS_DEVICE = 'fc.device';
 
 // newPerDay et maxReviews servent de valeurs par défaut pour une matière sans réglage propre.
 // subjects : { matiere: { newPerDay, maxReviews } } ; maxReviews = 0 signifie sans limite.
-export const DEFAULT_SETTINGS = { newPerDay: 10, maxReviews: 100, subjects: {}, inactive: [], updated: 0 };
+export const DEFAULT_SETTINGS = {
+  newPerDay: 10, maxReviews: 100, subjects: {}, inactive: [], updated: 0,
+  ...F.DEFAULT_SCHEDULING,
+};
 
 export function subjectLimits(settings, mat) {
   const s = (settings.subjects || {})[mat] || {};
@@ -15,15 +20,6 @@ export function subjectLimits(settings, mat) {
     newPerDay: Number.isFinite(s.newPerDay) ? s.newPerDay : settings.newPerDay,
     maxReviews: Number.isFinite(s.maxReviews) ? s.maxReviews : settings.maxReviews,
   };
-}
-
-// ---------- Dates (jour local au format AAAA-MM-JJ) ----------
-export function iso(d) {
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-export function today() { return iso(new Date()); }
-export function inDays(n, from = new Date()) {
-  const d = new Date(from); d.setDate(d.getDate() + n); return iso(d);
 }
 
 // ---------- Stockage local ----------
@@ -45,15 +41,19 @@ export function deviceId() {
 }
 
 export function emptyProgress() {
-  return { version: 2, cards: {}, logs: {}, settings: { ...DEFAULT_SETTINGS } };
+  return { version: 3, cards: {}, logs: {}, settings: { ...DEFAULT_SETTINGS } };
 }
 
 export function normalize(p) {
   const base = emptyProgress();
   if (!p || typeof p !== 'object') return base;
+  const cards = {};
+  Object.entries(p.cards && typeof p.cards === 'object' ? p.cards : {}).forEach(([k, st]) => {
+    if (st) cards[k] = F.migrateCard(st);
+  });
   return {
-    version: 2,
-    cards: p.cards && typeof p.cards === 'object' ? p.cards : {},
+    version: 3,
+    cards,
     logs: p.logs && typeof p.logs === 'object' ? p.logs : {},
     settings: { ...DEFAULT_SETTINGS, ...(p.settings || {}) },
   };
@@ -69,7 +69,7 @@ export function loadConfig() {
 export function saveConfig(c) { writeLS(LS_CONFIG, c); }
 
 // ---------- Fusion de deux progressions (PC et téléphone) ----------
-// Cartes : on garde l'état le plus récent. Journaux : un par appareil, on garde le maximum.
+// Cartes : on garde l'état le plus récent. Journaux : un par appareil, on garde la version la plus récente.
 export function merge(a, b) {
   a = normalize(a); b = normalize(b);
   const out = emptyProgress();
@@ -106,45 +106,62 @@ export function stableStringify(v) {
 }
 
 // ---------- Journal quotidien ----------
+// Par appareil et par jour :
+//   r réponses, c réponses autres que « À revoir », n nouvelles cartes, v cartes en révision vues,
+//   t temps passé (ms), g répartition des 4 boutons, rv [révisions, réussies] pour la rétention,
+//   m { matière: [réponses, justes] }, mn { matière: [nouvelles, révisions] }, mt { matière: temps },
+//   s compteur de modifications (pour la fusion).
+function emptyLog() {
+  return { r: 0, c: 0, n: 0, v: 0, t: 0, g: [0, 0, 0, 0], rv: [0, 0], m: {}, mn: {}, mt: {}, s: 0 };
+}
 function dayLog(p, dev, day) {
   p.logs[dev] = p.logs[dev] || {};
-  p.logs[dev][day] = p.logs[dev][day] || { r: 0, c: 0, n: 0, v: 0, m: {}, mn: {} };
-  const l = p.logs[dev][day];
-  l.m = l.m || {};
-  l.mn = l.mn || {};
+  const old = p.logs[dev][day];
+  const l = { ...emptyLog(), ...(old || {}) };
+  if (old && old.s == null) l.s = old.r || 0;
+  p.logs[dev][day] = l;
   return l;
 }
 
 // Totaux d'une journée, tous appareils confondus.
 export function dayTotals(p, day) {
-  // m : réponses par matière [réponses, justes] ; mn : cartes faites par matière [nouvelles, révisions]
-  const t = { r: 0, c: 0, n: 0, v: 0, m: {}, mn: {} };
+  const t = emptyLog();
+  const addMap = (target, src, size) => Object.entries(src || {}).forEach(([k, v]) => {
+    if (size) {
+      target[k] = target[k] || new Array(size).fill(0);
+      v.forEach((x, i) => { target[k][i] += x || 0; });
+    } else target[k] = (target[k] || 0) + (v || 0);
+  });
   Object.values(p.logs).forEach((days) => {
     const l = days[day];
     if (!l) return;
-    t.r += l.r || 0; t.c += l.c || 0; t.n += l.n || 0; t.v += l.v || 0;
-    Object.entries(l.m || {}).forEach(([mat, [r, c]]) => {
-      t.m[mat] = t.m[mat] || [0, 0];
-      t.m[mat][0] += r; t.m[mat][1] += c;
-    });
-    Object.entries(l.mn || {}).forEach(([mat, [n, v]]) => {
-      t.mn[mat] = t.mn[mat] || [0, 0];
-      t.mn[mat][0] += n; t.mn[mat][1] += v;
-    });
+    ['r', 'c', 'n', 'v', 't'].forEach((k) => { t[k] += l[k] || 0; });
+    (l.g || []).forEach((x, i) => { t.g[i] += x || 0; });
+    (l.rv || []).forEach((x, i) => { t.rv[i] += x || 0; });
+    addMap(t.m, l.m, 2);
+    addMap(t.mn, l.mn, 2);
+    addMap(t.mt, l.mt, 0);
   });
   return t;
 }
 
-// ---------- Révision ----------
-export const cardKey = (chapter, card) => chapter.id + '/' + card.id;
-
-export function cardState(p, chapter, card) {
-  const st = p.cards[cardKey(chapter, card)];
-  return st && st.box > 0 ? st : null; // null = carte jamais vue (box 0 : réponse annulée sur une nouvelle carte)
+// ---------- Cartes et faces ----------
+// Une carte « inversée » donne deux faces à réviser : question → réponse et réponse → question.
+export function faces(ch) {
+  const out = [];
+  ch.cartes.forEach((card) => {
+    out.push({ chapter: ch, card, rev: false, key: ch.id + '/' + card.id });
+    if (card.inverse) out.push({ chapter: ch, card, rev: true, key: ch.id + '/' + card.id + '~r' });
+  });
+  return out;
 }
-
-export function isDue(state, day = today()) {
-  return !state || state.due <= day;
+export function cardKey(chapter, card, rev = false) {
+  return chapter.id + '/' + card.id + (rev ? '~r' : '');
+}
+// État d'une face, ou null si elle n'a jamais été vue.
+export function stateOf(p, key) {
+  const st = p.cards[key];
+  return st && st.state && st.state !== 'new' ? st : null;
 }
 
 export function shuffle(a) {
@@ -155,25 +172,26 @@ export function shuffle(a) {
   return a;
 }
 
-// Cartes à faire aujourd'hui dans les chapitres donnés, en respectant les limites quotidiennes
-// de chaque matière (les chapitres portent leur matière dans `matiere`).
-// Renvoie { items, reviewsDue, newAvailable, bySubject } ; items est mélangé.
+// Cartes à faire aujourd'hui dans les chapitres donnés, en respectant les limites de chaque matière.
+// Les cartes en cours d'apprentissage (revues dans la journée) ne sont pas limitées.
+// Renvoie { items, learn, reviewsDue, newAvailable, bySubject } ; items est mélangé.
 export function dailyQueue(p, chapters) {
-  const day = today();
+  const day = F.today();
   const t = dayTotals(p, day);
-  const groups = new Map(); // matière -> { reviews, fresh }
+  const groups = new Map(); // matière -> { learn, reviews, fresh }
   chapters.forEach((ch) => {
-    if (!groups.has(ch.matiere)) groups.set(ch.matiere, { reviews: [], fresh: [] });
+    if (!groups.has(ch.matiere)) groups.set(ch.matiere, { learn: [], reviews: [], fresh: [] });
     const g = groups.get(ch.matiere);
-    ch.cartes.forEach((card) => {
-      const st = cardState(p, ch, card);
-      if (!st) g.fresh.push({ chapter: ch, card, isNew: true });
-      else if (st.due <= day) g.reviews.push({ chapter: ch, card, isNew: false });
+    faces(ch).forEach((f) => {
+      const st = stateOf(p, f.key);
+      if (!st) g.fresh.push({ ...f, kind: 'new' });
+      else if (st.state !== 'review') g.learn.push({ ...f, kind: 'learn' });
+      else if (st.due <= day) g.reviews.push({ ...f, kind: 'review' });
     });
   });
   const items = [];
   const bySubject = {};
-  let reviewsDue = 0, newAvailable = 0;
+  let reviewsDue = 0, newAvailable = 0, learn = 0;
   groups.forEach((g, mat) => {
     const lim = subjectLimits(p.settings, mat);
     const [doneNew, doneRev] = t.mn[mat] || [0, 0];
@@ -181,45 +199,46 @@ export function dailyQueue(p, chapters) {
     const newLimit = Math.max(0, lim.newPerDay - doneNew);
     const rev = shuffle(g.reviews).slice(0, reviewLimit);
     const fresh = shuffle(g.fresh).slice(0, newLimit);
-    items.push(...rev, ...fresh);
-    bySubject[mat] = { reviews: rev.length, fresh: fresh.length, total: rev.length + fresh.length };
+    items.push(...g.learn, ...rev, ...fresh);
+    bySubject[mat] = { reviews: rev.length, fresh: fresh.length, learn: g.learn.length, total: rev.length + fresh.length + g.learn.length };
     reviewsDue += rev.length;
     newAvailable += fresh.length;
+    learn += g.learn.length;
   });
-  return { items: shuffle(items), reviewsDue, newAvailable, bySubject };
+  return { items: shuffle(items), reviewsDue, newAvailable, learn, bySubject };
 }
 
-// Enregistre une réponse. `first` : premier passage de cette carte dans la session.
-// Renvoie de quoi annuler cette réponse avec undoAnswer.
-export function recordAnswer(p, item, knew, first) {
-  const key = cardKey(item.chapter, item.card);
-  const day = today();
+// Enregistre une réponse (g de 1 à 4). `first` : premier passage de cette face dans la session.
+// `ms` : temps passé sur la carte. Renvoie de quoi annuler cette réponse avec undoAnswer.
+export function recordAnswer(p, item, g, first, ms = 0, now = Date.now()) {
+  const key = item.key;
+  const day = F.today(now);
   const dev = deviceId();
   const undo = {
     key, day, dev,
     prevCard: p.cards[key] ? { ...p.cards[key] } : null,
     prevLog: p.logs[dev] && p.logs[dev][day] ? JSON.parse(JSON.stringify(p.logs[dev][day])) : null,
   };
-  const prev = p.cards[key] || { box: 0, n: 0, l: 0 };
-  const now = Date.now();
-  if (knew) {
-    const box = Math.min(5, (prev.box || 0) + 1);
-    p.cards[key] = { box, due: inDays(INTERVALS[box - 1]), last: now, n: (prev.n || 0) + 1, l: prev.l || 0 };
-  } else {
-    p.cards[key] = { box: 1, due: today(), last: now, n: (prev.n || 0) + 1, l: (prev.l || 0) + 1 };
-  }
+  const prev = stateOf(p, key);
+  p.cards[key] = F.schedule(prev, g, now, p.settings, key);
+
   const l = dayLog(p, dev, day);
+  const mat = item.chapter.matiere;
+  const time = Math.min(Math.max(0, ms), 60000); // au-delà d'une minute, on considère une pause
   l.s = (l.s ?? l.r) + 1;
   l.r++;
-  if (knew) l.c++;
-  const mat = item.chapter.matiere;
-  if (first) {
+  if (g > 1) l.c++;
+  l.g[g - 1]++;
+  l.t += time;
+  l.mt[mat] = (l.mt[mat] || 0) + time;
+  if (prev && prev.state === 'review') { l.rv[0]++; if (g > 1) l.rv[1]++; }
+  if (first && (item.kind === 'new' || item.kind === 'review')) {
     l.mn[mat] = l.mn[mat] || [0, 0];
-    if (item.isNew) { l.n++; l.mn[mat][0]++; } else { l.v++; l.mn[mat][1]++; }
+    if (item.kind === 'new') { l.n++; l.mn[mat][0]++; } else { l.v++; l.mn[mat][1]++; }
   }
   l.m[mat] = l.m[mat] || [0, 0];
   l.m[mat][0]++;
-  if (knew) l.m[mat][1]++;
+  if (g > 1) l.m[mat][1]++;
   return undo;
 }
 
@@ -227,11 +246,14 @@ export function recordAnswer(p, item, knew, first) {
 // Les dates `last` et le compteur `s` avancent pour que l'annulation l'emporte à la synchronisation.
 export function undoAnswer(p, undo) {
   const now = Date.now();
-  p.cards[undo.key] = undo.prevCard
-    ? { ...undo.prevCard, last: now }
-    : { box: 0, due: null, last: now, n: 0, l: 0 };
+  p.cards[undo.key] = undo.prevCard ? { ...undo.prevCard, last: now } : { state: 'new', last: now };
   const cur = p.logs[undo.dev] && p.logs[undo.dev][undo.day];
   const s = cur ? (cur.s ?? cur.r ?? 0) : 0;
   p.logs[undo.dev] = p.logs[undo.dev] || {};
-  p.logs[undo.dev][undo.day] = { ...(undo.prevLog || { r: 0, c: 0, n: 0, v: 0, m: {}, mn: {} }), s: s + 1 };
+  p.logs[undo.dev][undo.day] = { ...(undo.prevLog || emptyLog()), s: s + 1 };
+}
+
+// Intervalles proposés par les 4 boutons pour une face.
+export function previews(p, item, now = Date.now()) {
+  return F.previewAll(stateOf(p, item.key), now, p.settings, item.key).map((next) => F.formatDelay(next, now));
 }

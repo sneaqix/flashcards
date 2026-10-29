@@ -1,0 +1,124 @@
+// État partagé de l'appli et petits outils d'affichage.
+import * as S from './store.js?v=20261029224717';
+
+export const $ = (id) => document.getElementById(id);
+export const TABS = ['reviser', 'bachotage', 'cartes', 'stats', 'parametres'];
+
+export const state = {
+  matieres: [],          // [{ id, nom, chapitres: [chapter] }]
+  chapters: [],          // tous les chapitres
+  byId: new Map(),
+  progress: S.loadProgress(),
+  config: S.loadConfig(),
+  gh: null,
+  session: null,         // révision en cours
+  finished: null,        // dernière session terminée (pour annuler sa dernière réponse)
+  lastMode: 'srs',
+  syncing: false,
+  syncAgain: false,
+  imgCache: new Map(),   // images ajoutées pendant cette visite (avant mise à jour du site)
+  edit: null,            // carte ouverte dans l'éditeur
+  editReturn: null,      // 'session' quand l'éditeur a été ouvert pendant une révision
+  cramSel: new Set(),
+  discardUntil: 0,       // délai pendant lequel on peut abandonner des modifications non enregistrées
+  views: {},             // fonctions d'affichage de chaque onglet (renseignées par app.js)
+};
+
+export function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+export function typeset(...els) {
+  els = els.filter(Boolean);
+  if (!els.length || !window.MathJax || !MathJax.typesetPromise) return;
+  if (MathJax.typesetClear) MathJax.typesetClear(els);
+  MathJax.typesetPromise(els).catch(() => {});
+}
+export function imageUrl(path) {
+  return state.imgCache.get(path) || path;
+}
+export function textHtml(text) {
+  return escapeHtml(text || '').replace(/\n/g, '<br>');
+}
+export function renderFace(el, text, img) {
+  el.innerHTML = textHtml(text);
+  if (img) {
+    const im = new Image();
+    im.alt = '';
+    im.src = imageUrl(img);
+    el.appendChild(im);
+  }
+  typeset(el);
+}
+let toastTimer;
+export function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+export function setStatus(id, msg, kind = '') {
+  const el = $(id);
+  el.textContent = msg;
+  el.className = 'status' + (kind ? ' ' + kind : '');
+}
+export function plural(n, one, many) { return n + ' ' + (n > 1 ? many : one); }
+export function saveProgress() { S.saveProgress(state.progress); }
+export function activeChapters() {
+  const off = new Set(state.progress.settings.inactive || []);
+  return state.chapters.filter((c) => !off.has(c.id));
+}
+export function canSync() { return !!(state.gh && state.config.dataRepo); }
+export function canEdit() { return !!(state.gh && state.config.contentRepo); }
+export function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+// Contenu affiché d'une face : une face inversée échange question et réponse.
+export function faceContent(item) {
+  const c = item.card;
+  return item.rev
+    ? { q: c.r, r: c.q, img_q: c.img_r, img_r: c.img_q }
+    : { q: c.q, r: c.r, img_q: c.img_q, img_r: c.img_r };
+}
+export function firstLine(text) {
+  return String(text || '').split('\n').map((l) => l.trim()).find(Boolean) || '';
+}
+// Réponse courte attendue (saisie, choix multiples, associations).
+export function expectedAnswer(card) {
+  return (card.attendu && card.attendu.trim()) || firstLine(card.r);
+}
+
+// Répartition des faces d'un chapitre dans les paliers N, j1, j2…
+export function chapterCounts(ch) {
+  const counts = new Array(S.BUCKETS.length).fill(0);
+  S.faces(ch).forEach((f) => { counts[S.bucketOf(S.stateOf(state.progress, f.key))]++; });
+  return counts;
+}
+
+// ---------- Navigation ----------
+export function showView(name) {
+  document.querySelectorAll('.view').forEach((v) => { v.hidden = v.id !== 'view-' + name; });
+  const tab = name === 'carte' ? (state.editReturn === 'session' ? null : 'cartes') : name === 'assoc' ? 'bachotage' : name;
+  document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
+  document.body.classList.toggle('in-session', ['session', 'done', 'assoc'].includes(name) || (name === 'carte' && state.editReturn === 'session'));
+  window.scrollTo(0, 0);
+}
+export function currentTab() {
+  const h = location.hash.slice(1);
+  return TABS.includes(h) ? h : 'reviser';
+}
+export function route() {
+  if (state.session || state.assoc) return;
+  const tab = currentTab();
+  state.views[tab]();
+  showView(tab);
+}
+export function goTab(tab) {
+  if (location.hash.slice(1) !== tab) location.hash = tab;
+  else route();
+}
+// Rafraîchit la vue affichée après une synchronisation, sauf si l'utilisateur est en train de réviser ou d'écrire.
+export function refreshIfIdle() {
+  if (state.session || state.assoc || !$('view-carte').hidden || !$('view-done').hidden) return;
+  if (document.activeElement && document.activeElement.matches('input, textarea, select')) return;
+  route();
+}

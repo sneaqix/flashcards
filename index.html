@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261029215054">
+<link rel="stylesheet" href="css/app.css?v=20261029224717">
 </head>
 <body>
 <div class="app">
@@ -28,7 +28,7 @@
       <button id="startDaily" class="primary" type="button">Révision du jour</button>
     </div>
     <div id="chapterList" class="matieres"></div>
-    <p class="legend">Les barres montrent où en sont les cartes : N pour les cartes jamais vues, puis j1, j2, j4, j8 et j16, le nombre de jours avant leur prochain passage. Une carte sue passe au palier suivant ; une carte ratée revient à j1. Les cartes sont mélangées entre les chapitres.</p>
+    <p class="legend">Les barres montrent où en sont les cartes : N pour les cartes jamais vues, puis le temps avant leur prochain passage (j1 = 1 jour, j2 = 2 à 3 jours, j4 = 4 à 7 jours… j32+ = plus d'un mois). Les cartes en cours d'apprentissage reviennent dans la journée et comptent dans j1.</p>
   </section>
 
   <!-- ============ Session ============ -->
@@ -36,22 +36,34 @@
     <div class="bar-top">
       <button id="quit" class="ghost" type="button">Retour</button>
       <span class="mode-label" id="modeLabel"></span>
-      <span class="counter" id="counter"></span>
+      <span></span>
     </div>
     <div class="progress"><div id="progressBar"></div></div>
+    <p class="session-counts" id="counter"></p>
     <article class="card" id="card">
       <p class="tag" id="cardTag"></p>
       <div class="face" id="question"></div>
+      <div id="choices" class="choices" hidden></div>
+      <div id="typeBox" class="type-box" hidden>
+        <label for="typeInput" class="sr-only">Ta réponse</label>
+        <input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tape ta réponse puis Entrée">
+      </div>
+      <div id="compare" class="compare" hidden></div>
       <div class="face answer" id="answer" hidden></div>
     </article>
     <div class="actions">
       <button id="show" class="primary" type="button">Voir la réponse</button>
       <div id="grade" class="grade" hidden>
-        <button id="again" class="again" type="button">À revoir</button>
-        <button id="good" class="good" type="button">Je savais</button>
+        <button id="g1" class="g g1" type="button">À revoir</button>
+        <button id="g2" class="g g2" type="button">Difficile</button>
+        <button id="g3" class="g g3" type="button">Correct</button>
+        <button id="g4" class="g g4" type="button">Facile</button>
       </div>
-      <button id="undo" class="ghost undo" type="button" hidden>↶ Carte précédente</button>
-      <p class="keys">Espace : voir la réponse · ← : à revoir · → : je savais · Retour arrière : carte précédente · Échap : retour</p>
+      <div class="session-tools">
+        <button id="undo" class="ghost small" type="button" hidden>↶ Carte précédente</button>
+        <button id="editCard" class="ghost small" type="button">✎ Modifier la carte</button>
+      </div>
+      <p class="keys">Espace : voir la réponse, puis Correct · 1 à 4 : noter · Retour arrière : carte précédente · E : modifier · Échap : quitter</p>
     </div>
   </section>
 
@@ -70,10 +82,16 @@
   <section id="view-bachotage" class="view" hidden>
     <div class="panel">
       <h2>Bachotage</h2>
-      <p class="sub">Révise des chapitres entiers dans un ordre aléatoire, sans toucher à ta progression Leitner. Idéal la veille d'un DS ou d'une colle.</p>
+      <p class="sub">Révise des chapitres entiers dans un ordre aléatoire, sans toucher à ta progression. Idéal la veille d'un DS ou d'une colle.</p>
     </div>
     <div id="cramChapters" class="checklist"></div>
     <div class="panel form">
+      <label for="cramMode">Mode</label>
+      <select id="cramMode">
+        <option value="cram">Cartes : je retourne et je note</option>
+        <option value="qcm">QCM : choisir parmi 4 réponses</option>
+        <option value="assoc">Associations : relier questions et réponses</option>
+      </select>
       <label for="cramCount">Nombre de cartes</label>
       <select id="cramCount">
         <option value="10">10</option>
@@ -81,13 +99,35 @@
         <option value="50">50</option>
         <option value="0">Toutes</option>
       </select>
-      <label class="check"><input type="checkbox" id="cramHard"> Seulement les cartes à consolider (jamais vues, j1 ou j2)</label>
+      <label class="check"><input type="checkbox" id="cramHard"> Seulement les cartes à consolider (jamais vues, en cours, j1 à j2 ou souvent oubliées)</label>
       <p class="sub" id="cramInfo"></p>
       <button id="startCram" class="primary" type="button">Lancer le bachotage</button>
     </div>
   </section>
 
-  <!-- ============ Cartes (éditeur) ============ -->
+  <section id="view-assoc" class="view" hidden>
+    <div class="bar-top">
+      <button id="assocQuit" class="ghost" type="button">Retour</button>
+      <span class="mode-label">Associations</span>
+      <span class="counter" id="assocCounter"></span>
+    </div>
+    <p class="sub" id="assocStatus" role="status"></p>
+    <div id="assocBoard" class="assoc">
+      <div id="assocLeft" class="assoc-col"></div>
+      <div id="assocRight" class="assoc-col"></div>
+    </div>
+    <button id="assocNext" class="primary" type="button" hidden>Manche suivante</button>
+    <div id="assocDone" class="panel" hidden>
+      <h2>Bien joué</h2>
+      <p id="assocDoneText"></p>
+      <div class="row">
+        <button id="assocAgain" class="primary" type="button">Rejouer</button>
+        <button id="assocEnd" class="ghost" type="button">Terminer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Cartes ============ -->
   <section id="view-cartes" class="view" hidden>
     <div id="editorLocked" class="panel" hidden>
       <h2>Modifier les cartes</h2>
@@ -95,10 +135,21 @@
       <a class="button ghost" href="#parametres">Ouvrir les réglages</a>
     </div>
     <div class="panel form">
-      <label for="editChapter">Chapitre</label>
-      <select id="editChapter"></select>
+      <label for="cardSearch">Rechercher dans toutes les cartes</label>
+      <input id="cardSearch" type="search" placeholder="Mot, formule, chapitre…" autocomplete="off">
+      <div class="filter-grid">
+        <label>Matière<select id="fMat"></select></label>
+        <label>Chapitre<select id="fChap"></select></label>
+        <label>État<select id="fEtat"></select></label>
+        <label>Type<select id="fType"></select></label>
+      </div>
+      <div class="result-bar">
+        <p class="sub" id="resultCount"></p>
+        <button id="filtersReset" class="ghost small" type="button">Effacer les filtres</button>
+      </div>
       <div class="row">
         <button id="newCard" class="primary" type="button">Ajouter une carte</button>
+        <button id="practiceSel" class="ghost" type="button">Réviser la sélection</button>
         <button id="newChapter" class="ghost" type="button">Nouveau chapitre</button>
       </div>
     </div>
@@ -113,7 +164,6 @@
         <button id="ncCancel" class="ghost" type="button">Annuler</button>
       </div>
     </div>
-    <input id="cardSearch" type="search" placeholder="Rechercher dans ce chapitre" autocomplete="off">
     <ul id="cardList" class="card-list"></ul>
   </section>
 
@@ -127,27 +177,52 @@
       </span>
     </div>
     <div id="editBody" class="edit-body">
-    <div class="panel form">
-      <label for="fQ">Question</label>
-      <textarea id="fQ" rows="3" placeholder="Formules entre $ $, par exemple $\omega_0 = \sqrt{k/m}$"></textarea>
-      <div class="img-field">
-        <div class="img-preview" id="fImgQPrev"></div>
-        <label class="button ghost file">Image de la question<input id="fImgQ" type="file" accept="image/*"></label>
-        <button id="fImgQDel" class="ghost small" type="button" hidden>Retirer l'image</button>
+      <div class="panel form">
+        <div id="fChapterBox" class="field">
+          <label for="fChapter">Chapitre</label>
+          <select id="fChapter"></select>
+        </div>
+        <label for="fQ">Question</label>
+        <textarea id="fQ" rows="3" placeholder="Formules entre $ $, par exemple $\omega_0 = \sqrt{k/m}$"></textarea>
+        <div class="img-field">
+          <div class="img-preview" id="fImgQPrev"></div>
+          <label class="button ghost file">Image de la question<input id="fImgQ" type="file" accept="image/*"></label>
+          <button id="fImgQDel" class="ghost small" type="button" hidden>Retirer l'image</button>
+        </div>
+        <label for="fR">Réponse</label>
+        <textarea id="fR" rows="4" placeholder="Formule centrée : $$ ... $$"></textarea>
+        <div class="img-field">
+          <div class="img-preview" id="fImgRPrev"></div>
+          <label class="button ghost file">Image de la réponse<input id="fImgR" type="file" accept="image/*"></label>
+          <button id="fImgRDel" class="ghost small" type="button" hidden>Retirer l'image</button>
+        </div>
       </div>
-      <label for="fR">Réponse</label>
-      <textarea id="fR" rows="4" placeholder="Formule centrée : $$ ... $$"></textarea>
-      <div class="img-field">
-        <div class="img-preview" id="fImgRPrev"></div>
-        <label class="button ghost file">Image de la réponse<input id="fImgR" type="file" accept="image/*"></label>
-        <button id="fImgRDel" class="ghost small" type="button" hidden>Retirer l'image</button>
+      <div class="panel form">
+        <h2>Options de révision</h2>
+        <label class="check"><input type="checkbox" id="fInverse"> Créer aussi la carte inversée (réponse → question)</label>
+        <label for="fMode">Façon de répondre</label>
+        <select id="fMode">
+          <option value="">Classique : je retourne la carte</option>
+          <option value="saisie">Je tape la réponse</option>
+          <option value="qcm">Choix multiples</option>
+        </select>
+        <div id="fAttenduBox" class="field" hidden>
+          <label for="fAttendu">Réponse attendue</label>
+          <input id="fAttendu" type="text" autocomplete="off">
+          <p class="sub">Plusieurs réponses acceptées : sépare-les par « / ». Majuscules, accents et articles (to, a, the, le…) sont tolérés.</p>
+        </div>
+        <div id="fChoixBox" class="field" hidden>
+          <label for="fChoix">Mauvaises réponses proposées, une par ligne</label>
+          <textarea id="fChoix" rows="3" placeholder="Facultatif : sinon elles sont tirées des autres cartes du chapitre"></textarea>
+        </div>
+        <p class="sub">Ces options s'appliquent au sens question → réponse. La carte inversée se révise toujours en mode classique.</p>
       </div>
-    </div>
-    <p class="sub preview-label">Aperçu</p>
-    <article class="card">
-      <div class="face" id="pQ"></div>
-      <div class="face answer" id="pR"></div>
-    </article>
+      <p class="sub preview-label">Aperçu</p>
+      <article class="card">
+        <div class="face" id="pQ"></div>
+        <div class="face answer" id="pR"></div>
+      </article>
+      <div id="fStats" class="panel card-stats" hidden></div>
     </div>
     <p class="sub swipe-hint" id="swipeHint">Glisse vers la gauche ou la droite pour passer d'une carte à l'autre.</p>
     <div class="row">
@@ -168,16 +243,41 @@
   <section id="view-stats" class="view" hidden>
     <div class="tiles" id="statTiles"></div>
     <div class="panel">
+      <h2>Calendrier des révisions</h2>
+      <div id="heatmap" class="chart"></div>
+    </div>
+    <div class="panel">
       <h2>Réponses des 30 derniers jours</h2>
       <div id="chart30" class="chart"></div>
+    </div>
+    <div class="panel">
+      <h2>Temps de révision</h2>
+      <div id="chartTime" class="chart"></div>
+    </div>
+    <div class="panel">
+      <h2>Boutons utilisés (30 jours)</h2>
+      <div id="chartButtons" class="chart"></div>
+    </div>
+    <div class="panel">
+      <h2>État des cartes</h2>
+      <div id="chartStates" class="chart"></div>
+    </div>
+    <div class="panel">
+      <h2>Intervalles</h2>
+      <div id="chartIvl" class="chart"></div>
+    </div>
+    <div class="panel">
+      <h2>Prévision sur 30 jours</h2>
+      <div id="forecast" class="chart"></div>
     </div>
     <div class="panel">
       <h2>Par matière</h2>
       <div id="statMatieres"></div>
     </div>
     <div class="panel">
-      <h2>Cartes prévues sur 7 jours</h2>
-      <div id="forecast" class="chart"></div>
+      <h2>Cartes les plus souvent oubliées</h2>
+      <p class="sub">Touche une carte pour la reformuler ou la découper en cartes plus simples.</p>
+      <ul id="hardList" class="card-list"></ul>
     </div>
   </section>
 
@@ -189,6 +289,25 @@
       <div class="limits" id="subjectLimits"></div>
       <p class="sub limits-total" id="limitsTotal"></p>
       <p class="status" id="sStatus" role="status"></p>
+    </div>
+    <div class="panel form">
+      <h2>Planification</h2>
+      <label for="sRetention">Rétention visée</label>
+      <select id="sRetention">
+        <option value="80">80 % : moins de révisions, plus d'oublis</option>
+        <option value="85">85 %</option>
+        <option value="90">90 % : recommandé</option>
+        <option value="95">95 % : beaucoup plus de révisions</option>
+      </select>
+      <p class="sub">Probabilité de te souvenir d'une carte au moment où elle revient. Plus elle est haute, plus les intervalles sont courts.</p>
+      <label for="sMaxIvl">Intervalle maximum (jours)</label>
+      <input id="sMaxIvl" type="number" min="7" max="3650" inputmode="numeric">
+      <label for="sLearn">Étapes d'apprentissage (minutes)</label>
+      <input id="sLearn" type="text" inputmode="numeric" autocomplete="off" placeholder="1 10">
+      <p class="sub">Une nouvelle carte revient après chacune de ces étapes avant de passer à plusieurs jours.</p>
+      <label for="sRelearn">Étapes après un oubli (minutes)</label>
+      <input id="sRelearn" type="text" inputmode="numeric" autocomplete="off" placeholder="10">
+      <p class="status" id="algoStatus" role="status"></p>
     </div>
     <div class="panel">
       <h2>Programme TSI</h2>
@@ -245,6 +364,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261029215054"></script>
+<script type="module" src="js/app.js?v=20261029224717"></script>
 </body>
 </html>
