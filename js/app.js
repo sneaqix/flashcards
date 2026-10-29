@@ -1,5 +1,5 @@
-import { GitHub, isConflict } from './github.js';
-import * as S from './store.js';
+import { GitHub, isConflict } from './github.js?v=20261029215054';
+import * as S from './store.js?v=20261029215054';
 
 const $ = (id) => document.getElementById(id);
 const TABS = ['reviser', 'bachotage', 'cartes', 'stats', 'parametres'];
