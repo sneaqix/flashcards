@@ -28,7 +28,7 @@
       <button id="startDaily" class="primary" type="button">Révision du jour</button>
     </div>
     <div id="chapterList" class="matieres"></div>
-    <p class="legend">Les barres montrent les boîtes de Leitner : N pour les cartes jamais vues, puis les boîtes 1 à 5. Une carte sue monte d'une boîte et revient dans 1, 2, 4, 8 puis 16 jours ; une carte ratée retourne en boîte 1. Les cartes sont mélangées entre les chapitres.</p>
+    <p class="legend">Les barres montrent où en sont les cartes : N pour les cartes jamais vues, puis j1, j2, j4, j8 et j16, le nombre de jours avant leur prochain passage. Une carte sue passe au palier suivant ; une carte ratée revient à j1. Les cartes sont mélangées entre les chapitres.</p>
   </section>
 
   <!-- ============ Session ============ -->
@@ -81,7 +81,7 @@
         <option value="50">50</option>
         <option value="0">Toutes</option>
       </select>
-      <label class="check"><input type="checkbox" id="cramHard"> Seulement les cartes à consolider (jamais vues ou boîtes 1 et 2)</label>
+      <label class="check"><input type="checkbox" id="cramHard"> Seulement les cartes à consolider (jamais vues, j1 ou j2)</label>
       <p class="sub" id="cramInfo"></p>
       <button id="startCram" class="primary" type="button">Lancer le bachotage</button>
     </div>

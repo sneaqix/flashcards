@@ -150,12 +150,14 @@ function refreshIfIdle() {
 // =====================================================================
 // Accueil : révision du jour
 // =====================================================================
+// Nom d'une boîte de Leitner d'après son intervalle de révision : N (jamais vue), j1, j2, j4, j8, j16.
+function boxLabel(box) { return box > 0 ? 'j' + S.INTERVALS[box - 1] : 'N'; }
 function boxesHtml(counts) {
   const max = Math.max(1, ...counts);
   return '<div class="boxes">' + counts.map((n, i) =>
-    '<div class="box" title="' + (i === 0 ? 'Jamais vues' : 'Boîte ' + i) + ' : ' + n + '">' +
+    '<div class="box" title="' + (i === 0 ? 'Jamais vues' : 'Reviennent après ' + S.INTERVALS[i - 1] + ' j') + ' : ' + n + '">' +
     '<div class="bar"><div class="fill" style="height:' + Math.round(n / max * 100) + '%"></div></div>' +
-    '<span>' + (i === 0 ? 'N' : i) + '·' + n + '</span></div>').join('') + '</div>';
+    '<span>' + boxLabel(i) + '·' + n + '</span></div>').join('') + '</div>';
 }
 
 function renderHome() {
@@ -440,7 +442,7 @@ function renderCardList() {
     const li = document.createElement('li');
     const b = document.createElement('button');
     b.type = 'button';
-    b.innerHTML = '<span class="q"></span><span class="meta">' + (st ? 'B' + st.box : 'N') + (card.img_q || card.img_r ? ' · img' : '') + '</span>';
+    b.innerHTML = '<span class="q"></span><span class="meta">' + boxLabel(st ? st.box : 0) + (card.img_q || card.img_r ? ' · img' : '') + '</span>';
     b.querySelector('.q').innerHTML = escapeHtml(card.q);
     b.addEventListener('click', () => openEditor(ch, card));
     li.appendChild(b);
@@ -762,7 +764,7 @@ function renderStats() {
     [streak(), 'jours de suite'],
     [totals[totals.length - 1].r, 'réponses aujourd\'hui'],
     [r30 ? Math.round(c30 / r30 * 100) + ' %' : '–', 'de réussite sur 30 jours'],
-    [mastered + ' / ' + all, 'cartes en boîte 5'],
+    [mastered + ' / ' + all, 'cartes au palier ' + boxLabel(5)],
   ];
   $('statTiles').innerHTML = tiles.map(([v, l]) => '<div class="tile"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>').join('');
 
@@ -790,7 +792,7 @@ function renderStats() {
   $('chart30').innerHTML = svg;
 
   // Par matière : réussite sur 30 jours et répartition dans les boîtes.
-  const legend = ['Jamais vues', 'B1', 'B2', 'B3', 'B4', 'B5'];
+  const legend = ['Jamais vues', 1, 2, 3, 4, 5].map((b) => typeof b === 'number' ? boxLabel(b) : b);
   const shade = (i) => i === 0 ? 'var(--line)' : 'color-mix(in srgb, var(--accent) ' + (20 + i * 16) + '%, transparent)';
   let html = '';
   state.matieres.forEach((m) => {
