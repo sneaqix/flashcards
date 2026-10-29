@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261029224717">
+<link rel="stylesheet" href="css/app.css?v=20261029233129">
 </head>
 <body>
 <div class="app">
@@ -205,17 +205,19 @@
           <option value="">Classique : je retourne la carte</option>
           <option value="saisie">Je tape la réponse</option>
           <option value="qcm">Choix multiples</option>
+          <option value="trou">Texte à trous</option>
         </select>
-        <div id="fAttenduBox" class="field" hidden>
-          <label for="fAttendu">Réponse attendue</label>
+        <p id="fTrouHelp" class="sub help" hidden>Écris la phrase dans la question et entoure chaque mot à trouver de doubles accolades : <code>{{overtourism}}</code>. Indice facultatif après deux deux-points : <code>{{overtourism::surtourisme}}</code>. Plusieurs réponses possibles : <code>{{crowded/packed}}</code>. La réponse peut contenir une traduction ou une explication.</p>
+        <div id="fAttenduBox" class="field">
+          <label for="fAttendu">Réponse courte</label>
           <input id="fAttendu" type="text" autocomplete="off">
-          <p class="sub">Plusieurs réponses acceptées : sépare-les par « / ». Majuscules, accents et articles (to, a, the, le…) sont tolérés.</p>
+          <p class="sub">Utilisée pour la saisie, les QCM et les associations. Plusieurs réponses acceptées : sépare-les par « / ». Majuscules, accents et articles (to, a, the, le…) sont tolérés.</p>
         </div>
         <div id="fChoixBox" class="field" hidden>
           <label for="fChoix">Mauvaises réponses proposées, une par ligne</label>
           <textarea id="fChoix" rows="3" placeholder="Facultatif : sinon elles sont tirées des autres cartes du chapitre"></textarea>
         </div>
-        <p class="sub">Ces options s'appliquent au sens question → réponse. La carte inversée se révise toujours en mode classique.</p>
+        <p class="sub">Ces options s'appliquent au sens question → réponse. La carte inversée se révise toujours en mode classique ; un texte à trous n'a pas de carte inversée.</p>
       </div>
       <p class="sub preview-label">Aperçu</p>
       <article class="card">
@@ -364,6 +366,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261029224717"></script>
+<script type="module" src="js/app.js?v=20261029233129"></script>
 </body>
 </html>

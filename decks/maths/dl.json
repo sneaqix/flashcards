@@ -30,17 +30,38 @@
     {
       "id": "cos",
       "q": "DL à l'ordre $4$ en $0$ de $\\cos x$",
-      "r": "$$\\cos x = 1 - \\frac{x^2}{2} + \\frac{x^4}{24} + o(x^4)$$"
+      "r": "$$\\cos x = 1 - \\frac{x^2}{2} + \\frac{x^4}{24} + o(x^4)$$",
+      "mode": "qcm",
+      "attendu": "$1 - \\dfrac{x^2}{2} + \\dfrac{x^4}{24} + o(x^4)$",
+      "choix": [
+        "$1 - \\dfrac{x^2}{2} + \\dfrac{x^4}{12} + o(x^4)$",
+        "$1 + \\dfrac{x^2}{2} + \\dfrac{x^4}{24} + o(x^4)$",
+        "$1 - x^2 + \\dfrac{x^4}{24} + o(x^4)$"
+      ]
     },
     {
       "id": "tan",
       "q": "DL à l'ordre $3$ en $0$ de $\\tan x$",
-      "r": "$$\\tan x = x + \\frac{x^3}{3} + o(x^3)$$"
+      "r": "$$\\tan x = x + \\frac{x^3}{3} + o(x^3)$$",
+      "mode": "qcm",
+      "attendu": "$x + \\dfrac{x^3}{3} + o(x^3)$",
+      "choix": [
+        "$x - \\dfrac{x^3}{3} + o(x^3)$",
+        "$x + \\dfrac{x^3}{6} + o(x^3)$",
+        "$x + \\dfrac{2x^3}{3} + o(x^3)$"
+      ]
     },
     {
       "id": "arctan",
       "q": "DL à l'ordre $5$ en $0$ de $\\arctan x$",
-      "r": "$$\\arctan x = x - \\frac{x^3}{3} + \\frac{x^5}{5} + o(x^5)$$"
+      "r": "$$\\arctan x = x - \\frac{x^3}{3} + \\frac{x^5}{5} + o(x^5)$$",
+      "mode": "qcm",
+      "attendu": "$x - \\dfrac{x^3}{3} + \\dfrac{x^5}{5} + o(x^5)$",
+      "choix": [
+        "$x - \\dfrac{x^3}{6} + \\dfrac{x^5}{120} + o(x^5)$",
+        "$x + \\dfrac{x^3}{3} + \\dfrac{x^5}{5} + o(x^5)$",
+        "$x - \\dfrac{x^3}{3} + \\dfrac{2x^5}{15} + o(x^5)$"
+      ]
     },
     {
       "id": "taylor-young",
@@ -50,7 +71,14 @@
     {
       "id": "equivalents",
       "q": "Équivalents usuels en $0$ de $\\sin x$, $\\ln(1+x)$, $e^x-1$ et $1-\\cos x$",
-      "r": "$$\\sin x \\sim x,\\quad \\ln(1+x) \\sim x,\\quad e^x - 1 \\sim x,\\quad 1-\\cos x \\sim \\frac{x^2}{2}$$"
+      "r": "$$\\sin x \\sim x,\\quad \\ln(1+x) \\sim x,\\quad e^x - 1 \\sim x,\\quad 1-\\cos x \\sim \\frac{x^2}{2}$$",
+      "mode": "qcm",
+      "attendu": "$1-\\cos x \\sim \\dfrac{x^2}{2}$",
+      "choix": [
+        "$1-\\cos x \\sim x^2$",
+        "$1-\\cos x \\sim \\dfrac{x}{2}$",
+        "$1-\\cos x \\sim -\\dfrac{x^2}{2}$"
+      ]
     }
   ]
 }

@@ -15,12 +15,26 @@
     {
       "id": "deux-forces",
       "q": "Solide soumis à deux glisseurs : condition d'équilibre",
-      "r": "Les deux forces sont directement opposées : même droite d'action, même norme, sens opposés."
+      "r": "Les deux forces sont directement opposées : même droite d'action, même norme, sens opposés.",
+      "mode": "qcm",
+      "attendu": "Les deux forces sont directement opposées (même droite d'action, même norme, sens opposés).",
+      "choix": [
+        "Les deux forces sont parallèles et de même sens.",
+        "Les deux forces sont perpendiculaires.",
+        "Les deux forces ont la même norme, quelle que soit leur droite d'action."
+      ]
     },
     {
       "id": "trois-forces",
       "q": "Solide soumis à trois glisseurs non parallèles : condition d'équilibre",
-      "r": "Les trois droites d'action sont concourantes et la somme des forces est nulle."
+      "r": "Les trois droites d'action sont concourantes et la somme des forces est nulle.",
+      "mode": "qcm",
+      "attendu": "Droites d'action concourantes et somme des forces nulle.",
+      "choix": [
+        "Droites d'action parallèles et somme des forces nulle.",
+        "Les trois forces ont la même norme.",
+        "Somme des forces nulle, droites d'action quelconques."
+      ]
     },
     {
       "id": "coulomb",

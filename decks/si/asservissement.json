@@ -5,7 +5,14 @@
     {
       "id": "premier-ordre",
       "q": "Fonction de transfert canonique d'un système du 1er ordre et temps de réponse à 5 %",
-      "r": "$$H(p) = \\frac{K}{1 + \\tau p}, \\qquad t_{5\\%} = 3\\tau$$"
+      "r": "$$H(p) = \\frac{K}{1 + \\tau p}, \\qquad t_{5\\%} = 3\\tau$$",
+      "mode": "qcm",
+      "attendu": "$H(p) = \\dfrac{K}{1 + \\tau p}$ et $t_{5\\%} = 3\\tau$",
+      "choix": [
+        "$H(p) = \\dfrac{K}{1 + \\tau p}$ et $t_{5\\%} = \\tau$",
+        "$H(p) = \\dfrac{K}{\\tau p}$ et $t_{5\\%} = 3\\tau$",
+        "$H(p) = \\dfrac{K}{1 + \\tau p}$ et $t_{5\\%} = 5\\tau$"
+      ]
     },
     {
       "id": "second-ordre",
@@ -15,7 +22,14 @@
     {
       "id": "depassement",
       "q": "Condition d'absence de dépassement pour un 2nd ordre",
-      "r": "$\\xi \\geq 1$ (régime critique ou apériodique)."
+      "r": "$\\xi \\geq 1$ (régime critique ou apériodique).",
+      "mode": "qcm",
+      "attendu": "$\\xi \\geq 1$",
+      "choix": [
+        "$\\xi \\leq 1$",
+        "$\\xi \\geq 0{,}7$",
+        "$\\xi = 0$"
+      ]
     },
     {
       "id": "t5-optimal",
@@ -25,12 +39,26 @@
     {
       "id": "ftbf",
       "q": "Fonction de transfert en boucle fermée (chaîne directe $A$, retour $B$)",
-      "r": "$$H_{BF}(p) = \\frac{A(p)}{1 + A(p)\\,B(p)}$$"
+      "r": "$$H_{BF}(p) = \\frac{A(p)}{1 + A(p)\\,B(p)}$$",
+      "mode": "qcm",
+      "attendu": "$H_{BF} = \\dfrac{A}{1 + AB}$",
+      "choix": [
+        "$H_{BF} = \\dfrac{A}{1 - AB}$",
+        "$H_{BF} = \\dfrac{AB}{1 + AB}$",
+        "$H_{BF} = \\dfrac{1}{1 + AB}$"
+      ]
     },
     {
       "id": "valeur-finale",
       "q": "Théorème de la valeur finale",
-      "r": "$$\\lim_{t \\to +\\infty} f(t) = \\lim_{p \\to 0} p\\,F(p)$$"
+      "r": "$$\\lim_{t \\to +\\infty} f(t) = \\lim_{p \\to 0} p\\,F(p)$$",
+      "mode": "qcm",
+      "attendu": "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to 0} p\\,F(p)$",
+      "choix": [
+        "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to +\\infty} p\\,F(p)$",
+        "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to 0} F(p)$",
+        "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to 0} \\dfrac{F(p)}{p}$"
+      ]
     },
     {
       "id": "valeur-initiale",

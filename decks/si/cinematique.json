@@ -10,12 +10,26 @@
     {
       "id": "babar",
       "q": "Relation de changement de point du champ des vitesses",
-      "r": "$$\\vec{V}(B, 1/0) = \\vec{V}(A, 1/0) + \\vec{BA} \\wedge \\vec{\\Omega}(1/0)$$"
+      "r": "$$\\vec{V}(B, 1/0) = \\vec{V}(A, 1/0) + \\vec{BA} \\wedge \\vec{\\Omega}(1/0)$$",
+      "mode": "qcm",
+      "attendu": "$\\vec{V}(B) = \\vec{V}(A) + \\vec{BA} \\wedge \\vec{\\Omega}$",
+      "choix": [
+        "$\\vec{V}(B) = \\vec{V}(A) + \\vec{AB} \\wedge \\vec{\\Omega}$",
+        "$\\vec{V}(B) = \\vec{V}(A) + \\vec{\\Omega} \\wedge \\vec{BA}$",
+        "$\\vec{V}(B) = \\vec{V}(A) \\wedge \\vec{BA}$"
+      ]
     },
     {
       "id": "rsg",
       "q": "Condition de roulement sans glissement au point de contact $I$",
-      "r": "$$\\vec{V}(I, 1/2) = \\vec{0}$$"
+      "r": "$$\\vec{V}(I, 1/2) = \\vec{0}$$",
+      "mode": "qcm",
+      "attendu": "$\\vec{V}(I, 1/2) = \\vec{0}$",
+      "choix": [
+        "$\\vec{\\Omega}(1/2) = \\vec{0}$",
+        "$\\vec{V}(I, 1/2) \\cdot \\vec{n} = 0$ seulement",
+        "$\\vec{V}(I, 1/0) = \\vec{V}(I, 2/0) + \\vec{\\Omega}(1/2)$"
+      ]
     },
     {
       "id": "derivation",

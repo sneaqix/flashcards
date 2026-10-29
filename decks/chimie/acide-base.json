@@ -10,7 +10,14 @@
     {
       "id": "ke",
       "q": "Produit ionique de l'eau à 25 °C",
-      "r": "$$K_e = [\\text{H}_3\\text{O}^+][\\text{HO}^-] = 10^{-14}$$"
+      "r": "$$K_e = [\\text{H}_3\\text{O}^+][\\text{HO}^-] = 10^{-14}$$",
+      "mode": "qcm",
+      "attendu": "$K_e = 10^{-14}$",
+      "choix": [
+        "$K_e = 10^{-7}$",
+        "$K_e = 10^{14}$",
+        "$K_e = 14$"
+      ]
     },
     {
       "id": "ka",
@@ -20,12 +27,26 @@
     {
       "id": "henderson",
       "q": "Relation entre pH, p$K_a$ et concentrations",
-      "r": "$$\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{A}^-]}{[\\text{AH}]}$$"
+      "r": "$$\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{A}^-]}{[\\text{AH}]}$$",
+      "mode": "qcm",
+      "attendu": "$\\text{pH} = \\text{p}K_a + \\log\\dfrac{[\\text{A}^-]}{[\\text{AH}]}$",
+      "choix": [
+        "$\\text{pH} = \\text{p}K_a + \\log\\dfrac{[\\text{AH}]}{[\\text{A}^-]}$",
+        "$\\text{pH} = \\text{p}K_a - \\log\\dfrac{[\\text{A}^-]}{[\\text{AH}]}$",
+        "$\\text{pH} = K_a + \\log\\dfrac{[\\text{A}^-]}{[\\text{AH}]}$"
+      ]
     },
     {
       "id": "predominance",
       "q": "Domaines de prédominance du couple $\\text{AH}/\\text{A}^-$",
-      "r": "$\\text{pH} < \\text{p}K_a$ : $\\text{AH}$ prédomine. $\\text{pH} > \\text{p}K_a$ : $\\text{A}^-$ prédomine."
+      "r": "$\\text{pH} < \\text{p}K_a$ : $\\text{AH}$ prédomine. $\\text{pH} > \\text{p}K_a$ : $\\text{A}^-$ prédomine.",
+      "mode": "qcm",
+      "attendu": "$\\text{pH} < \\text{p}K_a$ : $\\text{AH}$ prédomine",
+      "choix": [
+        "$\\text{pH} < \\text{p}K_a$ : $\\text{A}^-$ prédomine",
+        "$\\text{pH} > \\text{p}K_a$ : $\\text{AH}$ prédomine",
+        "$\\text{pH} = \\text{p}K_a$ : seul $\\text{AH}$ est présent"
+      ]
     },
     {
       "id": "acide-fort",

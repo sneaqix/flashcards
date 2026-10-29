@@ -1,11 +1,11 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261029224717';
+import * as S from './store.js?v=20261029233129';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters,
-  canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab,
-} from './ui.js?v=20261029224717';
-import { scheduleSync } from './sync.js?v=20261029224717';
-import { openEditor } from './editor.js?v=20261029224717';
+  canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
+} from './ui.js?v=20261029233129';
+import { scheduleSync } from './sync.js?v=20261029233129';
+import { openEditor } from './editor.js?v=20261029233129';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -142,7 +142,7 @@ export function qcmOptions(item, count = 4) {
   if (!item.rev && Array.isArray(item.card.choix) && item.card.choix.length) {
     wrong = item.card.choix.filter((x) => x && x.trim() && x.trim() !== correct);
   } else {
-    const pool = (cards) => S.shuffle(cards.filter((c) => c.id !== item.card.id).map(side))
+    const pool = (cards) => S.shuffle(cards.filter((c) => c.id !== item.card.id && !isCloze(c)).map(side))
       .filter((x, i, arr) => x && x !== correct && arr.indexOf(x) === i);
     wrong = pool(item.chapter.cartes);
     if (wrong.length < count - 1) {
@@ -199,6 +199,7 @@ function nextCard() {
 }
 
 function modeOf(s, item) {
+  if (isCloze(item.card)) return 'trou';
   if (s.mode === 'qcm') return 'qcm';
   if (!item.rev && (item.card.mode === 'saisie' || item.card.mode === 'qcm')) return item.card.mode;
   return 'classic';
@@ -246,11 +247,14 @@ function showCurrent(revealed) {
       typeset(box);
     }
   }
+  if (mode === 'trou') renderCloze(item);
   if (mode === 'saisie') {
     $('typeBox').hidden = false;
     $('typeInput').value = '';
     $('show').textContent = 'Vérifier';
     setTimeout(() => $('typeInput').focus({ preventScroll: true }), 30);
+  } else if (mode === 'trou') {
+    $('show').textContent = 'Vérifier';
   } else {
     $('show').textContent = 'Voir la réponse';
   }
@@ -278,6 +282,7 @@ function reveal() {
   const s = state.session;
   if (!s || !$('answer').hidden) return;
   if (s.view.mode === 'saisie' && $('compare').hidden) return checkAnswer();
+  if (s.view.mode === 'trou' && !s.view.checked) return checkCloze();
   const content = faceContent(s.cur);
   renderFace($('answer'), content.r, content.img_r);
   $('answer').hidden = false;
@@ -306,6 +311,71 @@ function checkAnswer() {
   box.hidden = false;
   reveal();
   suggest(res.verdict === 'exact' ? 3 : res.verdict === 'close' || res.verdict === 'typo' ? 2 : 1);
+}
+
+// ---------- Texte à trous : une case à remplir par trou, directement dans la phrase ----------
+function renderCloze(item) {
+  const q = $('question');
+  q.innerHTML = '';
+  let n = 0;
+  clozeParts(item.card.q).forEach((p) => {
+    if (p.answer === undefined) {
+      p.text.split('\n').forEach((line, i) => {
+        if (i) q.appendChild(document.createElement('br'));
+        q.appendChild(document.createTextNode(line));
+      });
+      return;
+    }
+    const wrap = document.createElement('span');
+    wrap.className = 'blank-wrap';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'blank';
+    input.autocomplete = 'off';
+    input.autocapitalize = 'off';
+    input.spellcheck = false;
+    input.dataset.answer = p.answer;
+    input.placeholder = p.hint || '…';
+    input.setAttribute('aria-label', 'Trou ' + (++n) + (p.hint ? ' : ' + p.hint : ''));
+    input.style.width = Math.max(4, Math.min(22, Math.max(p.answer.split('/')[0].trim().length, (p.hint || '').length) + 2)) + 'ch';
+    input.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const all = [...q.querySelectorAll('input.blank')];
+      const next = all[all.indexOf(input) + 1];
+      if (next) next.focus(); else checkCloze();
+    });
+    wrap.appendChild(input);
+    q.appendChild(wrap);
+  });
+  if (item.card.img_q) {
+    const im = new Image();
+    im.alt = '';
+    im.src = imageUrl(item.card.img_q);
+    q.appendChild(im);
+  }
+  state.session.view.checked = false;
+  const first = q.querySelector('input.blank');
+  if (first) setTimeout(() => first.focus({ preventScroll: true }), 30);
+}
+function checkCloze() {
+  const s = state.session;
+  let worst = 3;
+  $('question').querySelectorAll('input.blank').forEach((input) => {
+    const res = checkTyped(input.value, input.dataset.answer);
+    input.disabled = true;
+    input.classList.add(res.verdict === 'exact' ? 'b-ok' : res.verdict === 'close' || res.verdict === 'typo' ? 'b-near' : 'b-bad');
+    if (res.verdict !== 'exact') {
+      const fix = document.createElement('span');
+      fix.className = 'blank-fix';
+      fix.textContent = input.dataset.answer.split('/')[0].trim();
+      input.parentNode.appendChild(fix);
+    }
+    worst = Math.min(worst, res.verdict === 'exact' ? 3 : res.verdict === 'close' || res.verdict === 'typo' ? 2 : 1);
+  });
+  s.view.checked = true;
+  reveal();
+  suggest(worst);
 }
 
 function chooseOption(opt, btn) {

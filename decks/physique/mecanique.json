@@ -30,7 +30,14 @@
     {
       "id": "oh",
       "q": "Équation et pulsation de l'oscillateur harmonique masse-ressort",
-      "r": "$$\\ddot{x} + \\omega_0^2 x = 0, \\qquad \\omega_0 = \\sqrt{\\frac{k}{m}}$$"
+      "r": "$$\\ddot{x} + \\omega_0^2 x = 0, \\qquad \\omega_0 = \\sqrt{\\frac{k}{m}}$$",
+      "mode": "qcm",
+      "attendu": "$\\omega_0 = \\sqrt{\\dfrac{k}{m}}$",
+      "choix": [
+        "$\\omega_0 = \\sqrt{\\dfrac{m}{k}}$",
+        "$\\omega_0 = \\dfrac{k}{m}$",
+        "$\\omega_0 = \\sqrt{km}$"
+      ]
     },
     {
       "id": "tmc-axe",
@@ -40,12 +47,26 @@
     {
       "id": "ec-rotation",
       "q": "Énergie cinétique d'un solide en rotation autour d'un axe fixe",
-      "r": "$$E_c = \\frac{1}{2} J_\\Delta \\omega^2$$"
+      "r": "$$E_c = \\frac{1}{2} J_\\Delta \\omega^2$$",
+      "mode": "qcm",
+      "attendu": "$E_c = \\dfrac{1}{2} J_\\Delta \\omega^2$",
+      "choix": [
+        "$E_c = J_\\Delta \\omega^2$",
+        "$E_c = \\dfrac{1}{2} J_\\Delta \\omega$",
+        "$E_c = \\dfrac{1}{2} m \\omega^2$"
+      ]
     },
     {
       "id": "inertie-cyl",
       "q": "Moment d'inertie d'un cylindre plein (masse $m$, rayon $R$) par rapport à son axe",
-      "r": "$$J = \\frac{1}{2} m R^2$$"
+      "r": "$$J = \\frac{1}{2} m R^2$$",
+      "mode": "qcm",
+      "attendu": "$J = \\dfrac{1}{2} m R^2$",
+      "choix": [
+        "$J = m R^2$",
+        "$J = \\dfrac{2}{5} m R^2$",
+        "$J = \\dfrac{1}{3} m R^2$"
+      ]
     },
     {
       "id": "puissance-rot",

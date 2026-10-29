@@ -10,7 +10,14 @@
     {
       "id": "faraday",
       "q": "Loi de Faraday",
-      "r": "$$e = -\\frac{d\\Phi}{dt}$$ en convention générateur."
+      "r": "$$e = -\\frac{d\\Phi}{dt}$$ en convention générateur.",
+      "mode": "qcm",
+      "attendu": "$e = -\\dfrac{d\\Phi}{dt}$",
+      "choix": [
+        "$e = \\dfrac{d\\Phi}{dt}$",
+        "$e = -\\Phi\\,\\dfrac{dB}{dt}$",
+        "$e = -L\\,\\Phi$"
+      ]
     },
     {
       "id": "lenz",
@@ -30,7 +37,14 @@
     {
       "id": "solenoide",
       "q": "Champ magnétique dans un solénoïde infini ($n$ spires par mètre)",
-      "r": "$$B = \\mu_0\\, n\\, I$$"
+      "r": "$$B = \\mu_0\\, n\\, I$$",
+      "mode": "qcm",
+      "attendu": "$B = \\mu_0\\, n\\, I$",
+      "choix": [
+        "$B = \\dfrac{\\mu_0 I}{n}$",
+        "$B = \\mu_0\\, N\\, I$ ($N$ spires au total)",
+        "$B = \\dfrac{\\mu_0 I}{2\\pi r}$"
+      ]
     },
     {
       "id": "couplage",

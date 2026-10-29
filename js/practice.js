@@ -1,9 +1,9 @@
 // Onglet Bachotage : révision libre (cartes ou QCM) et jeu d'associations, sans effet sur la progression.
-import * as S from './store.js?v=20261029224717';
+import * as S from './store.js?v=20261029233129';
 import {
   $, state, textHtml, typeset, toast, plural, showView, goTab, faceContent, expectedAnswer,
-} from './ui.js?v=20261029224717';
-import { startSession } from './review.js?v=20261029224717';
+} from './ui.js?v=20261029233129';
+import { startSession } from './review.js?v=20261029233129';
 
 // =====================================================================
 // Listes de chapitres à cocher (bachotage et réglages)
@@ -63,7 +63,7 @@ function cramPool() {
   state.chapters.forEach((ch) => {
     if (!state.cramSel.has(ch.id)) return;
     S.faces(ch).forEach((f) => {
-      if (assoc && f.rev) return; // les associations utilisent le sens question → réponse
+      if (assoc && (f.rev || f.card.mode === 'trou')) return; // associations : sens question → réponse, sans textes à trous
       if (hard && !isHard(S.stateOf(state.progress, f.key))) return;
       pool.push({ ...f, kind: 'cram' });
     });

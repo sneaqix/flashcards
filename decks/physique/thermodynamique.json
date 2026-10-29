@@ -15,7 +15,14 @@
     {
       "id": "travail",
       "q": "Travail élémentaire des forces de pression",
-      "r": "$$\\delta W = -P_{\\text{ext}}\\,dV$$"
+      "r": "$$\\delta W = -P_{\\text{ext}}\\,dV$$",
+      "mode": "qcm",
+      "attendu": "$\\delta W = -P_{\\text{ext}}\\,dV$",
+      "choix": [
+        "$\\delta W = P_{\\text{ext}}\\,dV$",
+        "$\\delta W = -V\\,dP_{\\text{ext}}$",
+        "$\\delta W = -P\\,V$"
+      ]
     },
     {
       "id": "du-gp",
@@ -25,7 +32,14 @@
     {
       "id": "mayer",
       "q": "Relation de Mayer (gaz parfait)",
-      "r": "$$C_{p,m} - C_{v,m} = R$$"
+      "r": "$$C_{p,m} - C_{v,m} = R$$",
+      "mode": "qcm",
+      "attendu": "$C_{p,m} - C_{v,m} = R$",
+      "choix": [
+        "$C_{v,m} - C_{p,m} = R$",
+        "$C_{p,m} + C_{v,m} = R$",
+        "$\\dfrac{C_{p,m}}{C_{v,m}} = R$"
+      ]
     },
     {
       "id": "laplace",
@@ -40,7 +54,14 @@
     {
       "id": "carnot-moteur",
       "q": "Rendement de Carnot d'un moteur ditherme",
-      "r": "$$\\eta_C = 1 - \\frac{T_f}{T_c}$$"
+      "r": "$$\\eta_C = 1 - \\frac{T_f}{T_c}$$",
+      "mode": "qcm",
+      "attendu": "$\\eta_C = 1 - \\dfrac{T_f}{T_c}$",
+      "choix": [
+        "$\\eta_C = 1 - \\dfrac{T_c}{T_f}$",
+        "$\\eta_C = \\dfrac{T_f}{T_c - T_f}$",
+        "$\\eta_C = \\dfrac{T_c}{T_c - T_f}$"
+      ]
     },
     {
       "id": "carnot-frigo",

@@ -1,0 +1,146 @@
+{
+  "id": "physique-unites",
+  "nom": "Grandeurs et unités",
+  "cartes": [
+    {
+      "id": "inductance",
+      "q": "Unité SI de l'inductance $L$",
+      "r": "henry (H)\n$1\\ \\text{H} = 1\\ \\text{V·s·A}^{-1}$",
+      "mode": "qcm",
+      "attendu": "henry (H)"
+    },
+    {
+      "id": "capacite",
+      "q": "Unité SI de la capacité $C$ d'un condensateur",
+      "r": "farad (F)\n$1\\ \\text{F} = 1\\ \\text{C·V}^{-1}$",
+      "mode": "qcm",
+      "attendu": "farad (F)"
+    },
+    {
+      "id": "champ-b",
+      "q": "Unité SI de le champ magnétique $B$",
+      "r": "tesla (T)",
+      "mode": "qcm",
+      "attendu": "tesla (T)"
+    },
+    {
+      "id": "flux",
+      "q": "Unité SI de le flux magnétique $\\Phi$",
+      "r": "weber (Wb)\n$1\\ \\text{Wb} = 1\\ \\text{T·m}^2$",
+      "mode": "qcm",
+      "attendu": "weber (Wb)"
+    },
+    {
+      "id": "puissance",
+      "q": "Unité SI de la puissance $P$",
+      "r": "watt (W)\n$1\\ \\text{W} = 1\\ \\text{J·s}^{-1}$",
+      "mode": "qcm",
+      "attendu": "watt (W)"
+    },
+    {
+      "id": "energie",
+      "q": "Unité SI de l'énergie $E$",
+      "r": "joule (J)\n$1\\ \\text{J} = 1\\ \\text{N·m}$",
+      "mode": "qcm",
+      "attendu": "joule (J)"
+    },
+    {
+      "id": "pression",
+      "q": "Unité SI de la pression $P$",
+      "r": "pascal (Pa)\n$1\\ \\text{bar} = 10^5\\ \\text{Pa}$",
+      "mode": "qcm",
+      "attendu": "pascal (Pa)"
+    },
+    {
+      "id": "force",
+      "q": "Unité SI de une force $F$",
+      "r": "newton (N)\n$1\\ \\text{N} = 1\\ \\text{kg·m·s}^{-2}$",
+      "mode": "qcm",
+      "attendu": "newton (N)"
+    },
+    {
+      "id": "frequence",
+      "q": "Unité SI de la fréquence $f$",
+      "r": "hertz (Hz)\n$1\\ \\text{Hz} = 1\\ \\text{s}^{-1}$",
+      "mode": "qcm",
+      "attendu": "hertz (Hz)"
+    },
+    {
+      "id": "charge",
+      "q": "Unité SI de la charge électrique $q$",
+      "r": "coulomb (C)\n$1\\ \\text{C} = 1\\ \\text{A·s}$",
+      "mode": "qcm",
+      "attendu": "coulomb (C)"
+    },
+    {
+      "id": "resistance",
+      "q": "Unité SI de la résistance $R$",
+      "r": "ohm (Ω)\n$1\\ \\Omega = 1\\ \\text{V·A}^{-1}$",
+      "mode": "qcm",
+      "attendu": "ohm (Ω)"
+    },
+    {
+      "id": "conductance",
+      "q": "Unité SI de la conductance $G$",
+      "r": "siemens (S)\n$1\\ \\text{S} = 1\\ \\Omega^{-1}$",
+      "mode": "qcm",
+      "attendu": "siemens (S)"
+    },
+    {
+      "id": "couple",
+      "q": "Unité SI de un couple ou le moment d'une force",
+      "r": "N·m",
+      "mode": "qcm",
+      "attendu": "N·m"
+    },
+    {
+      "id": "omega",
+      "q": "Unité SI de une vitesse angulaire $\\omega$",
+      "r": "rad·s⁻¹\n$1\\ \\text{tr/min} = \\dfrac{2\\pi}{60}\\ \\text{rad·s}^{-1}$",
+      "mode": "qcm",
+      "attendu": "rad·s⁻¹"
+    },
+    {
+      "id": "inertie",
+      "q": "Unité SI de un moment d'inertie $J$",
+      "r": "kg·m²",
+      "mode": "qcm",
+      "attendu": "kg·m²"
+    },
+    {
+      "id": "raideur",
+      "q": "Unité SI de la raideur $k$ d'un ressort",
+      "r": "N·m⁻¹",
+      "mode": "qcm",
+      "attendu": "N·m⁻¹"
+    },
+    {
+      "id": "quantite",
+      "q": "Unité SI de la quantité de matière $n$",
+      "r": "mole (mol)",
+      "mode": "qcm",
+      "attendu": "mole (mol)"
+    },
+    {
+      "id": "cap-massique",
+      "q": "Unité SI de la capacité thermique massique $c$",
+      "r": "J·kg⁻¹·K⁻¹",
+      "mode": "qcm",
+      "attendu": "J·kg⁻¹·K⁻¹"
+    },
+    {
+      "id": "entropie",
+      "q": "Unité SI de l'entropie $S$",
+      "r": "J·K⁻¹",
+      "mode": "qcm",
+      "attendu": "J·K⁻¹"
+    },
+    {
+      "id": "concentration",
+      "q": "Unité SI de une concentration molaire",
+      "r": "mol·m⁻³\nEn chimie, on utilise souvent mol·L⁻¹.",
+      "mode": "qcm",
+      "attendu": "mol·m⁻³"
+    }
+  ]
+}

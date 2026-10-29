@@ -10,7 +10,14 @@
     {
       "id": "engrenage-int",
       "q": "Rapport de transmission d'un engrenage intérieur ($Z_1$ menant, $Z_2$ mené)",
-      "r": "$$\\frac{\\omega_2}{\\omega_1} = +\\frac{Z_1}{Z_2}$$ Les deux roues tournent dans le même sens."
+      "r": "$$\\frac{\\omega_2}{\\omega_1} = +\\frac{Z_1}{Z_2}$$ Les deux roues tournent dans le même sens.",
+      "mode": "qcm",
+      "attendu": "$\\dfrac{\\omega_2}{\\omega_1} = +\\dfrac{Z_1}{Z_2}$",
+      "choix": [
+        "$\\dfrac{\\omega_2}{\\omega_1} = -\\dfrac{Z_1}{Z_2}$",
+        "$\\dfrac{\\omega_2}{\\omega_1} = +\\dfrac{Z_2}{Z_1}$",
+        "$\\dfrac{\\omega_2}{\\omega_1} = -\\dfrac{Z_2}{Z_1}$"
+      ]
     },
     {
       "id": "train-simple",
@@ -20,7 +27,14 @@
     {
       "id": "module",
       "q": "Diamètre primitif et entraxe d'un engrenage extérieur (module $m$)",
-      "r": "$$d = mZ, \\qquad a = \\frac{m(Z_1 + Z_2)}{2}$$"
+      "r": "$$d = mZ, \\qquad a = \\frac{m(Z_1 + Z_2)}{2}$$",
+      "mode": "qcm",
+      "attendu": "$d = mZ$ et $a = \\dfrac{m(Z_1 + Z_2)}{2}$",
+      "choix": [
+        "$d = \\dfrac{Z}{m}$ et $a = m(Z_1 + Z_2)$",
+        "$d = mZ$ et $a = m(Z_1 + Z_2)$",
+        "$d = 2mZ$ et $a = \\dfrac{m(Z_1 - Z_2)}{2}$"
+      ]
     },
     {
       "id": "willis",
@@ -30,7 +44,14 @@
     {
       "id": "raison-basique",
       "q": "Raison basique d'un train épicycloïdal simple (planétaire $Z_1$, couronne $Z_3$)",
-      "r": "$$\\lambda = -\\frac{Z_1}{Z_3}$$ Négative : avec le porte-satellites fixe, planétaire et couronne tournent en sens opposés."
+      "r": "$$\\lambda = -\\frac{Z_1}{Z_3}$$ Négative : avec le porte-satellites fixe, planétaire et couronne tournent en sens opposés.",
+      "mode": "qcm",
+      "attendu": "$\\lambda = -\\dfrac{Z_1}{Z_3}$",
+      "choix": [
+        "$\\lambda = +\\dfrac{Z_1}{Z_3}$",
+        "$\\lambda = -\\dfrac{Z_3}{Z_1}$",
+        "$\\lambda = 1 + \\dfrac{Z_3}{Z_1}$"
+      ]
     },
     {
       "id": "poulie",
@@ -40,7 +61,14 @@
     {
       "id": "vis-ecrou",
       "q": "Relation vitesse de translation / vitesse de rotation pour un système vis-écrou de pas $p$",
-      "r": "$$v = \\frac{p\\,\\omega}{2\\pi}$$"
+      "r": "$$v = \\frac{p\\,\\omega}{2\\pi}$$",
+      "mode": "qcm",
+      "attendu": "$v = \\dfrac{p\\,\\omega}{2\\pi}$",
+      "choix": [
+        "$v = p\\,\\omega$",
+        "$v = 2\\pi\\,p\\,\\omega$",
+        "$v = \\dfrac{\\omega}{2\\pi\\,p}$"
+      ]
     },
     {
       "id": "rendement",

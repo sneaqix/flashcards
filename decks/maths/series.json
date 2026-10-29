@@ -5,12 +5,26 @@
     {
       "id": "geom",
       "q": "Nature et somme de la série géométrique $\\sum q^n$",
-      "r": "Converge si et seulement si $|q| < 1$, et alors$$\\sum_{n=0}^{+\\infty} q^n = \\frac{1}{1-q}$$"
+      "r": "Converge si et seulement si $|q| < 1$, et alors$$\\sum_{n=0}^{+\\infty} q^n = \\frac{1}{1-q}$$",
+      "mode": "qcm",
+      "attendu": "Converge si et seulement si $|q| < 1$, somme $\\dfrac{1}{1-q}$",
+      "choix": [
+        "Converge si et seulement si $|q| \\leq 1$, somme $\\dfrac{1}{1-q}$",
+        "Converge si et seulement si $|q| < 1$, somme $\\dfrac{q}{1-q}$",
+        "Converge pour tout $q$, somme $\\dfrac{1}{1+q}$"
+      ]
     },
     {
       "id": "riemann",
       "q": "Nature de la série de Riemann $\\sum \\dfrac{1}{n^\\alpha}$",
-      "r": "Converge si et seulement si $\\alpha > 1$."
+      "r": "Converge si et seulement si $\\alpha > 1$.",
+      "mode": "qcm",
+      "attendu": "Converge si et seulement si $\\alpha > 1$",
+      "choix": [
+        "Converge si et seulement si $\\alpha \\geq 1$",
+        "Converge si et seulement si $\\alpha > 0$",
+        "Converge si et seulement si $\\alpha < 1$"
+      ]
     },
     {
       "id": "grossiere",

@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261029224717';
+import * as S from './store.js?v=20261029233129';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'stats', 'parametres'];
@@ -72,9 +72,32 @@ export function canSync() { return !!(state.gh && state.config.dataRepo); }
 export function canEdit() { return !!(state.gh && state.config.contentRepo); }
 export function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
+// Texte à trous : « Venice suffers from {{overtourism::surtourisme}}. »
+// Renvoie les morceaux [{ text }] et [{ answer, hint }] dans l'ordre.
+export function clozeParts(text) {
+  const parts = [];
+  const re = /\{\{(.+?)\}\}/g;
+  let last = 0, m;
+  while ((m = re.exec(text || ''))) {
+    if (m.index > last) parts.push({ text: text.slice(last, m.index) });
+    const [answer, hint] = m[1].split('::');
+    parts.push({ answer: answer.trim(), hint: (hint || '').trim() });
+    last = re.lastIndex;
+  }
+  if (last < (text || '').length) parts.push({ text: text.slice(last) });
+  return parts;
+}
+export function isCloze(card) { return card.mode === 'trou'; }
+function clozeText(text, filled) {
+  return clozeParts(text).map((p) => (p.answer === undefined ? p.text : filled ? '« ' + p.answer.split('/')[0].trim() + ' »' : '[…' + (p.hint ? ' ' + p.hint + ' ' : '') + ']')).join('');
+}
+
 // Contenu affiché d'une face : une face inversée échange question et réponse.
 export function faceContent(item) {
   const c = item.card;
+  if (isCloze(c)) {
+    return { q: clozeText(c.q, false), r: clozeText(c.q, true) + (c.r ? '\n\n' + c.r : ''), img_q: c.img_q, img_r: c.img_r };
+  }
   return item.rev
     ? { q: c.r, r: c.q, img_q: c.img_r, img_r: c.img_q }
     : { q: c.q, r: c.r, img_q: c.img_q, img_r: c.img_r };
@@ -84,6 +107,7 @@ export function firstLine(text) {
 }
 // Réponse courte attendue (saisie, choix multiples, associations).
 export function expectedAnswer(card) {
+  if (isCloze(card)) return clozeParts(card.q).filter((p) => p.answer !== undefined).map((p) => p.answer.split('/')[0].trim()).join(' · ');
   return (card.attendu && card.attendu.trim()) || firstLine(card.r);
 }
 

@@ -1,7 +1,7 @@
 // Progression, paramètres, journal quotidien et file de révision.
-import * as F from './scheduler.js?v=20261029224717';
+import * as F from './scheduler.js?v=20261029233129';
 
-export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261029224717';
+export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261029233129';
 
 const LS_PROGRESS = 'fc.progress.v2';
 const LS_CONFIG = 'fc.config.v1';
@@ -151,7 +151,7 @@ export function faces(ch) {
   const out = [];
   ch.cartes.forEach((card) => {
     out.push({ chapter: ch, card, rev: false, key: ch.id + '/' + card.id });
-    if (card.inverse) out.push({ chapter: ch, card, rev: true, key: ch.id + '/' + card.id + '~r' });
+    if (card.inverse && card.mode !== 'trou') out.push({ chapter: ch, card, rev: true, key: ch.id + '/' + card.id + '~r' });
   });
   return out;
 }

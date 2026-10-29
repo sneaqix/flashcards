@@ -20,7 +20,14 @@
     {
       "id": "rl-tau",
       "q": "Constante de temps d'un circuit RL série",
-      "r": "$$\\tau = \\frac{L}{R}$$"
+      "r": "$$\\tau = \\frac{L}{R}$$",
+      "mode": "qcm",
+      "attendu": "$\\tau = \\dfrac{L}{R}$",
+      "choix": [
+        "$\\tau = RL$",
+        "$\\tau = \\dfrac{R}{L}$",
+        "$\\tau = \\sqrt{LR}$"
+      ]
     },
     {
       "id": "energie-c",
@@ -40,17 +47,38 @@
     {
       "id": "lc-omega0",
       "q": "Pulsation propre d'un circuit LC",
-      "r": "$$\\omega_0 = \\frac{1}{\\sqrt{LC}}$$"
+      "r": "$$\\omega_0 = \\frac{1}{\\sqrt{LC}}$$",
+      "mode": "qcm",
+      "attendu": "$\\omega_0 = \\dfrac{1}{\\sqrt{LC}}$",
+      "choix": [
+        "$\\omega_0 = \\sqrt{LC}$",
+        "$\\omega_0 = \\dfrac{1}{LC}$",
+        "$\\omega_0 = \\sqrt{\\dfrac{L}{C}}$"
+      ]
     },
     {
       "id": "rlc-q",
       "q": "Facteur de qualité d'un RLC série",
-      "r": "$$Q = \\frac{1}{R}\\sqrt{\\frac{L}{C}} = \\frac{L\\omega_0}{R}$$"
+      "r": "$$Q = \\frac{1}{R}\\sqrt{\\frac{L}{C}} = \\frac{L\\omega_0}{R}$$",
+      "mode": "qcm",
+      "attendu": "$Q = \\dfrac{1}{R}\\sqrt{\\dfrac{L}{C}}$",
+      "choix": [
+        "$Q = R\\sqrt{\\dfrac{L}{C}}$",
+        "$Q = \\dfrac{1}{R}\\sqrt{\\dfrac{C}{L}}$",
+        "$Q = \\dfrac{R}{L\\omega_0}$"
+      ]
     },
     {
       "id": "eff",
       "q": "Valeur efficace d'une tension sinusoïdale d'amplitude $U_m$",
-      "r": "$$U_{\\text{eff}} = \\frac{U_m}{\\sqrt{2}}$$"
+      "r": "$$U_{\\text{eff}} = \\frac{U_m}{\\sqrt{2}}$$",
+      "mode": "qcm",
+      "attendu": "$U_{\\text{eff}} = \\dfrac{U_m}{\\sqrt{2}}$",
+      "choix": [
+        "$U_{\\text{eff}} = \\dfrac{U_m}{2}$",
+        "$U_{\\text{eff}} = \\sqrt{2}\\,U_m$",
+        "$U_{\\text{eff}} = \\dfrac{U_m}{\\pi}$"
+      ]
     },
     {
       "id": "puissance",

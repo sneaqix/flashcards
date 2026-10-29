@@ -337,3 +337,19 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .tile-btn.matched { opacity: 0.35; border-style: dashed; }
 .tile-btn.wrong { border-color: var(--again); background: color-mix(in srgb, var(--again) 14%, var(--card)); }
 @media (max-width: 380px) { .grade .g { font-size: 0.85rem; } .filter-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Texte à trous ---------- */
+.blank-wrap { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px; margin: 2px 2px; vertical-align: baseline; }
+input.blank {
+  font: 500 1rem var(--font-mono); color: var(--accent); background: var(--accent-soft);
+  border: 0; border-bottom: 2px solid var(--accent); border-radius: 4px 4px 0 0;
+  padding: 1px 6px; min-height: 0; height: 1.7em; max-width: 100%;
+}
+input.blank:disabled { border-width: 0 0 2px; }
+.blank::placeholder { color: var(--muted); font-family: var(--font-body); font-style: italic; opacity: 0.9; }
+.blank:disabled { opacity: 1; -webkit-text-fill-color: currentColor; }
+input.blank.b-ok { color: var(--good); border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--card)); }
+input.blank.b-near { color: var(--hard); border-color: var(--hard); background: color-mix(in srgb, var(--hard) 12%, var(--card)); }
+input.blank.b-bad { color: var(--again); border-color: var(--again); background: color-mix(in srgb, var(--again) 10%, var(--card)); text-decoration: line-through; }
+.blank-fix { font: 600 0.95rem var(--font-mono); color: var(--good); }
+.help code { font: 500 0.85em var(--font-mono); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }

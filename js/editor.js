@@ -1,13 +1,13 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261029224717';
-import { retrievability } from './scheduler.js?v=20261029224717';
+import * as S from './store.js?v=20261029233129';
+import { retrievability } from './scheduler.js?v=20261029233129';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
-  showView, route, firstLine, imageUrl,
-} from './ui.js?v=20261029224717';
-import { updateChapterFile } from './sync.js?v=20261029224717';
-import { resumeSession } from './review.js?v=20261029224717';
-import { startPractice } from './practice.js?v=20261029224717';
+  showView, route, firstLine, imageUrl, faceContent,
+} from './ui.js?v=20261029233129';
+import { updateChapterFile } from './sync.js?v=20261029233129';
+import { resumeSession } from './review.js?v=20261029233129';
+import { startPractice } from './practice.js?v=20261029233129';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
@@ -30,6 +30,7 @@ const TYPES = [
   ['inverse', 'Inversées'],
   ['saisie', 'Réponse à taper'],
   ['qcm', 'Choix multiples'],
+  ['trou', 'Texte à trous'],
   ['image', 'Avec image'],
 ];
 
@@ -51,6 +52,7 @@ function typeMatches(card, type) {
     case 'inverse': return !!card.inverse;
     case 'saisie': return card.mode === 'saisie';
     case 'qcm': return card.mode === 'qcm';
+    case 'trou': return card.mode === 'trou';
     case 'image': return !!(card.img_q || card.img_r);
     default: return true;
   }
@@ -101,6 +103,7 @@ export function renderCartes() {
 
 function flagsOf(card) {
   const f = [];
+  if (card.mode === 'trou') f.push('à trous');
   if (card.inverse) f.push('⇄');
   if (card.mode === 'saisie') f.push('à taper');
   if (card.mode === 'qcm') f.push('QCM');
@@ -213,8 +216,11 @@ export function openEditor(ch, card, slide) {
 
 function updateModeFields() {
   const mode = $('fMode').value;
-  $('fAttenduBox').hidden = !mode;
+  $('fAttenduBox').hidden = mode === 'trou';
   $('fChoixBox').hidden = mode !== 'qcm';
+  $('fTrouHelp').hidden = mode !== 'trou';
+  $('fInverse').disabled = mode === 'trou';
+  $('fR').placeholder = mode === 'trou' ? 'Facultatif : traduction ou explication' : 'Formule centrée : $$ ... $$';
   $('fAttendu').placeholder = 'Par défaut : ' + (firstLine($('fR').value) || 'première ligne de la réponse');
 }
 
@@ -317,6 +323,12 @@ function renderImgPreview(side) {
 let previewTimer;
 function renderPreview() {
   if (!state.edit) return;
+  if ($('fMode').value === 'trou') {
+    const c = faceContent({ card: { q: $('fQ').value, r: $('fR').value, mode: 'trou' }, rev: false });
+    renderFace($('pQ'), c.q, state.edit.img_q);
+    renderFace($('pR'), c.r, state.edit.img_r);
+    return;
+  }
   renderFace($('pQ'), $('fQ').value, state.edit.img_q);
   renderFace($('pR'), $('fR').value, state.edit.img_r);
 }
@@ -382,7 +394,9 @@ async function saveCard() {
   const f = readForm();
   const q = f.q.trim(), r = f.r.trim();
   if (!ch) { setStatus('fStatus', 'Choisis un chapitre.', 'error'); return; }
-  if (!q || !r) { setStatus('fStatus', 'La question et la réponse sont obligatoires.', 'error'); return; }
+  const cloze = f.mode === 'trou';
+  if (!q || (!r && !cloze)) { setStatus('fStatus', 'La question et la réponse sont obligatoires.', 'error'); return; }
+  if (cloze && !/\{\{.+?\}\}/.test(q)) { setStatus('fStatus', 'Entoure au moins un mot de doubles accolades : {{mot}}.', 'error'); return; }
   if (!canEdit()) { setStatus('fStatus', 'Renseigne ton jeton GitHub dans les réglages pour enregistrer.', 'error'); return; }
   setEditorBusy(true);
   setStatus('fStatus', 'Enregistrement sur GitHub…');
@@ -399,9 +413,9 @@ async function saveCard() {
     const setOpt = (k, v) => { if (v) card[k] = v; else delete card[k]; };
     setOpt('img_q', ed.img_q);
     setOpt('img_r', ed.img_r);
-    setOpt('inverse', f.inverse || null);
+    setOpt('inverse', (f.inverse && !cloze) || null);
     setOpt('mode', f.mode || null);
-    setOpt('attendu', f.mode ? f.attendu.trim() : null);
+    setOpt('attendu', cloze ? null : f.attendu.trim());
     const choix = f.choix.split('\n').map((x) => x.trim()).filter(Boolean);
     setOpt('choix', f.mode === 'qcm' && choix.length ? choix : null);
     const isNew = !ed.cardId;
@@ -536,7 +550,7 @@ export function bindEditor() {
   });
   $('fQ').addEventListener('input', updatePreview);
   $('fR').addEventListener('input', updatePreview);
-  $('fMode').addEventListener('change', updateModeFields);
+  $('fMode').addEventListener('change', () => { updateModeFields(); renderPreview(); });
   $('fImgQ').addEventListener('change', (e) => pickImage('q', e.target));
   $('fImgR').addEventListener('change', (e) => pickImage('r', e.target));
   $('fImgQDel').addEventListener('click', () => removeImage('q'));

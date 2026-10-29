@@ -20,12 +20,26 @@
     {
       "id": "prim-arcsin",
       "q": "Une primitive de $\\dfrac{1}{\\sqrt{1-x^2}}$ sur $]-1,1[$",
-      "r": "$$\\arcsin x$$"
+      "r": "$$\\arcsin x$$",
+      "mode": "qcm",
+      "attendu": "$\\arcsin x$",
+      "choix": [
+        "$\\arctan x$",
+        "$\\sqrt{1-x^2}$",
+        "$\\ln\\left(1 + \\sqrt{1-x^2}\\right)$"
+      ]
     },
     {
       "id": "prim-tan",
       "q": "Une primitive de $\\tan x$ sur $\\left]-\\frac{\\pi}{2}, \\frac{\\pi}{2}\\right[$",
-      "r": "$$-\\ln|\\cos x|$$"
+      "r": "$$-\\ln|\\cos x|$$",
+      "mode": "qcm",
+      "attendu": "$-\\ln|\\cos x|$",
+      "choix": [
+        "$\\ln|\\cos x|$",
+        "$\\dfrac{1}{\\cos^2 x}$",
+        "$\\ln|\\sin x|$"
+      ]
     },
     {
       "id": "ipp",
@@ -50,7 +64,14 @@
     {
       "id": "moyenne",
       "q": "Valeur moyenne de $f$ sur $[a,b]$",
-      "r": "$$\\langle f \\rangle = \\frac{1}{b-a}\\int_a^b f(t)\\,dt$$"
+      "r": "$$\\langle f \\rangle = \\frac{1}{b-a}\\int_a^b f(t)\\,dt$$",
+      "mode": "qcm",
+      "attendu": "$\\dfrac{1}{b-a}\\displaystyle\\int_a^b f(t)\\,dt$",
+      "choix": [
+        "$\\displaystyle\\int_a^b f(t)\\,dt$",
+        "$\\dfrac{f(a)+f(b)}{2}$",
+        "$(b-a)\\displaystyle\\int_a^b f(t)\\,dt$"
+      ]
     }
   ]
 }

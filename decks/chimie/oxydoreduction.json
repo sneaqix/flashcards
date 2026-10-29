@@ -5,12 +5,26 @@
     {
       "id": "oxydant",
       "q": "Définition d'un oxydant",
-      "r": "Espèce capable de capter un ou plusieurs électrons."
+      "r": "Espèce capable de capter un ou plusieurs électrons.",
+      "mode": "qcm",
+      "attendu": "Espèce capable de capter un ou plusieurs électrons.",
+      "choix": [
+        "Espèce capable de céder un ou plusieurs électrons.",
+        "Espèce capable de capter un proton.",
+        "Espèce capable de céder un proton."
+      ]
     },
     {
       "id": "electrodes",
       "q": "Anode et cathode : quelle réaction a lieu où ?",
-      "r": "Anode : oxydation. Cathode : réduction."
+      "r": "Anode : oxydation. Cathode : réduction.",
+      "mode": "qcm",
+      "attendu": "Anode : oxydation. Cathode : réduction.",
+      "choix": [
+        "Anode : réduction. Cathode : oxydation.",
+        "Les deux électrodes sont le siège d'une oxydation.",
+        "Anode : réduction. Cathode : réduction."
+      ]
     },
     {
       "id": "nernst",
@@ -30,7 +44,14 @@
     {
       "id": "faraday",
       "q": "Valeur de la constante de Faraday",
-      "r": "$$\\mathcal{F} \\approx 96\\,500 \\text{ C·mol}^{-1}$$"
+      "r": "$$\\mathcal{F} \\approx 96\\,500 \\text{ C·mol}^{-1}$$",
+      "mode": "qcm",
+      "attendu": "$\\mathcal{F} \\approx 96\\,500 \\text{ C·mol}^{-1}$",
+      "choix": [
+        "$\\mathcal{F} \\approx 9\\,650 \\text{ C·mol}^{-1}$",
+        "$\\mathcal{F} \\approx 6{,}02 \\times 10^{23} \\text{ mol}^{-1}$",
+        "$\\mathcal{F} \\approx 1{,}6 \\times 10^{-19} \\text{ C}$"
+      ]
     },
     {
       "id": "charge",

@@ -5,22 +5,28 @@
     {
       "id": "tourisme-masse",
       "q": "le tourisme de masse",
-      "r": "mass tourism\nMass tourism puts pressure on fragile ecosystems."
+      "r": "mass tourism\nMass tourism puts pressure on fragile ecosystems.",
+      "mode": "saisie",
+      "attendu": "mass tourism"
     },
     {
       "id": "surtourisme",
       "q": "le surtourisme",
-      "r": "overtourism\nVenice has been struggling with overtourism for years."
+      "r": "overtourism\nVenice has been struggling with overtourism for years.",
+      "mode": "saisie",
+      "attendu": "overtourism"
     },
     {
       "id": "ecotourisme",
       "q": "l'écotourisme",
-      "r": "ecotourism\nEcotourism aims to protect nature while supporting local communities."
+      "r": "ecotourism\nEcotourism aims to protect nature while supporting local communities.",
+      "mode": "qcm"
     },
     {
       "id": "tourisme-durable",
       "q": "le tourisme durable",
-      "r": "sustainable tourism"
+      "r": "sustainable tourism",
+      "mode": "qcm"
     },
     {
       "id": "destination",
@@ -30,7 +36,8 @@
     {
       "id": "vacancier",
       "q": "un vacancier",
-      "r": "a holidaymaker (UK) / a vacationer (US)"
+      "r": "a holidaymaker (UK) / a vacationer (US)",
+      "attendu": "a holidaymaker"
     },
     {
       "id": "voyageur-sac",
@@ -40,7 +47,9 @@
     {
       "id": "hors-saison",
       "q": "la haute saison / la basse saison",
-      "r": "the peak season / the off-season (low season)"
+      "r": "the peak season / the off-season (low season)",
+      "mode": "qcm",
+      "attendu": "the peak season / the off-season"
     },
     {
       "id": "forfait",
@@ -50,12 +59,15 @@
     {
       "id": "hebergement",
       "q": "l'hébergement",
-      "r": "accommodation (indénombrable en anglais britannique)\nWe booked our accommodation online."
+      "r": "accommodation (indénombrable en anglais britannique)\nWe booked our accommodation online.",
+      "mode": "saisie",
+      "attendu": "accommodation"
     },
     {
       "id": "auberge",
       "q": "une auberge de jeunesse",
-      "r": "a youth hostel"
+      "r": "a youth hostel",
+      "mode": "qcm"
     },
     {
       "id": "location-courte",
@@ -65,37 +77,46 @@
     {
       "id": "reserver",
       "q": "réserver (un hôtel, un vol)",
-      "r": "to book (a hotel, a flight)\na booking / a reservation"
+      "r": "to book (a hotel, a flight)\na booking / a reservation",
+      "attendu": "to book"
     },
     {
       "id": "vol-correspondance",
       "q": "un vol avec correspondance / un vol direct",
-      "r": "a connecting flight / a direct (non-stop) flight"
+      "r": "a connecting flight / a direct (non-stop) flight",
+      "attendu": "a connecting flight / a direct"
     },
     {
       "id": "compagnie-low-cost",
       "q": "une compagnie aérienne à bas prix",
-      "r": "a low-cost airline / a budget airline"
+      "r": "a low-cost airline / a budget airline",
+      "mode": "qcm"
     },
     {
       "id": "croisiere",
       "q": "un paquebot de croisière",
-      "r": "a cruise ship\nCruise ships release huge amounts of pollution in ports."
+      "r": "a cruise ship\nCruise ships release huge amounts of pollution in ports.",
+      "mode": "qcm"
     },
     {
       "id": "empreinte-carbone",
       "q": "l'empreinte carbone",
-      "r": "the carbon footprint\nFlying increases your carbon footprint."
+      "r": "the carbon footprint\nFlying increases your carbon footprint.",
+      "mode": "saisie",
+      "attendu": "the carbon footprint / carbon footprint"
     },
     {
       "id": "honte-avion",
       "q": "la honte de prendre l'avion",
-      "r": "flight shame (flygskam)"
+      "r": "flight shame (flygskam)",
+      "attendu": "flight shame"
     },
     {
       "id": "habitants",
       "q": "les habitants, la population locale",
-      "r": "the locals / local residents"
+      "r": "the locals / local residents",
+      "mode": "saisie",
+      "attendu": "the locals / local residents"
     },
     {
       "id": "gentrification",
@@ -105,7 +126,9 @@
     {
       "id": "taxe-sejour",
       "q": "la taxe de séjour",
-      "r": "the tourist tax\nAmsterdam has raised its tourist tax to curb overtourism."
+      "r": "the tourist tax\nAmsterdam has raised its tourist tax to curb overtourism.",
+      "mode": "saisie",
+      "attendu": "the tourist tax / tourist tax"
     },
     {
       "id": "limiter",
@@ -120,12 +143,14 @@
     {
       "id": "excursionniste",
       "q": "un visiteur à la journée",
-      "r": "a day-tripper"
+      "r": "a day-tripper",
+      "mode": "qcm"
     },
     {
       "id": "patrimoine",
       "q": "le patrimoine mondial de l'UNESCO",
-      "r": "a UNESCO World Heritage Site"
+      "r": "a UNESCO World Heritage Site",
+      "mode": "qcm"
     },
     {
       "id": "retombees",
@@ -135,7 +160,8 @@
     {
       "id": "emplois-saisonniers",
       "q": "les emplois saisonniers",
-      "r": "seasonal jobs"
+      "r": "seasonal jobs",
+      "mode": "qcm"
     },
     {
       "id": "degrader",
@@ -150,7 +176,8 @@
     {
       "id": "bucket-list",
       "q": "la liste des choses à faire avant de mourir",
-      "r": "a bucket list\nInstagram turns destinations into bucket-list spots."
+      "r": "a bucket list\nInstagram turns destinations into bucket-list spots.",
+      "mode": "qcm"
     },
     {
       "id": "traduction-1",

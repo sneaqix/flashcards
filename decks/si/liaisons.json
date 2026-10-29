@@ -1,0 +1,83 @@
+{
+  "id": "si-liaisons",
+  "nom": "Liaisons mécaniques",
+  "cartes": [
+    {
+      "id": "encastrement",
+      "q": "Liaison encastrement : degrés de liberté",
+      "r": "aucun (0 degré de liberté)\nAucun mouvement relatif possible.",
+      "mode": "qcm",
+      "attendu": "aucun (0 degré de liberté)"
+    },
+    {
+      "id": "pivot",
+      "q": "Liaison pivot : degrés de liberté",
+      "r": "1 rotation\n1 degré de liberté : rotation autour de l'axe.",
+      "mode": "qcm",
+      "attendu": "1 rotation"
+    },
+    {
+      "id": "glissiere",
+      "q": "Liaison glissière : degrés de liberté",
+      "r": "1 translation\n1 degré de liberté : translation selon la direction de la liaison.",
+      "mode": "qcm",
+      "attendu": "1 translation"
+    },
+    {
+      "id": "helicoidale",
+      "q": "Liaison hélicoïdale : degrés de liberté",
+      "r": "1 rotation liée à 1 translation\n1 degré de liberté : la translation dépend de la rotation par le pas ($v = p\\,\\omega / 2\\pi$).",
+      "mode": "qcm",
+      "attendu": "1 rotation liée à 1 translation"
+    },
+    {
+      "id": "pivot-glissant",
+      "q": "Liaison pivot glissant : degrés de liberté",
+      "r": "1 rotation + 1 translation\n2 degrés de liberté, de même axe.",
+      "mode": "qcm",
+      "attendu": "1 rotation + 1 translation"
+    },
+    {
+      "id": "rotule-doigt",
+      "q": "Liaison sphérique à doigt (rotule à doigt) : degrés de liberté",
+      "r": "2 rotations\n2 degrés de liberté : la rotation autour du doigt est bloquée.",
+      "mode": "qcm",
+      "attendu": "2 rotations"
+    },
+    {
+      "id": "rotule",
+      "q": "Liaison sphérique (rotule) : degrés de liberté",
+      "r": "3 rotations\n3 degrés de liberté, autour du centre de la rotule.",
+      "mode": "qcm",
+      "attendu": "3 rotations"
+    },
+    {
+      "id": "appui-plan",
+      "q": "Liaison appui plan : degrés de liberté",
+      "r": "2 translations + 1 rotation\n3 degrés de liberté : translations dans le plan, rotation autour de la normale.",
+      "mode": "qcm",
+      "attendu": "2 translations + 1 rotation"
+    },
+    {
+      "id": "lineaire-annulaire",
+      "q": "Liaison sphère-cylindre (linéaire annulaire) : degrés de liberté",
+      "r": "3 rotations + 1 translation\n4 degrés de liberté : translation selon l'axe du cylindre.",
+      "mode": "qcm",
+      "attendu": "3 rotations + 1 translation"
+    },
+    {
+      "id": "lineaire-rectiligne",
+      "q": "Liaison cylindre-plan (linéaire rectiligne) : degrés de liberté",
+      "r": "2 rotations + 2 translations\n4 degrés de liberté.",
+      "mode": "qcm",
+      "attendu": "2 rotations + 2 translations"
+    },
+    {
+      "id": "ponctuelle",
+      "q": "Liaison sphère-plan (ponctuelle) : degrés de liberté",
+      "r": "3 rotations + 2 translations\n5 degrés de liberté : seule la translation selon la normale est bloquée.",
+      "mode": "qcm",
+      "attendu": "3 rotations + 2 translations"
+    }
+  ]
+}

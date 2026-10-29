@@ -21,7 +21,8 @@
         "physique/mecanique.json",
         "physique/thermodynamique.json",
         "physique/optique.json",
-        "physique/induction.json"
+        "physique/induction.json",
+        "physique/unites.json"
       ]
     },
     {
@@ -39,7 +40,8 @@
         "si/transmission.json",
         "si/asservissement.json",
         "si/cinematique.json",
-        "si/statique.json"
+        "si/statique.json",
+        "si/liaisons.json"
       ]
     },
     {
@@ -47,7 +49,10 @@
       "nom": "Anglais",
       "chapitres": [
         "anglais/tourisme.json",
-        "anglais/manifestations.json"
+        "anglais/manifestations.json",
+        "anglais/tourisme-trous.json",
+        "anglais/manifestations-trous.json",
+        "anglais/connecteurs-trous.json"
       ]
     }
   ]

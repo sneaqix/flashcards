@@ -15,12 +15,26 @@
     {
       "id": "angle-limite",
       "q": "Angle limite de réflexion totale (passage de $n_1$ à $n_2 < n_1$)",
-      "r": "$$\\sin i_{\\lim} = \\frac{n_2}{n_1}$$"
+      "r": "$$\\sin i_{\\lim} = \\frac{n_2}{n_1}$$",
+      "mode": "qcm",
+      "attendu": "$\\sin i_{\\lim} = \\dfrac{n_2}{n_1}$",
+      "choix": [
+        "$\\sin i_{\\lim} = \\dfrac{n_1}{n_2}$",
+        "$\\cos i_{\\lim} = \\dfrac{n_2}{n_1}$",
+        "$\\tan i_{\\lim} = \\dfrac{n_2}{n_1}$"
+      ]
     },
     {
       "id": "descartes",
       "q": "Relation de conjugaison de Descartes (lentille mince)",
-      "r": "$$\\frac{1}{\\overline{OA'}} - \\frac{1}{\\overline{OA}} = \\frac{1}{f'}$$"
+      "r": "$$\\frac{1}{\\overline{OA'}} - \\frac{1}{\\overline{OA}} = \\frac{1}{f'}$$",
+      "mode": "qcm",
+      "attendu": "$\\dfrac{1}{\\overline{OA^\\prime}} - \\dfrac{1}{\\overline{OA}} = \\dfrac{1}{f^\\prime}$",
+      "choix": [
+        "$\\dfrac{1}{\\overline{OA^\\prime}} + \\dfrac{1}{\\overline{OA}} = \\dfrac{1}{f^\\prime}$",
+        "$\\dfrac{1}{\\overline{OA}} - \\dfrac{1}{\\overline{OA^\\prime}} = \\dfrac{1}{f^\\prime}$",
+        "$\\overline{OA^\\prime} - \\overline{OA} = f^\\prime$"
+      ]
     },
     {
       "id": "grandissement",
@@ -40,7 +54,14 @@
     {
       "id": "4f",
       "q": "Condition pour projeter l'image réelle d'un objet réel sur un écran à distance $D$ avec une lentille convergente",
-      "r": "$$D \\geq 4f'$$"
+      "r": "$$D \\geq 4f'$$",
+      "mode": "qcm",
+      "attendu": "$D \\geq 4f^\\prime$",
+      "choix": [
+        "$D \\geq 2f^\\prime$",
+        "$D \\leq 4f^\\prime$",
+        "$D \\geq f^\\prime$"
+      ]
     }
   ]
 }

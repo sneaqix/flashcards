@@ -5,12 +5,26 @@
     {
       "id": "cos-sum",
       "q": "Formule de $\\cos(a+b)$",
-      "r": "$$\\cos(a+b) = \\cos a \\cos b - \\sin a \\sin b$$"
+      "r": "$$\\cos(a+b) = \\cos a \\cos b - \\sin a \\sin b$$",
+      "mode": "qcm",
+      "attendu": "$\\cos a \\cos b - \\sin a \\sin b$",
+      "choix": [
+        "$\\cos a \\cos b + \\sin a \\sin b$",
+        "$\\sin a \\cos b + \\cos a \\sin b$",
+        "$\\cos a \\sin b - \\sin a \\cos b$"
+      ]
     },
     {
       "id": "sin-sum",
       "q": "Formule de $\\sin(a+b)$",
-      "r": "$$\\sin(a+b) = \\sin a \\cos b + \\cos a \\sin b$$"
+      "r": "$$\\sin(a+b) = \\sin a \\cos b + \\cos a \\sin b$$",
+      "mode": "qcm",
+      "attendu": "$\\sin a \\cos b + \\cos a \\sin b$",
+      "choix": [
+        "$\\sin a \\sin b + \\cos a \\cos b$",
+        "$\\sin a \\cos b - \\cos a \\sin b$",
+        "$\\cos a \\cos b - \\sin a \\sin b$"
+      ]
     },
     {
       "id": "tan-sum",
@@ -20,7 +34,14 @@
     {
       "id": "cos2",
       "q": "Linéariser $\\cos^2 x$ et $\\sin^2 x$",
-      "r": "$$\\cos^2 x = \\frac{1+\\cos 2x}{2}, \\qquad \\sin^2 x = \\frac{1-\\cos 2x}{2}$$"
+      "r": "$$\\cos^2 x = \\frac{1+\\cos 2x}{2}, \\qquad \\sin^2 x = \\frac{1-\\cos 2x}{2}$$",
+      "mode": "qcm",
+      "attendu": "$\\cos^2 x = \\dfrac{1+\\cos 2x}{2}$",
+      "choix": [
+        "$\\cos^2 x = \\dfrac{1-\\cos 2x}{2}$",
+        "$\\cos^2 x = \\dfrac{1+\\sin 2x}{2}$",
+        "$\\cos^2 x = 1+\\cos 2x$"
+      ]
     },
     {
       "id": "prod",

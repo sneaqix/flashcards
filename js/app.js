@@ -1,12 +1,12 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261029224717';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261029224717';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261029224717';
-import { renderHome, bindReview } from './review.js?v=20261029224717';
-import { renderCartes, bindEditor } from './editor.js?v=20261029224717';
-import { renderCram, bindPractice } from './practice.js?v=20261029224717';
-import { renderStats } from './stats.js?v=20261029224717';
-import { renderSettings, bindSettings } from './settings.js?v=20261029224717';
+import { GitHub } from './github.js?v=20261029233129';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261029233129';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261029233129';
+import { renderHome, bindReview } from './review.js?v=20261029233129';
+import { renderCartes, bindEditor } from './editor.js?v=20261029233129';
+import { renderCram, bindPractice } from './practice.js?v=20261029233129';
+import { renderStats } from './stats.js?v=20261029233129';
+import { renderSettings, bindSettings } from './settings.js?v=20261029233129';
 
 state.views = {
   reviser: renderHome,

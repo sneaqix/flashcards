@@ -10,17 +10,22 @@
     {
       "id": "manifestant",
       "q": "un manifestant",
-      "r": "a demonstrator / a protester"
+      "r": "a demonstrator / a protester",
+      "mode": "saisie",
+      "attendu": "a demonstrator / a protester"
     },
     {
       "id": "manifester",
       "q": "manifester (contre)",
-      "r": "to demonstrate / to protest (against)\nAttention : en anglais américain, « to protest something » sans préposition."
+      "r": "to demonstrate / to protest (against)\nAttention : en anglais américain, « to protest something » sans préposition.",
+      "attendu": "to demonstrate / to protest"
     },
     {
       "id": "descendre-rue",
       "q": "descendre dans la rue",
-      "r": "to take to the streets"
+      "r": "to take to the streets",
+      "mode": "saisie",
+      "attendu": "to take to the streets"
     },
     {
       "id": "defiler",
@@ -30,17 +35,21 @@
     {
       "id": "rassemblement",
       "q": "un rassemblement",
-      "r": "a rally / a gathering"
+      "r": "a rally / a gathering",
+      "mode": "qcm"
     },
     {
       "id": "sit-in",
       "q": "un sit-in, une occupation",
-      "r": "a sit-in / an occupation"
+      "r": "a sit-in / an occupation",
+      "mode": "qcm"
     },
     {
       "id": "greve",
       "q": "une grève, faire grève",
-      "r": "a strike / to go on strike / to be on strike\na general strike"
+      "r": "a strike / to go on strike / to be on strike\na general strike",
+      "mode": "saisie",
+      "attendu": "a strike"
     },
     {
       "id": "greviste",
@@ -55,12 +64,15 @@
     {
       "id": "syndicat",
       "q": "un syndicat",
-      "r": "a trade union (UK) / a labor union (US)\na union leader"
+      "r": "a trade union (UK) / a labor union (US)\na union leader",
+      "mode": "qcm",
+      "attendu": "a trade union"
     },
     {
       "id": "pancarte",
       "q": "une pancarte, une banderole",
-      "r": "a placard, a sign / a banner"
+      "r": "a placard, a sign / a banner",
+      "mode": "qcm"
     },
     {
       "id": "slogan",
@@ -70,12 +82,15 @@
     {
       "id": "petition",
       "q": "signer une pétition",
-      "r": "to sign a petition"
+      "r": "to sign a petition",
+      "mode": "qcm"
     },
     {
       "id": "revendication",
       "q": "les revendications",
-      "r": "the demands\nThe protesters' demands were ignored."
+      "r": "the demands\nThe protesters' demands were ignored.",
+      "mode": "saisie",
+      "attendu": "the demands / demands"
     },
     {
       "id": "reforme-retraites",
@@ -95,22 +110,27 @@
     {
       "id": "desobeissance",
       "q": "la désobéissance civile",
-      "r": "civil disobedience"
+      "r": "civil disobedience",
+      "mode": "qcm"
     },
     {
       "id": "emeute",
       "q": "une émeute, un émeutier",
-      "r": "a riot / a rioter"
+      "r": "a riot / a rioter",
+      "mode": "qcm"
     },
     {
       "id": "forces-ordre",
       "q": "les forces de l'ordre, la police anti-émeute",
-      "r": "law enforcement / riot police"
+      "r": "law enforcement / riot police",
+      "mode": "qcm"
     },
     {
       "id": "gaz",
       "q": "le gaz lacrymogène",
-      "r": "tear gas\nPolice fired tear gas to disperse the crowd."
+      "r": "tear gas\nPolice fired tear gas to disperse the crowd.",
+      "mode": "saisie",
+      "attendu": "tear gas"
     },
     {
       "id": "disperser",
@@ -120,7 +140,9 @@
     {
       "id": "repression",
       "q": "la répression, réprimer",
-      "r": "a crackdown / to crack down on\nThe government cracked down on dissent."
+      "r": "a crackdown / to crack down on\nThe government cracked down on dissent.",
+      "mode": "saisie",
+      "attendu": "a crackdown"
     },
     {
       "id": "arrestation",
@@ -130,17 +152,20 @@
     {
       "id": "violences-policieres",
       "q": "les violences policières",
-      "r": "police brutality"
+      "r": "police brutality",
+      "mode": "qcm"
     },
     {
       "id": "mouvement-citoyen",
       "q": "un mouvement de base, citoyen",
-      "r": "a grassroots movement"
+      "r": "a grassroots movement",
+      "mode": "qcm"
     },
     {
       "id": "militant",
       "q": "un militant, militer",
-      "r": "an activist / to campaign (for, against)\nclimate activists"
+      "r": "an activist / to campaign (for, against)\nclimate activists",
+      "attendu": "an activist / to campaign"
     },
     {
       "id": "liberte-expression",

@@ -20,17 +20,38 @@
     {
       "id": "binomiale",
       "q": "Loi binomiale $\\mathcal{B}(n,p)$ : $P(X=k)$, espérance, variance",
-      "r": "$$P(X=k) = \\binom{n}{k}p^k(1-p)^{n-k}$$ $E(X) = np$ et $V(X) = np(1-p)$."
+      "r": "$$P(X=k) = \\binom{n}{k}p^k(1-p)^{n-k}$$ $E(X) = np$ et $V(X) = np(1-p)$.",
+      "mode": "qcm",
+      "attendu": "$E(X) = np$ et $V(X) = np(1-p)$",
+      "choix": [
+        "$E(X) = np$ et $V(X) = np$",
+        "$E(X) = p$ et $V(X) = p(1-p)$",
+        "$E(X) = \\dfrac{n}{p}$ et $V(X) = np^2$"
+      ]
     },
     {
       "id": "geometrique",
       "q": "Loi géométrique $\\mathcal{G}(p)$ : $P(X=k)$ et espérance",
-      "r": "$$P(X=k) = (1-p)^{k-1}p, \\quad k \\geq 1$$ $E(X) = \\dfrac{1}{p}$."
+      "r": "$$P(X=k) = (1-p)^{k-1}p, \\quad k \\geq 1$$ $E(X) = \\dfrac{1}{p}$.",
+      "mode": "qcm",
+      "attendu": "$E(X) = \\dfrac{1}{p}$",
+      "choix": [
+        "$E(X) = p$",
+        "$E(X) = \\dfrac{1-p}{p}$",
+        "$E(X) = \\dfrac{1}{1-p}$"
+      ]
     },
     {
       "id": "poisson",
       "q": "Loi de Poisson $\\mathcal{P}(\\lambda)$ : $P(X=k)$, espérance, variance",
-      "r": "$$P(X=k) = e^{-\\lambda}\\frac{\\lambda^k}{k!}$$ $E(X) = V(X) = \\lambda$."
+      "r": "$$P(X=k) = e^{-\\lambda}\\frac{\\lambda^k}{k!}$$ $E(X) = V(X) = \\lambda$.",
+      "mode": "qcm",
+      "attendu": "$E(X) = V(X) = \\lambda$",
+      "choix": [
+        "$E(X) = \\lambda$ et $V(X) = \\lambda^2$",
+        "$E(X) = V(X) = \\dfrac{1}{\\lambda}$",
+        "$E(X) = \\lambda$ et $V(X) = \\sqrt{\\lambda}$"
+      ]
     },
     {
       "id": "koenig",

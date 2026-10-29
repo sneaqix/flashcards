@@ -1,0 +1,96 @@
+{
+  "id": "anglais-connecteurs-trous",
+  "nom": "Connecteurs : textes à trous",
+  "cartes": [
+    {
+      "id": "c1",
+      "q": "Tourism creates jobs. {{However::cependant}}, it also damages the environment.",
+      "mode": "trou",
+      "r": "However se place en tête de phrase, suivi d'une virgule."
+    },
+    {
+      "id": "c2",
+      "q": "{{Although/Even though::bien que}} tourism creates jobs, it damages the environment.",
+      "mode": "trou",
+      "r": "Although + sujet + verbe, sans subjonctif en anglais."
+    },
+    {
+      "id": "c3",
+      "q": "Some cities welcome tourists, {{whereas/while::alors que}} others try to keep them away.",
+      "mode": "trou",
+      "r": "Whereas exprime une opposition entre deux faits."
+    },
+    {
+      "id": "c4",
+      "q": "Protests can raise awareness. {{Moreover/Furthermore/What is more::de plus}}, they can lead to real change.",
+      "mode": "trou",
+      "r": "Connecteurs d'addition : moreover, furthermore, what is more, in addition."
+    },
+    {
+      "id": "c5",
+      "q": "Short-term rentals have multiplied. {{As a result/Consequently::par conséquent}}, rents have soared.",
+      "mode": "trou",
+      "r": "As a result, consequently, therefore : conséquence."
+    },
+    {
+      "id": "c6",
+      "q": "{{Despite/In spite of::malgré}} the rain, thousands of people marched.",
+      "mode": "trou",
+      "r": "Despite + nom (jamais despite of) ; in spite of + nom."
+    },
+    {
+      "id": "c7",
+      "q": "{{On the one hand::d'une part}}, tourism boosts the economy; {{on the other hand::d'autre part}}, it harms local communities.",
+      "mode": "trou",
+      "r": "Structure classique pour présenter deux points de vue dans un essai."
+    },
+    {
+      "id": "c8",
+      "q": "{{In order to/So as to::afin de}} curb overtourism, the city introduced visitor caps.",
+      "mode": "trou",
+      "r": "In order to / so as to + base verbale : but."
+    },
+    {
+      "id": "c9",
+      "q": "{{Unless::à moins que}} the government backs down, the strike will go on.",
+      "mode": "trou",
+      "r": "Unless = if… not. Présent après unless, même pour parler du futur."
+    },
+    {
+      "id": "c10",
+      "q": "{{Not only::non seulement}} does tourism create jobs, {{but it also::mais il … aussi}} brings in foreign currency.",
+      "mode": "trou",
+      "r": "Not only en tête de phrase entraîne l'inversion : does tourism create."
+    },
+    {
+      "id": "c11",
+      "q": "{{Owing to/Due to/Because of::en raison de}} the strike, all flights were cancelled.",
+      "mode": "trou",
+      "r": "Owing to / due to / because of + nom : cause."
+    },
+    {
+      "id": "c12",
+      "q": "{{The more::plus}} tourists come, {{the more::plus}} prices rise.",
+      "mode": "trou",
+      "r": "The more…, the more… : plus…, plus…"
+    },
+    {
+      "id": "c13",
+      "q": "{{To sum up/In conclusion/All in all::pour conclure}}, sustainable tourism seems to be the only way forward.",
+      "mode": "trou",
+      "r": "Pour introduire la conclusion d'un essai."
+    },
+    {
+      "id": "c14",
+      "q": "{{It is often argued::on affirme souvent}} that protests are useless, {{yet::pourtant}} history proves otherwise.",
+      "mode": "trou",
+      "r": "Yet = pourtant, mais. It is often argued that… introduit une thèse à discuter."
+    },
+    {
+      "id": "c15",
+      "q": "{{As far as::en ce qui concerne}} tourism {{is concerned::…}}, the figures speak for themselves.",
+      "mode": "trou",
+      "r": "As far as X is concerned = en ce qui concerne X."
+    }
+  ]
+}

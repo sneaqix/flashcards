@@ -1,9 +1,9 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261029224717';
-import * as S from './store.js?v=20261029224717';
-import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261029224717';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261029224717';
-import { buildChecklist } from './practice.js?v=20261029224717';
+import { GitHub } from './github.js?v=20261029233129';
+import * as S from './store.js?v=20261029233129';
+import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261029233129';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261029233129';
+import { buildChecklist } from './practice.js?v=20261029233129';
 
 export function renderSettings() {
   const s = state.progress.settings;

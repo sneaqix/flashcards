@@ -15,7 +15,14 @@
     {
       "id": "rang",
       "q": "Théorème du rang",
-      "r": "Pour $f \\in \\mathcal{L}(E,F)$ avec $E$ de dimension finie :$$\\dim E = \\operatorname{rg} f + \\dim \\operatorname{Ker} f$$"
+      "r": "Pour $f \\in \\mathcal{L}(E,F)$ avec $E$ de dimension finie :$$\\dim E = \\operatorname{rg} f + \\dim \\operatorname{Ker} f$$",
+      "mode": "qcm",
+      "attendu": "$\\dim E = \\operatorname{rg} f + \\dim \\operatorname{Ker} f$",
+      "choix": [
+        "$\\dim F = \\operatorname{rg} f + \\dim \\operatorname{Ker} f$",
+        "$\\dim E = \\operatorname{rg} f - \\dim \\operatorname{Ker} f$",
+        "$\\dim E = \\dim \\operatorname{Im} f \\times \\dim \\operatorname{Ker} f$"
+      ]
     },
     {
       "id": "injective",
@@ -35,7 +42,14 @@
     {
       "id": "det",
       "q": "Propriétés du déterminant : $\\det(AB)$ et $\\det(\\lambda A)$ pour $A \\in \\mathcal{M}_n(\\mathbb{K})$",
-      "r": "$$\\det(AB) = \\det A \\,\\det B, \\qquad \\det(\\lambda A) = \\lambda^n \\det A$$"
+      "r": "$$\\det(AB) = \\det A \\,\\det B, \\qquad \\det(\\lambda A) = \\lambda^n \\det A$$",
+      "mode": "qcm",
+      "attendu": "$\\det(AB) = \\det A\\,\\det B$ et $\\det(\\lambda A) = \\lambda^n \\det A$",
+      "choix": [
+        "$\\det(AB) = \\det A + \\det B$ et $\\det(\\lambda A) = \\lambda \\det A$",
+        "$\\det(AB) = \\det A\\,\\det B$ et $\\det(\\lambda A) = \\lambda \\det A$",
+        "$\\det(AB) = \\det(BA)^{-1}$ et $\\det(\\lambda A) = n\\lambda \\det A$"
+      ]
     },
     {
       "id": "chgt-base",

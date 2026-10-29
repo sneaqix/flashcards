@@ -5,7 +5,14 @@
     {
       "id": "ordre1-cst",
       "q": "Solutions de $y' + ay = 0$ ($a$ constante)",
-      "r": "$$y(x) = \\lambda\\,e^{-ax}, \\quad \\lambda \\in \\mathbb{R}$$"
+      "r": "$$y(x) = \\lambda\\,e^{-ax}, \\quad \\lambda \\in \\mathbb{R}$$",
+      "mode": "qcm",
+      "attendu": "$y(x) = \\lambda\\,e^{-ax}$",
+      "choix": [
+        "$y(x) = \\lambda\\,e^{ax}$",
+        "$y(x) = \\lambda\\,x\\,e^{-ax}$",
+        "$y(x) = e^{-ax} + \\lambda$"
+      ]
     },
     {
       "id": "ordre1-var",
@@ -25,7 +32,14 @@
     {
       "id": "carac",
       "q": "Équation caractéristique de $y'' + ay' + by = 0$",
-      "r": "$$r^2 + ar + b = 0$$"
+      "r": "$$r^2 + ar + b = 0$$",
+      "mode": "qcm",
+      "attendu": "$r^2 + ar + b = 0$",
+      "choix": [
+        "$r^2 - ar + b = 0$",
+        "$ar^2 + br = 0$",
+        "$r^2 + br + a = 0$"
+      ]
     },
     {
       "id": "ordre2-sol",
