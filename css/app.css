@@ -102,6 +102,13 @@ textarea { font-family: var(--font-mono); font-size: 0.9rem; resize: vertical; l
 .check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; }
 .check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex: none; }
 
+.limits { display: grid; grid-template-columns: minmax(0, 1fr) 84px 84px; gap: 8px 10px; align-items: center; }
+.limits .lh { font: 500 0.72rem var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; text-align: center; }
+.limits .ln { font-weight: 600; font-family: var(--font-display); overflow-wrap: anywhere; }
+.limits input { text-align: center; padding: 8px 6px; font-variant-numeric: tabular-nums; }
+.limits-total { font-variant-numeric: tabular-nums; }
+.matiere-head .subject-start { margin-left: auto; white-space: nowrap; flex: none; }
+
 .chip {
   font: 500 0.75rem var(--font-mono); min-height: 32px; padding: 4px 12px; border-radius: 999px;
   background: var(--card); border: 1px solid var(--line); color: var(--muted); white-space: nowrap;
@@ -242,3 +249,5 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 
 @media (min-width: 560px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .progress div { transition: none; } .edit-body.from-right, .edit-body.from-left { animation: none; } }
+.matiere-head { align-items: center; }
+.matiere-head > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }

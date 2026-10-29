@@ -180,11 +180,10 @@
   <!-- ============ Réglages ============ -->
   <section id="view-parametres" class="view" hidden>
     <div class="panel form">
-      <h2>Rythme quotidien</h2>
-      <label for="sNew">Nouvelles cartes par jour</label>
-      <input id="sNew" type="number" min="0" max="500" inputmode="numeric">
-      <label for="sMax">Révisions maximum par jour (0 = sans limite)</label>
-      <input id="sMax" type="number" min="0" max="2000" inputmode="numeric">
+      <h2>Rythme quotidien par matière</h2>
+      <p class="sub">Nouvelles cartes à découvrir et révisions maximum chaque jour. Une limite de révisions à 0 signifie sans limite.</p>
+      <div class="limits" id="subjectLimits"></div>
+      <p class="sub limits-total" id="limitsTotal"></p>
       <p class="status" id="sStatus" role="status"></p>
     </div>
     <div class="panel">

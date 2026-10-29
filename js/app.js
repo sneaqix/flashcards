@@ -178,8 +178,16 @@ function renderHome() {
     const total = m.chapitres.reduce((s, c) => s + c.cartes.length, 0);
     const sec = document.createElement('div');
     sec.className = 'matiere';
-    sec.innerHTML = '<div class="matiere-head"><h2></h2><span>' + plural(total, 'carte', 'cartes') + '</span></div><ul class="chapters"></ul>';
+    const activeHere = m.chapitres.filter((c) => !off.has(c.id));
+    const sub = daily.bySubject[m.id] || { reviews: 0, fresh: 0, total: 0 };
+    sec.innerHTML = '<div class="matiere-head"><div><h2></h2><span>' + plural(total, 'carte', 'cartes') + ' · ' +
+      sub.reviews + ' à revoir · ' + plural(sub.fresh, 'nouvelle', 'nouvelles') + '</span></div>' +
+      '<button class="primary small subject-start" type="button">Réviser · ' + sub.total + '</button></div><ul class="chapters"></ul>';
     sec.querySelector('h2').textContent = m.nom;
+    const subjectBtn = sec.querySelector('.subject-start');
+    subjectBtn.disabled = sub.total === 0;
+    subjectBtn.setAttribute('aria-label', 'Réviser ' + m.nom + ' : ' + plural(sub.total, 'carte', 'cartes'));
+    subjectBtn.addEventListener('click', () => startSession(S.dailyQueue(state.progress, activeHere).items, 'srs', m.nom));
     const ul = sec.querySelector('ul');
     m.chapitres.forEach((ch) => {
       const q = S.dailyQueue(p, [ch]);
@@ -787,7 +795,8 @@ function renderStats() {
       '<text x="' + (x + w / 2) + '" y="' + (fH - 5) + '" text-anchor="middle">' + shortDate(next[i]) + '</text>';
   });
   f += '<line class="grid" x1="0" x2="' + W + '" y1="' + fy(0) + '" y2="' + fy(0) + '"/></svg>';
-  $('forecast').innerHTML = f + '<p class="sub">Hors nouvelles cartes, limitées à ' + p.settings.newPerDay + ' par jour.</p>';
+  const newTotal = state.matieres.reduce((sum, m) => sum + S.subjectLimits(p.settings, m.id).newPerDay, 0);
+  $('forecast').innerHTML = f + '<p class="sub">Hors nouvelles cartes : jusqu\'à ' + newTotal + ' par jour selon tes réglages par matière.</p>';
 }
 
 // =====================================================================
@@ -795,8 +804,7 @@ function renderStats() {
 // =====================================================================
 function renderSettings() {
   const s = state.progress.settings;
-  $('sNew').value = s.newPerDay;
-  $('sMax').value = s.maxReviews;
+  renderSubjectLimits();
   const off = new Set(s.inactive || []);
   buildChecklist($('activeChapters'), (ch) => !off.has(ch.id), (chs, on) => {
     const set = new Set(state.progress.settings.inactive || []);
@@ -808,6 +816,50 @@ function renderSettings() {
   $('gData').value = state.config.dataRepo || ($('gContent').value ? $('gContent').value + '-data' : '');
   const last = state.config.lastSync ? new Date(state.config.lastSync).toLocaleString('fr-FR') : null;
   if (!$('gStatus').textContent) setStatus('gStatus', canSync() ? 'Dernière synchronisation : ' + (last || 'jamais') : 'Synchronisation non configurée.');
+}
+// Tableau des limites quotidiennes : une ligne par matière, nouvelles cartes et révisions maximum.
+function renderSubjectLimits() {
+  const box = $('subjectLimits');
+  box.innerHTML = '<span></span><span class="lh">Nouvelles</span><span class="lh">Révisions</span>';
+  state.matieres.forEach((m) => {
+    const lim = S.subjectLimits(state.progress.settings, m.id);
+    const name = document.createElement('span');
+    name.className = 'ln';
+    name.textContent = m.nom;
+    box.appendChild(name);
+    [['newPerDay', 500, 'nouvelles cartes par jour'], ['maxReviews', 2000, 'révisions maximum par jour']].forEach(([field, max, label]) => {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.max = String(max);
+      input.inputMode = 'numeric';
+      input.id = 'lim-' + m.id + '-' + field;
+      input.value = lim[field];
+      input.setAttribute('aria-label', m.nom + ' : ' + label);
+      input.addEventListener('change', () => {
+        const current = S.subjectLimits(state.progress.settings, m.id);
+        const v = readNumber(input.id, 0, max, current[field]);
+        input.value = v;
+        const subjects = { ...(state.progress.settings.subjects || {}) };
+        subjects[m.id] = { ...current, [field]: v };
+        updateSettings({ subjects });
+        updateLimitsTotal();
+      });
+      box.appendChild(input);
+    });
+  });
+  updateLimitsTotal();
+}
+function updateLimitsTotal() {
+  const s = state.progress.settings;
+  let nw = 0, rv = 0, unlimited = false;
+  state.matieres.forEach((m) => {
+    const lim = S.subjectLimits(s, m.id);
+    nw += lim.newPerDay;
+    if (lim.maxReviews === 0) unlimited = true; else rv += lim.maxReviews;
+  });
+  $('limitsTotal').textContent = 'Total par jour : ' + plural(nw, 'nouvelle carte', 'nouvelles cartes') + ' et ' +
+    (unlimited ? 'des révisions sans limite pour au moins une matière.' : 'au plus ' + plural(rv, 'révision', 'révisions') + '.');
 }
 // Sur GitHub Pages, l'adresse pseudo.github.io/depot donne le dépôt du site.
 function guessContentRepo() {
@@ -1011,16 +1063,6 @@ function bindEvents() {
   $('fDeleteNo').addEventListener('click', () => { $('deleteConfirm').hidden = true; });
   $('fDeleteYes').addEventListener('click', deleteCard);
 
-  $('sNew').addEventListener('change', () => {
-    const v = readNumber('sNew', 0, 500, state.progress.settings.newPerDay);
-    $('sNew').value = v;
-    updateSettings({ newPerDay: v });
-  });
-  $('sMax').addEventListener('change', () => {
-    const v = readNumber('sMax', 0, 2000, state.progress.settings.maxReviews);
-    $('sMax').value = v;
-    updateSettings({ maxReviews: v });
-  });
   $('gSave').addEventListener('click', saveGitHubConfig);
   $('gForget').addEventListener('click', forgetToken);
   $('exportBtn').addEventListener('click', exportProgress);

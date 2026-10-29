@@ -5,7 +5,17 @@ const LS_PROGRESS = 'fc.progress.v2';
 const LS_CONFIG = 'fc.config.v1';
 const LS_DEVICE = 'fc.device';
 
-export const DEFAULT_SETTINGS = { newPerDay: 10, maxReviews: 100, inactive: [], updated: 0 };
+// newPerDay et maxReviews servent de valeurs par défaut pour une matière sans réglage propre.
+// subjects : { matiere: { newPerDay, maxReviews } } ; maxReviews = 0 signifie sans limite.
+export const DEFAULT_SETTINGS = { newPerDay: 10, maxReviews: 100, subjects: {}, inactive: [], updated: 0 };
+
+export function subjectLimits(settings, mat) {
+  const s = (settings.subjects || {})[mat] || {};
+  return {
+    newPerDay: Number.isFinite(s.newPerDay) ? s.newPerDay : settings.newPerDay,
+    maxReviews: Number.isFinite(s.maxReviews) ? s.maxReviews : settings.maxReviews,
+  };
+}
 
 // ---------- Dates (jour local au format AAAA-MM-JJ) ----------
 export function iso(d) {
@@ -95,15 +105,17 @@ export function stableStringify(v) {
 // ---------- Journal quotidien ----------
 function dayLog(p, dev, day) {
   p.logs[dev] = p.logs[dev] || {};
-  p.logs[dev][day] = p.logs[dev][day] || { r: 0, c: 0, n: 0, v: 0, m: {} };
+  p.logs[dev][day] = p.logs[dev][day] || { r: 0, c: 0, n: 0, v: 0, m: {}, mn: {} };
   const l = p.logs[dev][day];
   l.m = l.m || {};
+  l.mn = l.mn || {};
   return l;
 }
 
 // Totaux d'une journée, tous appareils confondus.
 export function dayTotals(p, day) {
-  const t = { r: 0, c: 0, n: 0, v: 0, m: {} };
+  // m : réponses par matière [réponses, justes] ; mn : cartes faites par matière [nouvelles, révisions]
+  const t = { r: 0, c: 0, n: 0, v: 0, m: {}, mn: {} };
   Object.values(p.logs).forEach((days) => {
     const l = days[day];
     if (!l) return;
@@ -111,6 +123,10 @@ export function dayTotals(p, day) {
     Object.entries(l.m || {}).forEach(([mat, [r, c]]) => {
       t.m[mat] = t.m[mat] || [0, 0];
       t.m[mat][0] += r; t.m[mat][1] += c;
+    });
+    Object.entries(l.mn || {}).forEach(([mat, [n, v]]) => {
+      t.mn[mat] = t.mn[mat] || [0, 0];
+      t.mn[mat][0] += n; t.mn[mat][1] += v;
     });
   });
   return t;
@@ -135,23 +151,38 @@ export function shuffle(a) {
   return a;
 }
 
-// Cartes à faire aujourd'hui dans les chapitres donnés, en respectant les limites quotidiennes.
-// Renvoie { items, reviewsDue, newAvailable } ; items est mélangé.
+// Cartes à faire aujourd'hui dans les chapitres donnés, en respectant les limites quotidiennes
+// de chaque matière (les chapitres portent leur matière dans `matiere`).
+// Renvoie { items, reviewsDue, newAvailable, bySubject } ; items est mélangé.
 export function dailyQueue(p, chapters) {
   const day = today();
   const t = dayTotals(p, day);
-  const s = p.settings;
-  const reviews = [], fresh = [];
-  chapters.forEach((ch) => ch.cartes.forEach((card) => {
-    const st = cardState(p, ch, card);
-    if (!st) fresh.push({ chapter: ch, card, isNew: true });
-    else if (st.due <= day) reviews.push({ chapter: ch, card, isNew: false });
-  }));
-  shuffle(reviews); shuffle(fresh);
-  const reviewLimit = s.maxReviews > 0 ? Math.max(0, s.maxReviews - t.v) : Infinity;
-  const newLimit = Math.max(0, s.newPerDay - t.n);
-  const items = shuffle([...reviews.slice(0, reviewLimit), ...fresh.slice(0, newLimit)]);
-  return { items, reviewsDue: Math.min(reviews.length, reviewLimit), newAvailable: Math.min(fresh.length, newLimit) };
+  const groups = new Map(); // matière -> { reviews, fresh }
+  chapters.forEach((ch) => {
+    if (!groups.has(ch.matiere)) groups.set(ch.matiere, { reviews: [], fresh: [] });
+    const g = groups.get(ch.matiere);
+    ch.cartes.forEach((card) => {
+      const st = cardState(p, ch, card);
+      if (!st) g.fresh.push({ chapter: ch, card, isNew: true });
+      else if (st.due <= day) g.reviews.push({ chapter: ch, card, isNew: false });
+    });
+  });
+  const items = [];
+  const bySubject = {};
+  let reviewsDue = 0, newAvailable = 0;
+  groups.forEach((g, mat) => {
+    const lim = subjectLimits(p.settings, mat);
+    const [doneNew, doneRev] = t.mn[mat] || [0, 0];
+    const reviewLimit = lim.maxReviews > 0 ? Math.max(0, lim.maxReviews - doneRev) : Infinity;
+    const newLimit = Math.max(0, lim.newPerDay - doneNew);
+    const rev = shuffle(g.reviews).slice(0, reviewLimit);
+    const fresh = shuffle(g.fresh).slice(0, newLimit);
+    items.push(...rev, ...fresh);
+    bySubject[mat] = { reviews: rev.length, fresh: fresh.length, total: rev.length + fresh.length };
+    reviewsDue += rev.length;
+    newAvailable += fresh.length;
+  });
+  return { items: shuffle(items), reviewsDue, newAvailable, bySubject };
 }
 
 // Enregistre une réponse. `first` : premier passage de cette carte dans la session.
@@ -168,8 +199,11 @@ export function recordAnswer(p, item, knew, first) {
   const l = dayLog(p, deviceId(), today());
   l.r++;
   if (knew) l.c++;
-  if (first) { if (item.isNew) l.n++; else l.v++; }
   const mat = item.chapter.matiere;
+  if (first) {
+    l.mn[mat] = l.mn[mat] || [0, 0];
+    if (item.isNew) { l.n++; l.mn[mat][0]++; } else { l.v++; l.mn[mat][1]++; }
+  }
   l.m[mat] = l.m[mat] || [0, 0];
   l.m[mat][0]++;
   if (knew) l.m[mat][1]++;
