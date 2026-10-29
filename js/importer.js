@@ -1,11 +1,11 @@
 // Import d'un cours en PDF : génération des cartes par Gemini, relecture, puis ajout dans un chapitre.
-import * as G from './gemini.js?v=20261030004256';
+import * as G from './gemini.js?v=20261030004829';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId, showView,
   faceContent, route,
-} from './ui.js?v=20261030004256';
-import { updateChapterFile, createChapterFile } from './sync.js?v=20261030004256';
-import { showChapterCards } from './editor.js?v=20261030004256';
+} from './ui.js?v=20261030004829';
+import { updateChapterFile, createChapterFile } from './sync.js?v=20261030004829';
+import { showChapterCards } from './editor.js?v=20261030004829';
 
 const MAX_MB = 30;
 const TYPES = ['classique', 'qcm', 'trou', 'saisie'];
@@ -13,8 +13,76 @@ const FOCUS = ['definitions', 'formules', 'methodes', 'pieges'];
 const TYPE_NAMES = { classique: 'Classique', qcm: 'QCM', trou: 'Texte à trous', saisie: 'Réponse à taper' };
 
 let pdfFile = null;
-let draft = null;     // { titre, fileName, cards: [{ keep, card }] }
+let draft = null;     // { titre, fileName, mat, dest, newName, chap, cards: [{ keep, card }] }
 let abort = null;
+let running = false;  // génération en cours
+let hiddenDuring = false; // la page a été quittée pendant la génération
+let userCancel = false;
+let pendingJob = null; // génération interrompue, à relancer au retour sur la page
+let wakeLock = null;
+
+// ---------- Conservation sur l'appareil ----------
+// La relecture en cours est gardée dans le stockage local ; la génération en attente (avec le PDF,
+// trop gros pour le stockage local) est gardée dans IndexedDB.
+const LS_DRAFT = 'fc.importDraft';
+function saveDraft() {
+  try {
+    if (draft) localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
+    else localStorage.removeItem(LS_DRAFT);
+  } catch (e) { /* stockage indisponible ou plein */ }
+  updateImportBanner();
+}
+function loadDraft() {
+  try { return JSON.parse(localStorage.getItem(LS_DRAFT)) || null; } catch (e) { return null; }
+}
+let draftTimer;
+function saveDraftSoon() { clearTimeout(draftTimer); draftTimer = setTimeout(saveDraft, 400); }
+
+function idb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('fc-import', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('kv');
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function jobStore(mode, fn) {
+  const db = await idb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('kv', mode);
+    const req = fn(tx.objectStore('kv'));
+    tx.oncomplete = () => { db.close(); resolve(req && req.result); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+const saveJob = (job) => jobStore('readwrite', (st) => st.put(job, 'job')).catch(() => {});
+const loadJob = () => jobStore('readonly', (st) => st.get('job')).catch(() => null);
+const clearJob = () => jobStore('readwrite', (st) => st.delete('job')).catch(() => {});
+
+// ---------- Écran allumé pendant la génération ----------
+async function keepAwake() {
+  try { if (navigator.wakeLock && !wakeLock) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
+}
+function releaseAwake() {
+  try { if (wakeLock) wakeLock.release(); } catch (e) { /* déjà libéré */ }
+  wakeLock = null;
+}
+
+// Bandeau de l'onglet Cartes quand une relecture ou une génération attend.
+export function updateImportBanner() {
+  const box = $('impPending');
+  if (!box) return;
+  if (draft) {
+    const kept = draft.cards.filter((c) => c.keep).length;
+    $('impPendingText').textContent = 'Relecture en attente : ' + plural(draft.cards.length, 'carte générée', 'cartes générées') + ' depuis « ' + draft.fileName + ' » (' + kept + ' gardée' + (kept > 1 ? 's' : '') + ').';
+    box.hidden = false;
+  } else if (running || pendingJob) {
+    $('impPendingText').textContent = 'Génération en cours depuis « ' + ((pendingJob && pendingJob.fileName) || (pdfFile && pdfFile.name) || 'ton PDF') + ' ».';
+    box.hidden = false;
+  } else {
+    box.hidden = true;
+  }
+}
 
 export function openImport() {
   history.replaceState(null, '', '#cartes');
@@ -52,13 +120,33 @@ function renderImport() {
   $('impLocked').hidden = !problems.length;
   $('impLockedText').textContent = 'Pour générer des cartes, renseigne ' + problems.join(' et ') + ' dans les réglages.';
   fillMatieres();
-  showStep(draft ? 'review' : 'setup');
+  if (draft) restoreDest();
+  showStep(draft ? 'review' : running || pendingJob ? 'wait' : 'setup');
   if (draft) renderReview();
   updateGenerate();
 }
 
+// Remet les choix de destination enregistrés avec la relecture.
+function restoreDest() {
+  if (draft.mat && state.matieres.some((m) => m.id === draft.mat)) { $('impMat').value = draft.mat; fillChapters(); }
+  if (draft.dest === 'old' && !$('impDestOld').disabled) $('impDestOld').checked = true; else $('impDestNew').checked = true;
+  if (draft.chap && state.byId.has(draft.chap)) $('impChap').value = draft.chap;
+  $('impNewName').value = draft.newName || draft.titre || '';
+  updateDest();
+}
+function rememberDest() {
+  if (!draft) return;
+  draft.mat = $('impMat').value;
+  draft.dest = $('impDestNew').checked ? 'new' : 'old';
+  draft.newName = $('impNewName').value;
+  draft.chap = $('impChap').value;
+  saveDraftSoon();
+}
+
 function showStep(step) {
   $('impSetup').hidden = step !== 'setup';
+  $('impSetup2').hidden = step !== 'setup';
+  $('impDest').hidden = step === 'wait';
   $('impWait').hidden = step !== 'wait';
   $('impReview').hidden = step !== 'review';
 }
@@ -86,37 +174,107 @@ function pickPdf(input) {
 }
 
 async function generate() {
-  if (!pdfFile) return;
+  if (!pdfFile || running) return;
   const mat = state.matieres.find((m) => m.id === $('impMat').value);
+  let pdfBase64;
+  try { pdfBase64 = await G.fileToBase64(pdfFile); } catch (e) { setStatus('impStatus', e.message, 'error'); return; }
+  const job = {
+    fileName: pdfFile.name, pdfBase64,
+    count: Number($('impCount').value) || 0,
+    types: selected('impT-', TYPES),
+    focus: selected('impF-', FOCUS),
+    matiereNom: mat ? mat.nom : '',
+    consignes: $('impConsignes').value.trim(),
+    mat: $('impMat').value,
+    dest: $('impDestNew').checked ? 'new' : 'old',
+    newName: $('impNewName').value.trim(),
+    chap: $('impChap').value,
+  };
+  await saveJob(job); // permet de reprendre même si la page est fermée
+  runJob(job);
+}
+
+async function runJob(job) {
+  if (running) return;
+  running = true;
+  hiddenDuring = document.visibilityState === 'hidden';
+  userCancel = false;
+  pendingJob = null;
+  updateImportBanner();
   showStep('wait');
-  $('impWaitText').textContent = 'Gemini lit « ' + pdfFile.name + ' » et prépare les cartes. Cela prend en général entre 30 secondes et 2 minutes.';
+  $('impWaitText').textContent = 'Gemini lit « ' + job.fileName + ' » et prépare les cartes. Cela prend en général entre 30 secondes et 2 minutes. Reste sur cette page : l\'écran restera allumé.';
+  keepAwake();
   abort = new AbortController();
   const timer = setTimeout(() => abort.abort(), 240000);
   try {
-    const pdfBase64 = await G.fileToBase64(pdfFile);
     const res = await G.generateCards({
       key: state.config.geminiKey,
       model: state.config.geminiModel || G.DEFAULT_MODEL,
-      pdfBase64,
-      count: Number($('impCount').value) || 0,
-      types: selected('impT-', TYPES),
-      focus: selected('impF-', FOCUS),
-      matiere: mat ? mat.nom : '',
-      consignes: $('impConsignes').value.trim(),
+      pdfBase64: job.pdfBase64,
+      count: job.count, types: job.types, focus: job.focus,
+      matiere: job.matiereNom, consignes: job.consignes,
       signal: abort.signal,
     });
     const cards = res.cartes.map((g) => G.toDeckCard(g, newId())).filter((c) => c.q);
-    if (!cards.length) throw new Error('Gemini n\'a proposé aucune carte exploitable. Réessaie avec d\'autres consignes.');
-    draft = { titre: String(res.titre || '').trim(), fileName: pdfFile.name, mat: $('impMat').value, cards: cards.map((card) => ({ keep: true, card })) };
-    if ($('impDestNew').checked && !$('impNewName').value.trim() && draft.titre) $('impNewName').value = draft.titre;
-    showStep('review');
-    renderReview();
+    if (!cards.length) throw new G.GeminiError('Gemini n\'a proposé aucune carte exploitable. Réessaie avec d\'autres consignes.', 200);
+    const titre = String(res.titre || '').trim();
+    draft = {
+      titre, fileName: job.fileName, mat: job.mat, dest: job.dest, chap: job.chap,
+      newName: job.newName || titre,
+      cards: cards.map((card) => ({ keep: true, card })),
+    };
+    saveDraft();
+    clearJob();
+    pdfFile = null;
+    if (!$('view-import').hidden) {
+      restoreDest();
+      showStep('review');
+      renderReview();
+    } else {
+      toast('Cartes générées : ouvre l\'import pour les relire.');
+    }
   } catch (e) {
-    showStep('setup');
-    setStatus('impStatus', e.message, 'error');
+    // Interrompue parce que la page a été quittée (iPhone) : on relancera au retour.
+    const interrupted = !userCancel && (hiddenDuring || document.visibilityState === 'hidden') && !(e instanceof G.GeminiError && e.status);
+    if (interrupted) {
+      pendingJob = job;
+      showStep('wait');
+      $('impWaitText').textContent = 'La génération a été interrompue parce que tu as quitté la page. Elle reprend automatiquement.';
+      if (document.visibilityState === 'visible') setTimeout(resumeIfPending, 500);
+    } else {
+      clearJob();
+      showStep('setup');
+      setStatus('impStatus', userCancel ? 'Génération annulée.' : e.message, userCancel ? '' : 'error');
+    }
   } finally {
     clearTimeout(timer);
     abort = null;
+    running = false;
+    if (!pendingJob) releaseAwake();
+    updateImportBanner();
+  }
+}
+
+async function resumeIfPending() {
+  if (running) return;
+  const job = pendingJob || await loadJob();
+  if (!job || !job.pdfBase64) return;
+  pendingJob = job;
+  if (!state.config.geminiKey) return;
+  if ($('view-import').hidden && !state.session && !state.assoc) openImport();
+  runJob(job);
+}
+
+// À l'ouverture de l'appli : reprend une relecture ou une génération laissée en plan.
+export async function restoreImport() {
+  draft = loadDraft();
+  updateImportBanner();
+  if (draft) return;
+  const job = await loadJob();
+  if (job && job.pdfBase64) {
+    pendingJob = job;
+    updateImportBanner();
+    resumeIfPending();
   }
 }
 
@@ -189,6 +347,7 @@ function renderReview() {
     let t;
     const onEdit = () => {
       entry.card = cardFromBlock(li, entry.card);
+      saveDraftSoon();
       updateBlockFields(li);
       clearTimeout(t);
       t = setTimeout(() => renderBlockPreview(li, entry.card), 300);
@@ -198,6 +357,7 @@ function renderReview() {
     li.querySelector('.ir-keep').addEventListener('change', (e) => {
       entry.keep = e.target.checked;
       li.classList.toggle('off', !entry.keep);
+      saveDraftSoon();
       updateReviewCount();
     });
     list.appendChild(li);
@@ -243,6 +403,7 @@ async function save() {
     await updateChapterFile(ch, (list) => [...list, ...kept], 'Ajoute ' + plural(kept.length, 'carte générée', 'cartes générées') + ' depuis ' + draft.fileName);
     toast(plural(kept.length, 'carte ajoutée', 'cartes ajoutées') + ' à « ' + ch.nom + ' ».');
     draft = null;
+    saveDraft();
     pdfFile = null;
     resetSetup();
     showChapterCards(ch);
@@ -263,6 +424,7 @@ function resetSetup() {
 
 function discard() {
   draft = null;
+  saveDraft();
   $('impDiscardConfirm').hidden = true;
   setStatus('impSaveStatus', '');
   showStep('setup');
@@ -271,16 +433,31 @@ function discard() {
 
 export function bindImport() {
   $('importBtn').addEventListener('click', openImport);
-  $('impBack').addEventListener('click', () => { if (abort) abort.abort(); route(); });
+  $('impBack').addEventListener('click', () => route()); // la génération continue tant que l'appli reste ouverte
   $('impFile').addEventListener('change', (e) => pickPdf(e.target));
   $('impMat').addEventListener('change', fillChapters);
   $('impDestNew').addEventListener('change', updateDest);
   $('impDestOld').addEventListener('change', updateDest);
   [...TYPES.map((t) => 'impT-' + t), ...FOCUS.map((f) => 'impF-' + f)].forEach((id) => $(id).addEventListener('change', updateGenerate));
   $('impGo').addEventListener('click', generate);
-  $('impCancel').addEventListener('click', () => { if (abort) abort.abort(); });
-  $('impAll').addEventListener('click', () => { draft.cards.forEach((c) => { c.keep = true; }); renderReview(); });
-  $('impNone').addEventListener('click', () => { draft.cards.forEach((c) => { c.keep = false; }); renderReview(); });
+  $('impCancel').addEventListener('click', () => {
+    userCancel = true;
+    if (abort) abort.abort();
+    if (pendingJob && !running) { pendingJob = null; clearJob(); releaseAwake(); showStep('setup'); updateImportBanner(); }
+  });
+  $('impAll').addEventListener('click', () => { draft.cards.forEach((c) => { c.keep = true; }); saveDraft(); renderReview(); });
+  $('impNone').addEventListener('click', () => { draft.cards.forEach((c) => { c.keep = false; }); saveDraft(); renderReview(); });
+  ['impMat', 'impChap', 'impDestNew', 'impDestOld'].forEach((id) => $(id).addEventListener('change', rememberDest));
+  $('impNewName').addEventListener('input', rememberDest);
+  $('impResume').addEventListener('click', openImport);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      if (running) hiddenDuring = true;
+    } else {
+      if (running) keepAwake(); // iOS libère le verrou d'écran quand on quitte la page
+      if (pendingJob && !running) resumeIfPending();
+    }
+  });
   $('impSave').addEventListener('click', save);
   $('impDiscard').addEventListener('click', () => { $('impDiscardConfirm').hidden = false; });
   $('impDiscardYes').addEventListener('click', discard);

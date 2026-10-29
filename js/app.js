@@ -1,13 +1,13 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030004256';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030004256';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030004256';
-import { renderHome, bindReview } from './review.js?v=20261030004256';
-import { renderCartes, bindEditor } from './editor.js?v=20261030004256';
-import { renderCram, bindPractice } from './practice.js?v=20261030004256';
-import { bindImport } from './importer.js?v=20261030004256';
-import { renderStats } from './stats.js?v=20261030004256';
-import { renderSettings, bindSettings } from './settings.js?v=20261030004256';
+import { GitHub } from './github.js?v=20261030004829';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030004829';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030004829';
+import { renderHome, bindReview } from './review.js?v=20261030004829';
+import { renderCartes, bindEditor } from './editor.js?v=20261030004829';
+import { renderCram, bindPractice } from './practice.js?v=20261030004829';
+import { bindImport, restoreImport } from './importer.js?v=20261030004829';
+import { renderStats } from './stats.js?v=20261030004829';
+import { renderSettings, bindSettings } from './settings.js?v=20261030004829';
 
 state.views = {
   reviser: renderHome,
@@ -50,6 +50,7 @@ async function init() {
     $('chapterList').innerHTML = '<p class="status error">Impossible de charger les cartes. Vérifie le dossier « decks » et le fichier index.json.</p>';
   }
   route();
+  restoreImport(); // relecture ou génération laissée en plan
   if (canSync()) syncNow();
 }
 

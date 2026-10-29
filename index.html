@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030004256">
+<link rel="stylesheet" href="css/app.css?v=20261030004829">
 </head>
 <body>
 <div class="app">
@@ -134,6 +134,10 @@
       <p class="sub">Pour ajouter ou modifier des cartes depuis l'appli, renseigne ton jeton GitHub dans les réglages. Les modifications sont enregistrées directement dans ton dépôt.</p>
       <a class="button ghost" href="#parametres">Ouvrir les réglages</a>
     </div>
+    <div id="impPending" class="panel pending" hidden>
+      <p id="impPendingText"></p>
+      <button id="impResume" class="primary" type="button">Reprendre l'import</button>
+    </div>
     <div class="panel form">
       <label for="cardSearch">Rechercher dans toutes les cartes</label>
       <input id="cardSearch" type="search" placeholder="Mot, formule, chapitre…" autocomplete="off">
@@ -188,23 +192,27 @@
         </div>
         <p class="sub">PDF tapé (LaTeX, Word…), jusqu'à 30 Mo. Gemini lit le texte et les formules.</p>
       </div>
-      <div class="panel form">
-        <h2>Où ranger les cartes</h2>
-        <label for="impMat">Matière</label>
-        <select id="impMat"></select>
-        <div class="radio-row">
-          <label class="check"><input type="radio" name="impDest" id="impDestNew" checked> Nouveau chapitre</label>
-          <label class="check"><input type="radio" name="impDest" id="impDestOld"> Chapitre existant</label>
-        </div>
-        <div id="impNewBox" class="field">
-          <label for="impNewName">Nom du chapitre</label>
-          <input id="impNewName" type="text" autocomplete="off" placeholder="Par défaut : titre proposé par Gemini">
-        </div>
-        <div id="impChapBox" class="field" hidden>
-          <label for="impChap">Chapitre</label>
-          <select id="impChap"></select>
-        </div>
+    </div>
+
+    <div id="impDest" class="panel form">
+      <h2>Où ranger les cartes</h2>
+      <label for="impMat">Matière</label>
+      <select id="impMat"></select>
+      <div class="radio-row">
+        <label class="check"><input type="radio" name="impDest" id="impDestNew" checked> Nouveau chapitre</label>
+        <label class="check"><input type="radio" name="impDest" id="impDestOld"> Chapitre existant</label>
       </div>
+      <div id="impNewBox" class="field">
+        <label for="impNewName">Nom du chapitre</label>
+        <input id="impNewName" type="text" autocomplete="off" placeholder="Par défaut : titre proposé par Gemini">
+      </div>
+      <div id="impChapBox" class="field" hidden>
+        <label for="impChap">Chapitre</label>
+        <select id="impChap"></select>
+      </div>
+    </div>
+
+    <div id="impSetup2" class="stack-col">
       <div class="panel form">
         <h2>Cartes à générer</h2>
         <label for="impCount">Nombre de cartes</label>
@@ -478,6 +486,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030004256"></script>
+<script type="module" src="js/app.js?v=20261030004829"></script>
 </body>
 </html>

@@ -383,3 +383,5 @@ fieldset.checks legend { font-weight: 600; font-size: 0.95rem; padding: 0; margi
 .ir-edit label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 0.85rem; }
 .save-bar { position: sticky; bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom, 0px)); background: var(--paper); padding-block: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
 .stack-col { display: flex; flex-direction: column; gap: 14px; }
+.pending { border-color: var(--accent); flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.pending p { margin: 0; flex: 1 1 200px; }
