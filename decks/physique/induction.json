@@ -1,0 +1,41 @@
+{
+  "id": "physique-induction",
+  "nom": "Magnétisme et induction",
+  "cartes": [
+    {
+      "id": "flux",
+      "q": "Flux du champ magnétique à travers une surface",
+      "r": "$$\\Phi = \\iint_S \\vec{B}\\cdot d\\vec{S}$$ en webers (Wb)."
+    },
+    {
+      "id": "faraday",
+      "q": "Loi de Faraday",
+      "r": "$$e = -\\frac{d\\Phi}{dt}$$ en convention générateur."
+    },
+    {
+      "id": "lenz",
+      "q": "Loi de Lenz",
+      "r": "Les effets de l'induction s'opposent aux causes qui leur ont donné naissance."
+    },
+    {
+      "id": "laplace",
+      "q": "Force de Laplace sur un élément de circuit",
+      "r": "$$d\\vec{F} = I\\,d\\vec{\\ell} \\wedge \\vec{B}$$"
+    },
+    {
+      "id": "auto",
+      "q": "Définition de l'inductance propre",
+      "r": "$$\\Phi_p = L\\,i$$"
+    },
+    {
+      "id": "solenoide",
+      "q": "Champ magnétique dans un solénoïde infini ($n$ spires par mètre)",
+      "r": "$$B = \\mu_0\\, n\\, I$$"
+    },
+    {
+      "id": "couplage",
+      "q": "Bilan de puissance du couplage électromécanique parfait",
+      "r": "$$P_{\\text{Laplace}} + e\\,i = 0$$"
+    }
+  ]
+}

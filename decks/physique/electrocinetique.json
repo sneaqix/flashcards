@@ -1,0 +1,61 @@
+{
+  "id": "physique-electrocinetique",
+  "nom": "Électrocinétique",
+  "cartes": [
+    {
+      "id": "noeuds",
+      "q": "Loi des nœuds",
+      "r": "La somme des courants entrant dans un nœud est égale à la somme des courants sortants."
+    },
+    {
+      "id": "diviseur",
+      "q": "Pont diviseur de tension ($R_1$ et $R_2$ en série sous $u$)",
+      "r": "$$u_2 = \\frac{R_2}{R_1 + R_2}\\,u$$"
+    },
+    {
+      "id": "rc-tau",
+      "q": "Constante de temps d'un circuit RC série",
+      "r": "$$\\tau = RC$$ Le régime transitoire est terminé à 1 % près après environ $5\\tau$."
+    },
+    {
+      "id": "rl-tau",
+      "q": "Constante de temps d'un circuit RL série",
+      "r": "$$\\tau = \\frac{L}{R}$$"
+    },
+    {
+      "id": "energie-c",
+      "q": "Énergie stockée dans un condensateur",
+      "r": "$$E_C = \\frac{1}{2} C u^2$$"
+    },
+    {
+      "id": "energie-l",
+      "q": "Énergie stockée dans une bobine",
+      "r": "$$E_L = \\frac{1}{2} L i^2$$"
+    },
+    {
+      "id": "impedances",
+      "q": "Impédances complexes de $R$, $L$ et $C$",
+      "r": "$$Z_R = R, \\qquad Z_L = jL\\omega, \\qquad Z_C = \\frac{1}{jC\\omega}$$"
+    },
+    {
+      "id": "lc-omega0",
+      "q": "Pulsation propre d'un circuit LC",
+      "r": "$$\\omega_0 = \\frac{1}{\\sqrt{LC}}$$"
+    },
+    {
+      "id": "rlc-q",
+      "q": "Facteur de qualité d'un RLC série",
+      "r": "$$Q = \\frac{1}{R}\\sqrt{\\frac{L}{C}} = \\frac{L\\omega_0}{R}$$"
+    },
+    {
+      "id": "eff",
+      "q": "Valeur efficace d'une tension sinusoïdale d'amplitude $U_m$",
+      "r": "$$U_{\\text{eff}} = \\frac{U_m}{\\sqrt{2}}$$"
+    },
+    {
+      "id": "puissance",
+      "q": "Puissance moyenne en régime sinusoïdal",
+      "r": "$$P = U_{\\text{eff}}\\, I_{\\text{eff}} \\cos\\varphi$$ $\\cos\\varphi$ est le facteur de puissance."
+    }
+  ]
+}

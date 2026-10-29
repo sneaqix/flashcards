@@ -1,0 +1,56 @@
+{
+  "id": "physique-thermodynamique",
+  "nom": "Thermodynamique",
+  "cartes": [
+    {
+      "id": "gp",
+      "q": "Équation d'état du gaz parfait",
+      "r": "$$PV = nRT, \\qquad R = 8{,}314 \\text{ J·mol}^{-1}\\text{·K}^{-1}$$"
+    },
+    {
+      "id": "p1",
+      "q": "Premier principe pour un système fermé",
+      "r": "$$\\Delta U + \\Delta E_c = W + Q$$"
+    },
+    {
+      "id": "travail",
+      "q": "Travail élémentaire des forces de pression",
+      "r": "$$\\delta W = -P_{\\text{ext}}\\,dV$$"
+    },
+    {
+      "id": "du-gp",
+      "q": "Variation d'énergie interne d'un gaz parfait",
+      "r": "$$\\Delta U = n\\,C_{v,m}\\,\\Delta T$$"
+    },
+    {
+      "id": "mayer",
+      "q": "Relation de Mayer (gaz parfait)",
+      "r": "$$C_{p,m} - C_{v,m} = R$$"
+    },
+    {
+      "id": "laplace",
+      "q": "Loi de Laplace : énoncé et conditions",
+      "r": "$$PV^\\gamma = \\text{cste}$$ pour un gaz parfait subissant une transformation adiabatique et réversible, avec $\\gamma = C_p / C_v$."
+    },
+    {
+      "id": "p2",
+      "q": "Second principe : bilan d'entropie",
+      "r": "$$\\Delta S = S_e + S_c, \\qquad S_e = \\sum \\frac{Q_i}{T_i}, \\qquad S_c \\geq 0$$ $S_c = 0$ pour une transformation réversible."
+    },
+    {
+      "id": "carnot-moteur",
+      "q": "Rendement de Carnot d'un moteur ditherme",
+      "r": "$$\\eta_C = 1 - \\frac{T_f}{T_c}$$"
+    },
+    {
+      "id": "carnot-frigo",
+      "q": "Efficacité de Carnot d'une machine frigorifique",
+      "r": "$$e_C = \\frac{T_f}{T_c - T_f}$$"
+    },
+    {
+      "id": "p1-ouvert",
+      "q": "Premier principe industriel (écoulement permanent, grandeurs massiques)",
+      "r": "$$\\Delta h + \\Delta e_c + \\Delta e_p = w_u + q$$"
+    }
+  ]
+}

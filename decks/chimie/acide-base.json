@@ -1,0 +1,41 @@
+{
+  "id": "chimie-acide-base",
+  "nom": "Acides et bases",
+  "cartes": [
+    {
+      "id": "ph",
+      "q": "Définition du pH",
+      "r": "$$\\text{pH} = -\\log\\big[\\text{H}_3\\text{O}^+\\big]$$ (concentration en mol/L)"
+    },
+    {
+      "id": "ke",
+      "q": "Produit ionique de l'eau à 25 °C",
+      "r": "$$K_e = [\\text{H}_3\\text{O}^+][\\text{HO}^-] = 10^{-14}$$"
+    },
+    {
+      "id": "ka",
+      "q": "Constante d'acidité du couple $\\text{AH}/\\text{A}^-$",
+      "r": "$$K_a = \\frac{[\\text{A}^-][\\text{H}_3\\text{O}^+]}{[\\text{AH}]}$$"
+    },
+    {
+      "id": "henderson",
+      "q": "Relation entre pH, p$K_a$ et concentrations",
+      "r": "$$\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{A}^-]}{[\\text{AH}]}$$"
+    },
+    {
+      "id": "predominance",
+      "q": "Domaines de prédominance du couple $\\text{AH}/\\text{A}^-$",
+      "r": "$\\text{pH} < \\text{p}K_a$ : $\\text{AH}$ prédomine. $\\text{pH} > \\text{p}K_a$ : $\\text{A}^-$ prédomine."
+    },
+    {
+      "id": "acide-fort",
+      "q": "pH d'une solution d'acide fort de concentration $c$",
+      "r": "$$\\text{pH} = -\\log c$$ (si $c$ n'est pas trop faible)"
+    },
+    {
+      "id": "equivalence",
+      "q": "Relation à l'équivalence d'un titrage d'un monoacide par une monobase",
+      "r": "$$c_A V_A = c_B V_{B,\\text{éq}}$$"
+    }
+  ]
+}

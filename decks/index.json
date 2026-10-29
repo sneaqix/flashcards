@@ -1,3 +1,46 @@
 {
-  "decks": ["maths.json", "physique.json", "si.json"]
+  "matieres": [
+    {
+      "id": "maths",
+      "nom": "Maths",
+      "chapitres": [
+        "maths/dl.json",
+        "maths/integration.json",
+        "maths/trigo-complexes.json",
+        "maths/equa-diff.json",
+        "maths/algebre-lineaire.json",
+        "maths/series.json",
+        "maths/probabilites.json"
+      ]
+    },
+    {
+      "id": "physique",
+      "nom": "Physique",
+      "chapitres": [
+        "physique/electrocinetique.json",
+        "physique/mecanique.json",
+        "physique/thermodynamique.json",
+        "physique/optique.json",
+        "physique/induction.json"
+      ]
+    },
+    {
+      "id": "chimie",
+      "nom": "Chimie",
+      "chapitres": [
+        "chimie/oxydoreduction.json",
+        "chimie/acide-base.json"
+      ]
+    },
+    {
+      "id": "si",
+      "nom": "SI",
+      "chapitres": [
+        "si/transmission.json",
+        "si/asservissement.json",
+        "si/cinematique.json",
+        "si/statique.json"
+      ]
+    }
+  ]
 }

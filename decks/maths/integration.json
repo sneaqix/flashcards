@@ -1,0 +1,56 @@
+{
+  "id": "maths-integration",
+  "nom": "Primitives et intégration",
+  "cartes": [
+    {
+      "id": "prim-puiss",
+      "q": "Une primitive de $x^\\alpha$ pour $\\alpha \\neq -1$",
+      "r": "$$\\frac{x^{\\alpha+1}}{\\alpha+1}$$"
+    },
+    {
+      "id": "prim-inv",
+      "q": "Une primitive de $\\dfrac{1}{x}$",
+      "r": "$$\\ln|x|$$ sur $]-\\infty,0[$ ou sur $]0,+\\infty[$."
+    },
+    {
+      "id": "prim-arctan",
+      "q": "Une primitive de $\\dfrac{1}{1+x^2}$",
+      "r": "$$\\arctan x$$"
+    },
+    {
+      "id": "prim-arcsin",
+      "q": "Une primitive de $\\dfrac{1}{\\sqrt{1-x^2}}$ sur $]-1,1[$",
+      "r": "$$\\arcsin x$$"
+    },
+    {
+      "id": "prim-tan",
+      "q": "Une primitive de $\\tan x$ sur $\\left]-\\frac{\\pi}{2}, \\frac{\\pi}{2}\\right[$",
+      "r": "$$-\\ln|\\cos x|$$"
+    },
+    {
+      "id": "ipp",
+      "q": "Formule d'intégration par parties",
+      "r": "Pour $u$ et $v$ de classe $\\mathcal{C}^1$ sur $[a,b]$ :$$\\int_a^b u'v = \\big[uv\\big]_a^b - \\int_a^b uv'$$"
+    },
+    {
+      "id": "chgt-var",
+      "q": "Formule du changement de variable",
+      "r": "Pour $\\varphi$ de classe $\\mathcal{C}^1$ sur $[a,b]$ et $f$ continue sur $\\varphi([a,b])$ :$$\\int_a^b f(\\varphi(t))\\,\\varphi'(t)\\,dt = \\int_{\\varphi(a)}^{\\varphi(b)} f(x)\\,dx$$"
+    },
+    {
+      "id": "tfa",
+      "q": "Théorème fondamental de l'analyse",
+      "r": "Si $f$ est continue sur un intervalle $I$ et $a \\in I$, alors $F : x \\mapsto \\int_a^x f(t)\\,dt$ est l'unique primitive de $f$ sur $I$ qui s'annule en $a$ : $F' = f$."
+    },
+    {
+      "id": "riemann",
+      "q": "Sommes de Riemann (pas constant, points à gauche)",
+      "r": "Pour $f$ continue sur $[a,b]$ :$$\\frac{b-a}{n}\\sum_{k=0}^{n-1} f\\!\\left(a + k\\,\\frac{b-a}{n}\\right) \\xrightarrow[n\\to+\\infty]{} \\int_a^b f(t)\\,dt$$"
+    },
+    {
+      "id": "moyenne",
+      "q": "Valeur moyenne de $f$ sur $[a,b]$",
+      "r": "$$\\langle f \\rangle = \\frac{1}{b-a}\\int_a^b f(t)\\,dt$$"
+    }
+  ]
+}

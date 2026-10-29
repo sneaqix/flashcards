@@ -1,0 +1,46 @@
+{
+  "id": "maths-equa-diff",
+  "nom": "Équations différentielles",
+  "cartes": [
+    {
+      "id": "ordre1-cst",
+      "q": "Solutions de $y' + ay = 0$ ($a$ constante)",
+      "r": "$$y(x) = \\lambda\\,e^{-ax}, \\quad \\lambda \\in \\mathbb{R}$$"
+    },
+    {
+      "id": "ordre1-var",
+      "q": "Solutions de $y' + a(x)\\,y = 0$ ($a$ continue)",
+      "r": "$$y(x) = \\lambda\\,e^{-A(x)}$$ où $A$ est une primitive de $a$."
+    },
+    {
+      "id": "variation-cste",
+      "q": "Principe de la variation de la constante (ordre 1)",
+      "r": "On cherche une solution particulière de $y' + a(x)y = b(x)$ sous la forme $y_p(x) = \\lambda(x)\\,e^{-A(x)}$, ce qui donne $\\lambda'(x) = b(x)\\,e^{A(x)}$."
+    },
+    {
+      "id": "structure",
+      "q": "Structure des solutions d'une équation linéaire avec second membre",
+      "r": "Solution générale = solution générale de l'équation homogène + une solution particulière."
+    },
+    {
+      "id": "carac",
+      "q": "Équation caractéristique de $y'' + ay' + by = 0$",
+      "r": "$$r^2 + ar + b = 0$$"
+    },
+    {
+      "id": "ordre2-sol",
+      "q": "Solutions réelles de $y'' + ay' + by = 0$ selon le signe de $\\Delta$",
+      "r": "$\\Delta > 0$ : $\\lambda e^{r_1 x} + \\mu e^{r_2 x}$\n$\\Delta = 0$ : $(\\lambda x + \\mu)\\,e^{r x}$\n$\\Delta < 0$, $r = \\alpha \\pm i\\beta$ : $e^{\\alpha x}\\big(\\lambda\\cos\\beta x + \\mu\\sin\\beta x\\big)$"
+    },
+    {
+      "id": "second-membre-exp",
+      "q": "Solution particulière de $y'' + ay' + by = B\\,e^{mx}$",
+      "r": "On cherche $A\\,e^{mx}$ si $m$ n'est pas racine de l'équation caractéristique, $Ax\\,e^{mx}$ si $m$ est racine simple, $Ax^2\\,e^{mx}$ si $m$ est racine double."
+    },
+    {
+      "id": "cauchy",
+      "q": "Théorème de Cauchy pour $y'' + ay' + by = f$",
+      "r": "Pour $f$ continue sur $I$, $x_0 \\in I$ et $(y_0, y_1)$ donnés, il existe une unique solution vérifiant $y(x_0) = y_0$ et $y'(x_0) = y_1$."
+    }
+  ]
+}

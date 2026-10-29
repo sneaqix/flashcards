@@ -1,0 +1,56 @@
+{
+  "id": "maths-algebre-lineaire",
+  "nom": "Algèbre linéaire",
+  "cartes": [
+    {
+      "id": "libre",
+      "q": "Définition d'une famille libre $(u_1, \\dots, u_n)$",
+      "r": "$$\\sum_{i=1}^n \\lambda_i u_i = 0 \\implies \\lambda_1 = \\dots = \\lambda_n = 0$$"
+    },
+    {
+      "id": "base",
+      "q": "Définition d'une base",
+      "r": "Une famille à la fois libre et génératrice."
+    },
+    {
+      "id": "rang",
+      "q": "Théorème du rang",
+      "r": "Pour $f \\in \\mathcal{L}(E,F)$ avec $E$ de dimension finie :$$\\dim E = \\operatorname{rg} f + \\dim \\operatorname{Ker} f$$"
+    },
+    {
+      "id": "injective",
+      "q": "Caractérisation de l'injectivité d'une application linéaire",
+      "r": "$$f \\text{ injective} \\iff \\operatorname{Ker} f = \\{0\\}$$"
+    },
+    {
+      "id": "inverse-2x2",
+      "q": "Inverse de $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+      "r": "Si $ad - bc \\neq 0$ :$$\\frac{1}{ad-bc}\\begin{pmatrix} d & -b \\\\ -c & a \\end{pmatrix}$$"
+    },
+    {
+      "id": "transposee",
+      "q": "Transposée et inverse d'un produit $AB$",
+      "r": "$$(AB)^T = B^T A^T, \\qquad (AB)^{-1} = B^{-1}A^{-1}$$"
+    },
+    {
+      "id": "det",
+      "q": "Propriétés du déterminant : $\\det(AB)$ et $\\det(\\lambda A)$ pour $A \\in \\mathcal{M}_n(\\mathbb{K})$",
+      "r": "$$\\det(AB) = \\det A \\,\\det B, \\qquad \\det(\\lambda A) = \\lambda^n \\det A$$"
+    },
+    {
+      "id": "chgt-base",
+      "q": "Formule de changement de base pour un endomorphisme",
+      "r": "$$A' = P^{-1} A P$$ où $P$ est la matrice de passage de l'ancienne base vers la nouvelle."
+    },
+    {
+      "id": "vp",
+      "q": "Caractérisation d'une valeur propre $\\lambda$ de $A$",
+      "r": "$$\\det(A - \\lambda I_n) = 0$$"
+    },
+    {
+      "id": "diag",
+      "q": "Condition suffisante de diagonalisabilité",
+      "r": "$A \\in \\mathcal{M}_n(\\mathbb{K})$ admet $n$ valeurs propres distinctes. Condition nécessaire et suffisante : la somme des dimensions des sous-espaces propres vaut $n$."
+    }
+  ]
+}

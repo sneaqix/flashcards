@@ -1,0 +1,46 @@
+{
+  "id": "chimie-oxydoreduction",
+  "nom": "Oxydoréduction",
+  "cartes": [
+    {
+      "id": "oxydant",
+      "q": "Définition d'un oxydant",
+      "r": "Espèce capable de capter un ou plusieurs électrons."
+    },
+    {
+      "id": "electrodes",
+      "q": "Anode et cathode : quelle réaction a lieu où ?",
+      "r": "Anode : oxydation. Cathode : réduction."
+    },
+    {
+      "id": "nernst",
+      "q": "Formule de Nernst à 25 °C pour $\\alpha\\,\\text{Ox} + n\\,e^- = \\beta\\,\\text{Red}$",
+      "r": "$$E = E^\\circ + \\frac{0{,}06}{n}\\log\\frac{a_{\\text{Ox}}^{\\alpha}}{a_{\\text{Red}}^{\\beta}}$$"
+    },
+    {
+      "id": "fem",
+      "q": "Force électromotrice d'une pile",
+      "r": "$$e = E_+ - E_-$$"
+    },
+    {
+      "id": "k-redox",
+      "q": "Constante d'équilibre d'une réaction d'oxydoréduction à 25 °C ($n$ électrons échangés)",
+      "r": "$$\\log K = \\frac{n\\,(E^\\circ_1 - E^\\circ_2)}{0{,}06}$$ avec $E^\\circ_1$ le potentiel du couple de l'oxydant qui réagit."
+    },
+    {
+      "id": "faraday",
+      "q": "Valeur de la constante de Faraday",
+      "r": "$$\\mathcal{F} \\approx 96\\,500 \\text{ C·mol}^{-1}$$"
+    },
+    {
+      "id": "charge",
+      "q": "Charge échangée lors d'une électrolyse",
+      "r": "$$Q = I\\,\\Delta t = n_{e^-}\\,\\mathcal{F}$$"
+    },
+    {
+      "id": "evolution",
+      "q": "Sens d'évolution d'un système selon $Q_r$ et $K$",
+      "r": "$Q_r < K$ : sens direct. $Q_r > K$ : sens indirect. $Q_r = K$ : équilibre."
+    }
+  ]
+}

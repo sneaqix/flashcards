@@ -1,0 +1,51 @@
+{
+  "id": "si-transmission",
+  "nom": "Transmission de puissance",
+  "cartes": [
+    {
+      "id": "engrenage-ext",
+      "q": "Rapport de transmission d'un engrenage extérieur ($Z_1$ menant, $Z_2$ mené)",
+      "r": "$$\\frac{\\omega_2}{\\omega_1} = -\\frac{Z_1}{Z_2}$$"
+    },
+    {
+      "id": "engrenage-int",
+      "q": "Rapport de transmission d'un engrenage intérieur ($Z_1$ menant, $Z_2$ mené)",
+      "r": "$$\\frac{\\omega_2}{\\omega_1} = +\\frac{Z_1}{Z_2}$$ Les deux roues tournent dans le même sens."
+    },
+    {
+      "id": "train-simple",
+      "q": "Rapport d'un train d'engrenages simple (axes fixes)",
+      "r": "$$\\frac{\\omega_s}{\\omega_e} = (-1)^n \\frac{\\prod Z_{\\text{menantes}}}{\\prod Z_{\\text{menées}}}$$ avec $n$ le nombre de contacts extérieurs."
+    },
+    {
+      "id": "module",
+      "q": "Diamètre primitif et entraxe d'un engrenage extérieur (module $m$)",
+      "r": "$$d = mZ, \\qquad a = \\frac{m(Z_1 + Z_2)}{2}$$"
+    },
+    {
+      "id": "willis",
+      "q": "Formule de Willis pour un train épicycloïdal simple (planétaire $1$, couronne $3$, porte-satellites $PS$)",
+      "r": "$$\\frac{\\omega_{3/0} - \\omega_{PS/0}}{\\omega_{1/0} - \\omega_{PS/0}} = \\lambda$$ où $\\lambda$ est la raison basique, rapport obtenu quand le porte-satellites est fixe."
+    },
+    {
+      "id": "raison-basique",
+      "q": "Raison basique d'un train épicycloïdal simple (planétaire $Z_1$, couronne $Z_3$)",
+      "r": "$$\\lambda = -\\frac{Z_1}{Z_3}$$ Négative : avec le porte-satellites fixe, planétaire et couronne tournent en sens opposés."
+    },
+    {
+      "id": "poulie",
+      "q": "Rapport de transmission poulies-courroie (diamètres $d_1$ menant, $d_2$ mené)",
+      "r": "$$\\frac{\\omega_2}{\\omega_1} = \\frac{d_1}{d_2}$$ Même sens de rotation (courroie non croisée)."
+    },
+    {
+      "id": "vis-ecrou",
+      "q": "Relation vitesse de translation / vitesse de rotation pour un système vis-écrou de pas $p$",
+      "r": "$$v = \\frac{p\\,\\omega}{2\\pi}$$"
+    },
+    {
+      "id": "rendement",
+      "q": "Rendement d'une transmission et rendement global en série",
+      "r": "$$\\eta = \\frac{P_s}{P_e} = \\frac{C_s\\,\\omega_s}{C_e\\,\\omega_e}, \\qquad \\eta_{\\text{global}} = \\prod_i \\eta_i$$"
+    }
+  ]
+}

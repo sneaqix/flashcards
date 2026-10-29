@@ -1,0 +1,56 @@
+{
+  "id": "physique-mecanique",
+  "nom": "Mécanique",
+  "cartes": [
+    {
+      "id": "pfd",
+      "q": "Principe fondamental de la dynamique (référentiel galiléen)",
+      "r": "$$m\\,\\vec{a} = \\sum \\vec{F}_{\\text{ext}}$$"
+    },
+    {
+      "id": "tec",
+      "q": "Théorème de l'énergie cinétique",
+      "r": "$$\\Delta E_c = \\sum W(\\vec{F})$$ entre deux instants, dans un référentiel galiléen."
+    },
+    {
+      "id": "ep-pesanteur",
+      "q": "Énergie potentielle de pesanteur (axe $z$ vers le haut)",
+      "r": "$$E_p = mgz + \\text{cste}$$"
+    },
+    {
+      "id": "ep-ressort",
+      "q": "Énergie potentielle élastique d'un ressort",
+      "r": "$$E_p = \\frac{1}{2}k(\\ell - \\ell_0)^2$$"
+    },
+    {
+      "id": "puissance",
+      "q": "Puissance d'une force $\\vec{F}$ appliquée à un point de vitesse $\\vec{v}$",
+      "r": "$$P = \\vec{F}\\cdot\\vec{v}$$"
+    },
+    {
+      "id": "oh",
+      "q": "Équation et pulsation de l'oscillateur harmonique masse-ressort",
+      "r": "$$\\ddot{x} + \\omega_0^2 x = 0, \\qquad \\omega_0 = \\sqrt{\\frac{k}{m}}$$"
+    },
+    {
+      "id": "tmc-axe",
+      "q": "Théorème du moment cinétique pour un solide en rotation autour d'un axe fixe $\\Delta$",
+      "r": "$$J_\\Delta \\frac{d\\omega}{dt} = \\sum \\mathcal{M}_\\Delta(\\vec{F}_{\\text{ext}})$$"
+    },
+    {
+      "id": "ec-rotation",
+      "q": "Énergie cinétique d'un solide en rotation autour d'un axe fixe",
+      "r": "$$E_c = \\frac{1}{2} J_\\Delta \\omega^2$$"
+    },
+    {
+      "id": "inertie-cyl",
+      "q": "Moment d'inertie d'un cylindre plein (masse $m$, rayon $R$) par rapport à son axe",
+      "r": "$$J = \\frac{1}{2} m R^2$$"
+    },
+    {
+      "id": "puissance-rot",
+      "q": "Puissance d'un couple $C$ sur un arbre tournant à $\\omega$",
+      "r": "$$P = C\\,\\omega$$ avec $C$ en N·m et $\\omega$ en rad/s."
+    }
+  ]
+}

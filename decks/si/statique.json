@@ -1,0 +1,36 @@
+{
+  "id": "si-statique",
+  "nom": "Statique",
+  "cartes": [
+    {
+      "id": "pfs",
+      "q": "Principe fondamental de la statique",
+      "r": "Pour un solide (ou ensemble) $S$ en équilibre dans un référentiel galiléen, le torseur des actions mécaniques extérieures à $S$ est nul."
+    },
+    {
+      "id": "transport",
+      "q": "Transport du moment d'un torseur d'actions mécaniques",
+      "r": "$$\\vec{M}(B) = \\vec{M}(A) + \\vec{BA} \\wedge \\vec{R}$$"
+    },
+    {
+      "id": "deux-forces",
+      "q": "Solide soumis à deux glisseurs : condition d'équilibre",
+      "r": "Les deux forces sont directement opposées : même droite d'action, même norme, sens opposés."
+    },
+    {
+      "id": "trois-forces",
+      "q": "Solide soumis à trois glisseurs non parallèles : condition d'équilibre",
+      "r": "Les trois droites d'action sont concourantes et la somme des forces est nulle."
+    },
+    {
+      "id": "coulomb",
+      "q": "Lois de Coulomb (frottement de coefficient $f$)",
+      "r": "Glissement : $|T| = f\\,|N|$, $\\vec{T}$ opposée à la vitesse de glissement.\nAdhérence : $|T| \\leq f\\,|N|$."
+    },
+    {
+      "id": "pression",
+      "q": "Effort exercé par une pression uniforme $p$ sur une surface plane $S$",
+      "r": "$$F = p\\,S$$"
+    }
+  ]
+}

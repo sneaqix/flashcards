@@ -1,0 +1,46 @@
+{
+  "id": "physique-optique",
+  "nom": "Optique géométrique",
+  "cartes": [
+    {
+      "id": "indice",
+      "q": "Définition de l'indice optique d'un milieu",
+      "r": "$$n = \\frac{c}{v}$$ où $v$ est la vitesse de la lumière dans le milieu."
+    },
+    {
+      "id": "snell",
+      "q": "Loi de Snell-Descartes pour la réfraction",
+      "r": "$$n_1 \\sin i_1 = n_2 \\sin i_2$$"
+    },
+    {
+      "id": "angle-limite",
+      "q": "Angle limite de réflexion totale (passage de $n_1$ à $n_2 < n_1$)",
+      "r": "$$\\sin i_{\\lim} = \\frac{n_2}{n_1}$$"
+    },
+    {
+      "id": "descartes",
+      "q": "Relation de conjugaison de Descartes (lentille mince)",
+      "r": "$$\\frac{1}{\\overline{OA'}} - \\frac{1}{\\overline{OA}} = \\frac{1}{f'}$$"
+    },
+    {
+      "id": "grandissement",
+      "q": "Grandissement d'une lentille mince (origine au centre)",
+      "r": "$$\\gamma = \\frac{\\overline{A'B'}}{\\overline{AB}} = \\frac{\\overline{OA'}}{\\overline{OA}}$$"
+    },
+    {
+      "id": "newton",
+      "q": "Relation de conjugaison de Newton",
+      "r": "$$\\overline{FA}\\cdot\\overline{F'A'} = -f'^2$$"
+    },
+    {
+      "id": "vergence",
+      "q": "Définition de la vergence",
+      "r": "$$V = \\frac{1}{f'}$$ en dioptries ($\\delta$), avec $f'$ en mètres."
+    },
+    {
+      "id": "4f",
+      "q": "Condition pour projeter l'image réelle d'un objet réel sur un écran à distance $D$ avec une lentille convergente",
+      "r": "$$D \\geq 4f'$$"
+    }
+  ]
+}

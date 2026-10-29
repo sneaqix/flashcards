@@ -1,0 +1,56 @@
+{
+  "id": "maths-trigo-complexes",
+  "nom": "Trigonométrie et complexes",
+  "cartes": [
+    {
+      "id": "cos-sum",
+      "q": "Formule de $\\cos(a+b)$",
+      "r": "$$\\cos(a+b) = \\cos a \\cos b - \\sin a \\sin b$$"
+    },
+    {
+      "id": "sin-sum",
+      "q": "Formule de $\\sin(a+b)$",
+      "r": "$$\\sin(a+b) = \\sin a \\cos b + \\cos a \\sin b$$"
+    },
+    {
+      "id": "tan-sum",
+      "q": "Formule de $\\tan(a+b)$",
+      "r": "$$\\tan(a+b) = \\frac{\\tan a + \\tan b}{1 - \\tan a \\tan b}$$"
+    },
+    {
+      "id": "cos2",
+      "q": "Linéariser $\\cos^2 x$ et $\\sin^2 x$",
+      "r": "$$\\cos^2 x = \\frac{1+\\cos 2x}{2}, \\qquad \\sin^2 x = \\frac{1-\\cos 2x}{2}$$"
+    },
+    {
+      "id": "prod",
+      "q": "Transformer $\\cos a \\cos b$ en somme",
+      "r": "$$\\cos a \\cos b = \\frac{1}{2}\\big[\\cos(a-b) + \\cos(a+b)\\big]$$"
+    },
+    {
+      "id": "euler",
+      "q": "Formules d'Euler",
+      "r": "$$\\cos\\theta = \\frac{e^{i\\theta}+e^{-i\\theta}}{2}, \\qquad \\sin\\theta = \\frac{e^{i\\theta}-e^{-i\\theta}}{2i}$$"
+    },
+    {
+      "id": "moivre",
+      "q": "Formule de Moivre",
+      "r": "$$(\\cos\\theta + i\\sin\\theta)^n = \\cos(n\\theta) + i\\sin(n\\theta)$$"
+    },
+    {
+      "id": "racines-unite",
+      "q": "Racines $n$-ièmes de l'unité",
+      "r": "$$\\omega_k = e^{\\frac{2ik\\pi}{n}}, \\quad k \\in \\{0, \\dots, n-1\\}$$ Leur somme est nulle pour $n \\geq 2$."
+    },
+    {
+      "id": "module",
+      "q": "Relation entre $|z|$ et $\\bar{z}$",
+      "r": "$$|z|^2 = z\\,\\bar{z}$$"
+    },
+    {
+      "id": "acos-bsin",
+      "q": "Mettre $a\\cos x + b\\sin x$ sous la forme $R\\cos(x-\\varphi)$",
+      "r": "$$R = \\sqrt{a^2+b^2}, \\qquad \\cos\\varphi = \\frac{a}{R}, \\quad \\sin\\varphi = \\frac{b}{R}$$"
+    }
+  ]
+}

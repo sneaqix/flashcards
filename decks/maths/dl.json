@@ -1,0 +1,56 @@
+{
+  "id": "maths-dl",
+  "nom": "Développements limités",
+  "cartes": [
+    {
+      "id": "exp",
+      "q": "DL à l'ordre $n$ en $0$ de $e^x$",
+      "r": "$$e^x = \\sum_{k=0}^{n} \\frac{x^k}{k!} + o(x^n)$$"
+    },
+    {
+      "id": "ln",
+      "q": "DL à l'ordre $n$ en $0$ de $\\ln(1+x)$",
+      "r": "$$\\ln(1+x) = \\sum_{k=1}^{n} \\frac{(-1)^{k+1}x^k}{k} + o(x^n)$$"
+    },
+    {
+      "id": "inv",
+      "q": "DL à l'ordre $n$ en $0$ de $\\dfrac{1}{1-x}$",
+      "r": "$$\\frac{1}{1-x} = \\sum_{k=0}^{n} x^k + o(x^n)$$"
+    },
+    {
+      "id": "puiss",
+      "q": "DL à l'ordre $2$ en $0$ de $(1+x)^\\alpha$",
+      "r": "$$(1+x)^\\alpha = 1 + \\alpha x + \\frac{\\alpha(\\alpha-1)}{2}x^2 + o(x^2)$$"
+    },
+    {
+      "id": "sin",
+      "q": "DL à l'ordre $5$ en $0$ de $\\sin x$",
+      "r": "$$\\sin x = x - \\frac{x^3}{6} + \\frac{x^5}{120} + o(x^5)$$"
+    },
+    {
+      "id": "cos",
+      "q": "DL à l'ordre $4$ en $0$ de $\\cos x$",
+      "r": "$$\\cos x = 1 - \\frac{x^2}{2} + \\frac{x^4}{24} + o(x^4)$$"
+    },
+    {
+      "id": "tan",
+      "q": "DL à l'ordre $3$ en $0$ de $\\tan x$",
+      "r": "$$\\tan x = x + \\frac{x^3}{3} + o(x^3)$$"
+    },
+    {
+      "id": "arctan",
+      "q": "DL à l'ordre $5$ en $0$ de $\\arctan x$",
+      "r": "$$\\arctan x = x - \\frac{x^3}{3} + \\frac{x^5}{5} + o(x^5)$$"
+    },
+    {
+      "id": "taylor-young",
+      "q": "Formule de Taylor-Young à l'ordre $n$ en $a$",
+      "r": "Si $f$ est de classe $\\mathcal{C}^n$ au voisinage de $a$ :$$f(x) = \\sum_{k=0}^{n} \\frac{f^{(k)}(a)}{k!}(x-a)^k + o\\big((x-a)^n\\big)$$"
+    },
+    {
+      "id": "equivalents",
+      "q": "Équivalents usuels en $0$ de $\\sin x$, $\\ln(1+x)$, $e^x-1$ et $1-\\cos x$",
+      "r": "$$\\sin x \\sim x,\\quad \\ln(1+x) \\sim x,\\quad e^x - 1 \\sim x,\\quad 1-\\cos x \\sim \\frac{x^2}{2}$$"
+    }
+  ]
+}

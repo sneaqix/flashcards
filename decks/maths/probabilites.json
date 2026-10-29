@@ -1,0 +1,46 @@
+{
+  "id": "maths-probabilites",
+  "nom": "Probabilités",
+  "cartes": [
+    {
+      "id": "totales",
+      "q": "Formule des probabilités totales",
+      "r": "Pour un système complet d'événements $(A_i)$ :$$P(B) = \\sum_i P(B \\mid A_i)\\,P(A_i)$$"
+    },
+    {
+      "id": "bayes",
+      "q": "Formule de Bayes",
+      "r": "$$P(A \\mid B) = \\frac{P(B \\mid A)\\,P(A)}{P(B)}$$"
+    },
+    {
+      "id": "independance",
+      "q": "Définition de l'indépendance de deux événements",
+      "r": "$$P(A \\cap B) = P(A)\\,P(B)$$"
+    },
+    {
+      "id": "binomiale",
+      "q": "Loi binomiale $\\mathcal{B}(n,p)$ : $P(X=k)$, espérance, variance",
+      "r": "$$P(X=k) = \\binom{n}{k}p^k(1-p)^{n-k}$$ $E(X) = np$ et $V(X) = np(1-p)$."
+    },
+    {
+      "id": "geometrique",
+      "q": "Loi géométrique $\\mathcal{G}(p)$ : $P(X=k)$ et espérance",
+      "r": "$$P(X=k) = (1-p)^{k-1}p, \\quad k \\geq 1$$ $E(X) = \\dfrac{1}{p}$."
+    },
+    {
+      "id": "poisson",
+      "q": "Loi de Poisson $\\mathcal{P}(\\lambda)$ : $P(X=k)$, espérance, variance",
+      "r": "$$P(X=k) = e^{-\\lambda}\\frac{\\lambda^k}{k!}$$ $E(X) = V(X) = \\lambda$."
+    },
+    {
+      "id": "koenig",
+      "q": "Formule de König-Huygens",
+      "r": "$$V(X) = E(X^2) - E(X)^2$$"
+    },
+    {
+      "id": "bienayme",
+      "q": "Inégalité de Bienaymé-Tchebychev",
+      "r": "$$P\\big(|X - E(X)| \\geq \\varepsilon\\big) \\leq \\frac{V(X)}{\\varepsilon^2}$$"
+    }
+  ]
+}

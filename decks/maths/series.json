@@ -1,0 +1,41 @@
+{
+  "id": "maths-series",
+  "nom": "Séries numériques",
+  "cartes": [
+    {
+      "id": "geom",
+      "q": "Nature et somme de la série géométrique $\\sum q^n$",
+      "r": "Converge si et seulement si $|q| < 1$, et alors$$\\sum_{n=0}^{+\\infty} q^n = \\frac{1}{1-q}$$"
+    },
+    {
+      "id": "riemann",
+      "q": "Nature de la série de Riemann $\\sum \\dfrac{1}{n^\\alpha}$",
+      "r": "Converge si et seulement si $\\alpha > 1$."
+    },
+    {
+      "id": "grossiere",
+      "q": "Condition nécessaire de convergence de $\\sum u_n$",
+      "r": "$u_n \\to 0$. Sinon la série diverge grossièrement."
+    },
+    {
+      "id": "comparaison",
+      "q": "Théorème de comparaison pour les séries à termes positifs",
+      "r": "Si $0 \\leq u_n \\leq v_n$ et $\\sum v_n$ converge, alors $\\sum u_n$ converge."
+    },
+    {
+      "id": "equivalents",
+      "q": "Théorème des équivalents pour les séries",
+      "r": "Si $u_n \\sim v_n$ avec $v_n \\geq 0$, alors $\\sum u_n$ et $\\sum v_n$ sont de même nature."
+    },
+    {
+      "id": "absolue",
+      "q": "Lien entre convergence absolue et convergence",
+      "r": "Si $\\sum |u_n|$ converge, alors $\\sum u_n$ converge."
+    },
+    {
+      "id": "expo",
+      "q": "Somme de $\\sum \\dfrac{x^n}{n!}$",
+      "r": "$$\\sum_{n=0}^{+\\infty} \\frac{x^n}{n!} = e^x$$"
+    }
+  ]
+}

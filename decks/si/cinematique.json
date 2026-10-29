@@ -1,0 +1,46 @@
+{
+  "id": "si-cinematique",
+  "nom": "Cinématique",
+  "cartes": [
+    {
+      "id": "composition",
+      "q": "Composition des vitesses entre les solides $0$, $1$ et $2$",
+      "r": "$$\\vec{V}(M, 2/0) = \\vec{V}(M, 2/1) + \\vec{V}(M, 1/0)$$"
+    },
+    {
+      "id": "babar",
+      "q": "Relation de changement de point du champ des vitesses",
+      "r": "$$\\vec{V}(B, 1/0) = \\vec{V}(A, 1/0) + \\vec{BA} \\wedge \\vec{\\Omega}(1/0)$$"
+    },
+    {
+      "id": "rsg",
+      "q": "Condition de roulement sans glissement au point de contact $I$",
+      "r": "$$\\vec{V}(I, 1/2) = \\vec{0}$$"
+    },
+    {
+      "id": "derivation",
+      "q": "Formule de dérivation vectorielle (formule de Bour)",
+      "r": "$$\\left(\\frac{d\\vec{u}}{dt}\\right)_0 = \\left(\\frac{d\\vec{u}}{dt}\\right)_1 + \\vec{\\Omega}(1/0) \\wedge \\vec{u}$$"
+    },
+    {
+      "id": "peripherique",
+      "q": "Vitesse d'un point à la distance $R$ de l'axe d'un solide en rotation à $\\omega$",
+      "r": "$$v = R\\,\\omega$$"
+    },
+    {
+      "id": "pivot",
+      "q": "Torseur cinématique d'une liaison pivot d'axe $(A, \\vec{x})$, en $A$",
+      "r": "$$\\begin{Bmatrix} \\omega\\,\\vec{x} \\\\ \\vec{0} \\end{Bmatrix}_A$$"
+    },
+    {
+      "id": "glissiere",
+      "q": "Torseur cinématique d'une liaison glissière de direction $\\vec{x}$",
+      "r": "$$\\begin{Bmatrix} \\vec{0} \\\\ v\\,\\vec{x} \\end{Bmatrix}$$ (valable en tout point)"
+    },
+    {
+      "id": "ddl",
+      "q": "Degrés de liberté des liaisons pivot glissant, rotule et appui plan",
+      "r": "Pivot glissant : 1 rotation + 1 translation.\nRotule : 3 rotations.\nAppui plan : 2 translations + 1 rotation."
+    }
+  ]
+}
