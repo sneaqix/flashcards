@@ -1,11 +1,11 @@
 // Import d'un cours en PDF : génération des cartes par Gemini, relecture, puis ajout dans un chapitre.
-import * as G from './gemini.js?v=20261029235805';
+import * as G from './gemini.js?v=20261030004256';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId, showView,
   faceContent, route,
-} from './ui.js?v=20261029235805';
-import { updateChapterFile, createChapterFile } from './sync.js?v=20261029235805';
-import { showChapterCards } from './editor.js?v=20261029235805';
+} from './ui.js?v=20261030004256';
+import { updateChapterFile, createChapterFile } from './sync.js?v=20261030004256';
+import { showChapterCards } from './editor.js?v=20261030004256';
 
 const MAX_MB = 30;
 const TYPES = ['classique', 'qcm', 'trou', 'saisie'];
@@ -186,7 +186,6 @@ function renderReview() {
     li.querySelector('.ir-att').value = card.attendu || '';
     li.querySelector('.ir-choix').value = (card.choix || []).join('\n');
     updateBlockFields(li);
-    renderBlockPreview(li, card);
     let t;
     const onEdit = () => {
       entry.card = cardFromBlock(li, entry.card);
@@ -202,6 +201,9 @@ function renderReview() {
       updateReviewCount();
     });
     list.appendChild(li);
+    // Les formules doivent être mises en forme une fois la carte dans la page : sinon la taille
+    // du texte est inconnue et les symboles sont dessinés de façon démesurée.
+    renderBlockPreview(li, card);
   });
   updateReviewCount();
 }

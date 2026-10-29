@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261029235805';
+import * as S from './store.js?v=20261030004256';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'stats', 'parametres'];
@@ -133,8 +133,8 @@ export function currentTab() {
 export function route() {
   if (state.session || state.assoc) return;
   const tab = currentTab();
+  showView(tab); // l'onglet doit être visible avant d'y mettre en forme des formules
   state.views[tab]();
-  showView(tab);
 }
 export function goTab(tab) {
   if (location.hash.slice(1) !== tab) location.hash = tab;
