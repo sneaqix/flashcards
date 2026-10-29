@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<title>Flashcards prépa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout : une colonne étroite façon fiche bristol posée sur du papier quadrillé ; l'accueil liste les matières, la révision montre une carte à la fois. */
+:root {
+  --paper: #f3f5fa;
+  --grid: #e1e6f2;
+  --card: #ffffff;
+  --ink: #18203a;
+  --muted: #5d6680;
+  --line: #d4dae8;
+  --accent: #2443b8;      /* encre bleue */
+  --accent-ink: #ffffff;
+  --mark: #ffe066;        /* surligneur */
+  --good: #1f8a55;
+  --again: #c4422f;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11141d; --grid: #1a1f2c; --card: #1b2030; --ink: #e8ebf5; --muted: #98a1ba;
+    --line: #2c3347; --accent: #8ea2ff; --accent-ink: #0f1424; --mark: #6b5a12;
+    --good: #4cc08a; --again: #f07a66; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11141d; --grid: #1a1f2c; --card: #1b2030; --ink: #e8ebf5; --muted: #98a1ba;
+  --line: #2c3347; --accent: #8ea2ff; --accent-ink: #0f1424; --mark: #6b5a12;
+  --good: #4cc08a; --again: #f07a66; color-scheme: dark;
+}
+
+html, body { min-height: 100%; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font: 400 17px/1.5 var(--font-body);
+}
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 20px;
+}
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font: 800 1.9rem/1.1 var(--font-display); margin: 0; letter-spacing: -0.01em; }
+h1 span { background: linear-gradient(transparent 55%, var(--mark) 55%); padding: 0 2px; }
+.date { font: 500 0.8rem var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+main { display: flex; flex-direction: column; gap: 16px; }
+.summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 16px 18px; border-radius: 10px; background: var(--card); border: 1px solid var(--line);
+}
+.summary p { margin: 0; color: var(--muted); }
+.summary strong { font: 800 2rem/1 var(--font-display); color: var(--ink); margin-right: 6px; font-variant-numeric: tabular-nums; }
+
+button { font: 600 1rem var(--font-body); cursor: pointer; border-radius: 8px; border: 1px solid transparent; padding: 10px 16px; min-height: 44px; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button:disabled { opacity: 0.45; cursor: default; }
+.primary { background: var(--accent); color: var(--accent-ink); }
+.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+
+.decks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.deck {
+  display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center;
+  padding: 14px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+}
+.deck > div { min-width: 0; }
+.deck h2 { font: 600 1.2rem/1.2 var(--font-display); margin: 0; }
+.deck .desc { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+.deck .due { font: 500 0.8rem var(--font-mono); color: var(--muted); margin-top: 6px; }
+.deck .due b { color: var(--accent); font-weight: 500; }
+.boxes { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 4px; }
+.box { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.box .bar { width: 100%; height: 34px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; display: flex; align-items: flex-end; overflow: hidden; }
+.box .fill { width: 100%; background: var(--accent); opacity: 0.75; }
+.box span { font: 500 0.7rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.note { color: var(--muted); font-size: 0.88rem; margin: 0; }
+.legend { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+.bar-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.counter { font: 500 0.85rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress div { height: 100%; background: var(--accent); width: 0; transition: width 0.25s; }
+
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(24, 32, 58, 0.08);
+  padding: 22px 20px; min-height: 260px; display: flex; flex-direction: column; gap: 16px;
+  /* ligne rouge de marge des fiches bristol */
+  background-image: linear-gradient(90deg, transparent 10px, var(--again) 10px, var(--again) 11px, transparent 11px);
+  background-repeat: no-repeat; background-size: 100% 100%;
+}
+.card .tag { margin: 0; font: 500 0.75rem var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.face { font-size: 1.15rem; overflow-x: auto; min-width: 0; }
+.face.answer { border-top: 1px dashed var(--line); padding-top: 16px; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+
+.actions { display: flex; flex-direction: column; gap: 10px; }
+.actions .primary { width: 100%; }
+.grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.again { background: transparent; border-color: var(--again); color: var(--again); }
+.good { background: var(--good); color: var(--card); }
+.keys { color: var(--muted); font-size: 0.8rem; text-align: center; margin: 0; }
+
+.done { text-align: left; padding: 22px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 12px; }
+.done h2 { font: 800 1.5rem var(--font-display); margin: 0; }
+.done p { margin: 0; color: var(--muted); }
+.error { color: var(--again); }
+
+@media (hover: none) { .keys { display: none; } }
+@media (prefers-reduced-motion: reduce) { .progress div { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>Flashcards <span>prépa</span></h1>
+    <span class="date" id="date"></span>
+  </header>
+
+  <main id="home">
+    <section class="summary">
+      <p><strong id="dueTotal">0</strong>cartes à revoir aujourd'hui</p>
+      <button id="startAll" class="primary">Réviser tout</button>
+    </section>
+    <ul id="decks" class="decks"></ul>
+    <p class="legend">Les barres montrent les boîtes de Leitner : « N » pour les cartes jamais vues, puis les boîtes 1 à 5. Une carte sue monte d'une boîte et revient dans 1, 2, 4, 8 puis 16 jours ; une carte ratée retourne en boîte 1.</p>
+    <p class="note">La progression est enregistrée sur cet appareil. La synchronisation avec GitHub arrivera dans une prochaine version.</p>
+  </main>
+
+  <main id="review" hidden>
+    <div class="bar-top">
+      <button id="quit" class="ghost">Retour</button>
+      <span class="counter" id="counter"></span>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <article class="card" id="card">
+      <p class="tag" id="cardTag"></p>
+      <div class="face" id="question"></div>
+      <div class="face answer" id="answer" hidden></div>
+    </article>
+    <div class="actions">
+      <button id="show" class="primary">Voir la réponse</button>
+      <div id="grade" class="grade" hidden>
+        <button id="again" class="again">À revoir</button>
+        <button id="good" class="good">Je savais</button>
+      </div>
+      <p class="keys">Espace : voir la réponse · ← : à revoir · → : je savais · Échap : retour</p>
+    </div>
+  </main>
+
+  <main id="done" hidden>
+    <section class="done">
+      <h2>Session terminée</h2>
+      <p id="doneText"></p>
+      <button id="back" class="primary">Retour aux matières</button>
+    </section>
+  </main>
+</div>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    typeset: false,
+    ready() {
+      MathJax.startup.defaultReady();
+      // Si une carte était déjà affichée avant le chargement de MathJax, on la met en forme maintenant.
+      MathJax.startup.promise.then(() => MathJax.typesetPromise(
+        [document.getElementById('question'), document.getElementById('answer')]
+      )).catch(() => {});
+    }
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
+<script>
+(() => {
+  const STORAGE_KEY = 'flashcards.progress.v1';
+  const INTERVALS = [1, 2, 4, 8, 16]; // jours d'attente après une réussite, pour les boîtes 1 à 5
+  const $ = (id) => document.getElementById(id);
+
+  let decks = [];
+  let progress = loadProgress();
+  let session = null;
+
+  // ---------- Dates ----------
+  function iso(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function today() { return iso(new Date()); }
+  function inDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); }
+
+  // ---------- Progression ----------
+  function loadProgress() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveProgress() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) { /* stockage indisponible */ }
+  }
+  const keyOf = (deck, card) => deck.id + '/' + card.id;
+  function stateOf(deck, card) { return progress[keyOf(deck, card)] || { box: 0, due: null }; }
+  function isDue(s) { return s.box === 0 || s.due <= today(); }
+
+  // ---------- Affichage du texte avec formules ----------
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function renderMath(el, text) {
+    el.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetClear && MathJax.typesetClear([el]);
+      MathJax.typesetPromise([el]).catch(() => {});
+    }
+  }
+
+  // ---------- Accueil ----------
+  function renderHome() {
+    $('date').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const list = $('decks');
+    list.innerHTML = '';
+    let total = 0;
+    decks.forEach((deck) => {
+      const counts = [0, 0, 0, 0, 0, 0];
+      let due = 0;
+      deck.cartes.forEach((c) => {
+        const s = stateOf(deck, c);
+        counts[s.box]++;
+        if (isDue(s)) due++;
+      });
+      total += due;
+      const max = Math.max(1, ...counts);
+      const li = document.createElement('li');
+      li.className = 'deck';
+      li.innerHTML =
+        '<div><h2></h2><p class="desc"></p>' +
+        '<div class="due"><b>' + due + '</b> à revoir · ' + deck.cartes.length + ' cartes</div></div>' +
+        '<button class="primary">Réviser</button>' +
+        '<div class="boxes">' + counts.map((n, i) =>
+          '<div class="box" title="' + (i === 0 ? 'Nouvelles' : 'Boîte ' + i) + ' : ' + n + '">' +
+          '<div class="bar"><div class="fill" style="height:' + Math.round(n / max * 100) + '%"></div></div>' +
+          '<span>' + (i === 0 ? 'N' : i) + '·' + n + '</span></div>'
+        ).join('') + '</div>';
+      li.querySelector('h2').textContent = deck.nom;
+      li.querySelector('.desc').textContent = deck.description || '';
+      const btn = li.querySelector('button');
+      btn.disabled = due === 0;
+      btn.addEventListener('click', () => startSession([deck]));
+      list.appendChild(li);
+    });
+    $('dueTotal').textContent = total;
+    $('startAll').disabled = total === 0;
+  }
+
+  // ---------- Session ----------
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  function startSession(chosen) {
+    const queue = [];
+    chosen.forEach((deck) => deck.cartes.forEach((card) => {
+      if (isDue(stateOf(deck, card))) queue.push({ deck, card });
+    }));
+    if (!queue.length) return;
+    session = { queue: shuffle(queue), total: queue.length, doneCount: 0, firstTry: 0, missed: new Set() };
+    show('review');
+    nextCard();
+  }
+  function nextCard() {
+    if (!session.queue.length) return finish();
+    const { deck, card } = session.queue[0];
+    $('cardTag').textContent = deck.nom;
+    renderMath($('question'), card.q);
+    $('answer').hidden = true;
+    $('answer').innerHTML = '';
+    $('show').hidden = false;
+    $('grade').hidden = true;
+    $('counter').textContent = (session.doneCount + 1) + ' / ' + session.total;
+    $('progressBar').style.width = (session.doneCount / session.total * 100) + '%';
+    $('show').focus({ preventScroll: true });
+  }
+  function reveal() {
+    if (!session || !$('answer').hidden) return;
+    renderMath($('answer'), session.queue[0].card.r);
+    $('answer').hidden = false;
+    $('show').hidden = true;
+    $('grade').hidden = false;
+  }
+  function grade(knew) {
+    if (!session || $('answer').hidden) return;
+    const item = session.queue.shift();
+    const k = keyOf(item.deck, item.card);
+    const s = stateOf(item.deck, item.card);
+    if (knew) {
+      const box = Math.min(5, s.box + 1);
+      progress[k] = { box, due: inDays(INTERVALS[box - 1]) };
+      session.doneCount++;
+      if (!session.missed.has(k)) session.firstTry++;
+    } else {
+      progress[k] = { box: 1, due: today() };
+      session.missed.add(k);
+      session.queue.push(item); // la carte revient en fin de session
+    }
+    saveProgress();
+    nextCard();
+  }
+  function finish() {
+    const n = session.total;
+    $('doneText').textContent = n + (n > 1 ? ' cartes révisées, ' : ' carte révisée, ') +
+      session.firstTry + ' sue' + (session.firstTry > 1 ? 's' : '') + ' du premier coup.';
+    session = null;
+    show('done');
+    $('back').focus({ preventScroll: true });
+  }
+  function show(view) {
+    ['home', 'review', 'done'].forEach((v) => { $(v).hidden = v !== view; });
+    if (view === 'home') renderHome();
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- Événements ----------
+  $('startAll').addEventListener('click', () => startSession(decks));
+  $('show').addEventListener('click', reveal);
+  $('good').addEventListener('click', () => grade(true));
+  $('again').addEventListener('click', () => grade(false));
+  $('quit').addEventListener('click', () => { session = null; show('home'); });
+  $('back').addEventListener('click', () => show('home'));
+  document.addEventListener('keydown', (e) => {
+    if (!session) return;
+    if (e.key === ' ' || e.key === 'Enter') {
+      if ($('answer').hidden) { e.preventDefault(); reveal(); }
+    } else if (e.key === 'ArrowRight' || e.key === '2') grade(true);
+    else if (e.key === 'ArrowLeft' || e.key === '1') grade(false);
+    else if (e.key === 'Escape') { session = null; show('home'); }
+  });
+
+  // ---------- Chargement des paquets ----------
+  async function loadDecks() {
+    try {
+      const index = await fetch('decks/index.json', { cache: 'no-store' }).then((r) => r.json());
+      decks = await Promise.all(index.decks.map((f) =>
+        fetch('decks/' + f, { cache: 'no-store' }).then((r) => r.json())));
+      renderHome();
+    } catch (e) {
+      $('decks').innerHTML = '<li class="deck error">Impossible de charger les cartes. Vérifie le dossier « decks » et le fichier index.json.</li>';
+    }
+  }
+  $('date').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  loadDecks();
+})();
+</script>
+</body>
+</html>
