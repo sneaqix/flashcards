@@ -50,7 +50,8 @@
         <button id="again" class="again" type="button">À revoir</button>
         <button id="good" class="good" type="button">Je savais</button>
       </div>
-      <p class="keys">Espace : voir la réponse · ← : à revoir · → : je savais · Échap : retour</p>
+      <button id="undo" class="ghost undo" type="button" hidden>↶ Carte précédente</button>
+      <p class="keys">Espace : voir la réponse · ← : à revoir · → : je savais · Retour arrière : carte précédente · Échap : retour</p>
     </div>
   </section>
 
@@ -58,7 +59,10 @@
     <div class="panel">
       <h2>Session terminée</h2>
       <p id="doneText"></p>
-      <button id="back" class="primary" type="button">Continuer</button>
+      <div class="row">
+        <button id="back" class="primary" type="button">Continuer</button>
+        <button id="doneUndo" class="ghost" type="button" hidden>↶ Annuler la dernière réponse</button>
+      </div>
     </div>
   </section>
 

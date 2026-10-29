@@ -142,7 +142,7 @@ function route() {
 }
 // Rafraîchit la vue affichée après une synchronisation, sauf si l'utilisateur est en train de réviser ou d'écrire.
 function refreshIfIdle() {
-  if (state.session || !$('view-carte').hidden) return;
+  if (state.session || !$('view-carte').hidden || !$('view-done').hidden) return;
   if (currentTab() === 'parametres' && document.activeElement && document.activeElement.matches('input')) return;
   route();
 }
@@ -211,7 +211,8 @@ function renderHome() {
 // =====================================================================
 function startSession(items, mode, label) {
   if (!items.length) { toast('Rien à réviser ici pour aujourd\'hui.'); return; }
-  state.session = { mode, queue: items.slice(), total: items.length, done: 0, firstTry: 0, missed: new Set(), seen: new Set() };
+  state.session = { mode, queue: items.slice(), total: items.length, done: 0, firstTry: 0, missed: new Set(), seen: new Set(), history: [] };
+  state.finished = null;
   state.lastMode = mode;
   $('modeLabel').textContent = mode === 'cram' ? 'Bachotage' : label;
   showView('session');
@@ -229,6 +230,7 @@ function nextCard() {
   $('grade').hidden = true;
   $('counter').textContent = Math.min(s.done + 1, s.total) + ' / ' + s.total;
   $('progressBar').style.width = (s.done / s.total * 100) + '%';
+  $('undo').hidden = !s.history.length;
   $('show').focus({ preventScroll: true });
 }
 function reveal() {
@@ -243,15 +245,22 @@ function reveal() {
 function grade(knew) {
   const s = state.session;
   if (!s || $('answer').hidden) return;
+  // État de la session avant cette réponse, pour pouvoir revenir en arrière.
+  const snapshot = {
+    queue: s.queue.slice(), done: s.done, firstTry: s.firstTry,
+    missed: new Set(s.missed), seen: new Set(s.seen), undo: null,
+  };
   const item = s.queue.shift();
   const key = S.cardKey(item.chapter, item.card);
   const first = !s.seen.has(key);
   s.seen.add(key);
   if (s.mode === 'srs') {
-    S.recordAnswer(state.progress, item, knew, first);
+    snapshot.undo = S.recordAnswer(state.progress, item, knew, first);
     saveProgress();
     scheduleSync(20000); // sauvegarde régulière pendant une longue session
   }
+  s.history.push(snapshot);
+  if (s.history.length > 50) s.history.shift();
   if (knew) {
     s.done++;
     if (!s.missed.has(key)) s.firstTry++;
@@ -266,14 +275,41 @@ function finishSession() {
   $('doneText').textContent = plural(s.total, 'carte révisée', 'cartes révisées') + ', ' +
     plural(s.firstTry, 'sue', 'sues') + ' du premier coup.' +
     (s.mode === 'cram' ? ' Ta progression Leitner n\'a pas été modifiée.' : '');
+  state.finished = s; // permet encore d'annuler la dernière réponse depuis l'écran de fin
+  $('doneUndo').hidden = !s.history.length;
   state.session = null;
   if (state.lastMode === 'srs') scheduleSync(0);
   showView('done');
   $('back').focus({ preventScroll: true });
 }
+// Revient à la carte précédente : annule la dernière réponse et réaffiche la carte, réponse visible.
+function undoLast() {
+  if (!state.session && state.finished) {
+    state.session = state.finished;
+    state.finished = null;
+    showView('session');
+  }
+  const s = state.session;
+  if (!s || !s.history.length) return;
+  const snap = s.history.pop();
+  if (snap.undo) {
+    S.undoAnswer(state.progress, snap.undo);
+    saveProgress();
+    scheduleSync(20000);
+  }
+  s.queue = snap.queue;
+  s.done = snap.done;
+  s.firstTry = snap.firstTry;
+  s.missed = snap.missed;
+  s.seen = snap.seen;
+  nextCard();
+  reveal();
+  toast('Réponse annulée : choisis à nouveau.');
+}
 function leaveSession() {
   const wasSrs = state.session && state.session.mode === 'srs';
   state.session = null;
+  state.finished = null;
   if (wasSrs) scheduleSync(0);
   const target = state.lastMode === 'cram' ? 'bachotage' : 'reviser';
   if (location.hash.slice(1) !== target) location.hash = target;
@@ -1016,8 +1052,16 @@ function bindEvents() {
   $('again').addEventListener('click', () => grade(false));
   $('quit').addEventListener('click', leaveSession);
   $('back').addEventListener('click', leaveSession);
+  $('undo').addEventListener('click', undoLast);
+  $('doneUndo').addEventListener('click', undoLast);
   document.addEventListener('keydown', (e) => {
-    if (!state.session || e.target.matches('input, textarea, select')) return;
+    if (e.target.matches('input, textarea, select')) return;
+    if (e.key === 'Backspace' && (state.session || (state.finished && !$('view-done').hidden))) {
+      e.preventDefault();
+      undoLast();
+      return;
+    }
+    if (!state.session) return;
     if (e.key === ' ' || e.key === 'Enter') {
       if ($('answer').hidden) { e.preventDefault(); reveal(); }
     } else if (e.key === 'ArrowRight') grade(true);

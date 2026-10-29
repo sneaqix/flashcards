@@ -171,6 +171,7 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .actions { display: flex; flex-direction: column; gap: 10px; }
 .actions .primary { width: 100%; }
 .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.actions .undo { align-self: center; min-height: 40px; padding: 6px 16px; font-size: 0.95rem; color: var(--muted); }
 .keys { color: var(--muted); font-size: 0.8rem; text-align: center; margin: 0; }
 @media (hover: none) { .keys { display: none; } }
 

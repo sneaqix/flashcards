@@ -85,7 +85,10 @@ export function merge(a, b) {
     new Set([...Object.keys(la), ...Object.keys(lb)]).forEach((day) => {
       const x = la[day], y = lb[day];
       if (!x || !y) { days[day] = x || y; return; }
-      days[day] = (y.r || 0) > (x.r || 0) ? y : x; // même appareil : la version avec le plus de réponses est la plus récente
+      // Même appareil : la version la plus récente a le compteur de modifications `s` le plus grand
+      // (à défaut, le plus de réponses). `s` augmente aussi quand on annule une réponse.
+      const sx = x.s ?? x.r ?? 0, sy = y.s ?? y.r ?? 0;
+      days[day] = sy > sx ? y : x;
     });
     out.logs[dev] = days;
   });
@@ -136,7 +139,8 @@ export function dayTotals(p, day) {
 export const cardKey = (chapter, card) => chapter.id + '/' + card.id;
 
 export function cardState(p, chapter, card) {
-  return p.cards[cardKey(chapter, card)] || null; // null = carte jamais vue
+  const st = p.cards[cardKey(chapter, card)];
+  return st && st.box > 0 ? st : null; // null = carte jamais vue (box 0 : réponse annulée sur une nouvelle carte)
 }
 
 export function isDue(state, day = today()) {
@@ -186,8 +190,16 @@ export function dailyQueue(p, chapters) {
 }
 
 // Enregistre une réponse. `first` : premier passage de cette carte dans la session.
+// Renvoie de quoi annuler cette réponse avec undoAnswer.
 export function recordAnswer(p, item, knew, first) {
   const key = cardKey(item.chapter, item.card);
+  const day = today();
+  const dev = deviceId();
+  const undo = {
+    key, day, dev,
+    prevCard: p.cards[key] ? { ...p.cards[key] } : null,
+    prevLog: p.logs[dev] && p.logs[dev][day] ? JSON.parse(JSON.stringify(p.logs[dev][day])) : null,
+  };
   const prev = p.cards[key] || { box: 0, n: 0, l: 0 };
   const now = Date.now();
   if (knew) {
@@ -196,7 +208,8 @@ export function recordAnswer(p, item, knew, first) {
   } else {
     p.cards[key] = { box: 1, due: today(), last: now, n: (prev.n || 0) + 1, l: (prev.l || 0) + 1 };
   }
-  const l = dayLog(p, deviceId(), today());
+  const l = dayLog(p, dev, day);
+  l.s = (l.s ?? l.r) + 1;
   l.r++;
   if (knew) l.c++;
   const mat = item.chapter.matiere;
@@ -207,4 +220,18 @@ export function recordAnswer(p, item, knew, first) {
   l.m[mat] = l.m[mat] || [0, 0];
   l.m[mat][0]++;
   if (knew) l.m[mat][1]++;
+  return undo;
+}
+
+// Annule une réponse : la carte et le journal du jour reviennent à leur état d'avant.
+// Les dates `last` et le compteur `s` avancent pour que l'annulation l'emporte à la synchronisation.
+export function undoAnswer(p, undo) {
+  const now = Date.now();
+  p.cards[undo.key] = undo.prevCard
+    ? { ...undo.prevCard, last: now }
+    : { box: 0, due: null, last: now, n: 0, l: 0 };
+  const cur = p.logs[undo.dev] && p.logs[undo.dev][undo.day];
+  const s = cur ? (cur.s ?? cur.r ?? 0) : 0;
+  p.logs[undo.dev] = p.logs[undo.dev] || {};
+  p.logs[undo.dev][undo.day] = { ...(undo.prevLog || { r: 0, c: 0, n: 0, v: 0, m: {}, mn: {} }), s: s + 1 };
 }
