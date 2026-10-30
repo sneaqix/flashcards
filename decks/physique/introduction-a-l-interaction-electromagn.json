@@ -1,5 +1,174 @@
 {
   "id": "physique-introduction-a-l-interaction-electromagn",
   "nom": "Introduction à l'interaction électromagnétique",
-  "cartes": []
+  "cartes": [
+    {
+      "id": "mvungjlo3omc",
+      "q": "Quelle est la relation reliant la charge mésoscopique $\\text{d}Q(P)$ à la densité volumique de charge $\\rho(P)$ dans un volume élémentaire $\\text{d}\\tau$ ?",
+      "r": "$\\text{d}Q(P) = \\rho(P)\\text{d}\\tau$, avec $\\rho(P)$ exprimée en $\\text{C}\\cdot\\text{m}^{-3}$.",
+      "attendu": "$\\text{d}Q(P) = \\rho(P)\\text{d}\\tau$"
+    },
+    {
+      "id": "mvungjm3076e",
+      "q": "Dans le Système International, quelle est l'unité de la densité surfacique de charge $\\sigma$ ?",
+      "r": "$\\text{C}\\cdot\\text{m}^{-2}$, car elle correspond à une charge par unité de surface ($\\text{d}Q = \\sigma \\text{d}S$).",
+      "mode": "qcm",
+      "attendu": "$\\text{C}\\cdot\\text{m}^{-2}$",
+      "choix": [
+        "$\\text{C}\\cdot\\text{m}^{-3}$",
+        "$\\text{C}\\cdot\\text{m}^{-1}$",
+        "$\\text{A}\\cdot\\text{m}^{-2}$"
+      ]
+    },
+    {
+      "id": "mvungjm4980t",
+      "q": "Pour une plaque mince d'épaisseur $e$ et de densité volumique uniforme $\\rho$, quelle est l'expression de la densité surfacique $\\sigma$ dans le modèle surfacique ?",
+      "r": "$\\sigma = \\rho e$ (obtenue en écrivant $\\text{d}Q = \\rho e \\text{d}S = \\sigma \\text{d}S$).",
+      "attendu": "$\\sigma = \\rho e$"
+    },
+    {
+      "id": "mvungjm4t7mm",
+      "q": "Quelle est l'expression de la densité volumique de courant $\\vec{j}$ pour une distribution de charges de densité volumique $\\rho$ se déplaçant à la vitesse $\\vec{v}$ ?",
+      "r": "$\\vec{j} = \\rho \\vec{v}$, exprimée en $\\text{A}\\cdot\\text{m}^{-2}$.",
+      "mode": "qcm",
+      "attendu": "$\\vec{j} = \\rho \\vec{v}$",
+      "choix": [
+        "$\\vec{j} = \\frac{\\rho}{\\vec{v}}$",
+        "$\\vec{j} = \\rho \\frac{\\text{d}\\vec{v}}{\\text{d}t}$",
+        "$\\vec{j} = \\frac{1}{\\rho} \\vec{v}$"
+      ]
+    },
+    {
+      "id": "mvungjm47vut",
+      "q": "Quelle est l'expression de l'intensité $I$ à travers une surface $S$ orientée en fonction de la densité volumique de courant $\\vec{j}$ ?",
+      "r": "$I = \\iint_S \\vec{j} \\cdot \\text{d}\\vec{S}$. L'intensité est le flux du vecteur $\\vec{j}$ à travers la surface $S$.",
+      "attendu": "$I = \\iint_S \\vec{j} \\cdot \\text{d}\\vec{S}$"
+    },
+    {
+      "id": "mvungjm4jcng",
+      "q": "Quelle est l'expression locale de l'équation de Maxwell-Gauss reliant le champ électrique $\\vec{E}$ à la densité de charge volumique $\\rho$ ?",
+      "r": "$\\text{div}(\\vec{E}) = \\frac{\\rho}{\\varepsilon_0}$, où $\\varepsilon_0$ est la permittivité diélectrique du vide.",
+      "mode": "qcm",
+      "attendu": "$\\text{div}(\\vec{E}) = \\frac{\\rho}{\\varepsilon_0}$",
+      "choix": [
+        "$\\text{div}(\\vec{E}) = 0$",
+        "$\\text{div}(\\vec{E}) = \\mu_0 \\rho$",
+        "$\\vec{\\text{rot}}(\\vec{E}) = \\frac{\\rho}{\\varepsilon_0}$"
+      ]
+    },
+    {
+      "id": "mvungjm4zef4",
+      "q": "Donner l'équation locale de Maxwell-Thomson (aussi appelée Maxwell-flux).",
+      "r": "$\\text{div}(\\vec{B}) = 0$.",
+      "attendu": "$\\text{div}(\\vec{B}) = 0$"
+    },
+    {
+      "id": "mvungjm4amv9",
+      "q": "Quelle est l'expression locale de l'équation de Maxwell-Faraday ?",
+      "r": "$\\vec{\\text{rot}}(\\vec{E}) = -\\frac{\\partial \\vec{B}}{\\partial t}$, traduisant le fait qu'une variation temporelle du champ magnétique induit un champ électrique.",
+      "mode": "qcm",
+      "attendu": "$\\vec{\\text{rot}}(\\vec{E}) = -\\frac{\\partial \\vec{B}}{\\partial t}$",
+      "choix": [
+        "$\\vec{\\text{rot}}(\\vec{E}) = \\frac{\\partial \\vec{B}}{\\partial t}$",
+        "$\\text{div}(\\vec{E}) = -\\frac{\\partial \\vec{B}}{\\partial t}$",
+        "$\\vec{\\text{rot}}(\\vec{E}) = -\\mu_0 \\frac{\\partial \\vec{B}}{\\partial t}$"
+      ]
+    },
+    {
+      "id": "mvungjm4ixku",
+      "q": "Donner l'expression de l'équation de Maxwell-Ampère sous forme locale.",
+      "r": "$\\vec{\\text{rot}}(\\vec{B}) = \\mu_0 \\vec{j} + \\varepsilon_0 \\mu_0 \\frac{\\partial \\vec{E}}{\\partial t}$.",
+      "attendu": "$\\vec{\\text{rot}}(\\vec{B}) = \\mu_0 \\vec{j} + \\varepsilon_0 \\mu_0 \\frac{\\partial \\vec{E}}{\\partial t}$"
+    },
+    {
+      "id": "mvungjm4va0i",
+      "q": "Quelle relation différentielle relie la variation $\\text{d}f$ d'un champ scalaire $f$ au déplacement $\\text{d}\\vec{\\ell}$ via le gradient ?",
+      "r": "$\\text{d}f = \\vec{\\text{grad}}(f) \\cdot \\text{d}\\vec{\\ell}$.",
+      "attendu": "$\\text{d}f = \\vec{\\text{grad}}(f) \\cdot \\text{d}\\vec{\\ell}$"
+    },
+    {
+      "id": "mvungjm46bfl",
+      "q": "Quelle est la disposition géométrique de $\\vec{\\text{grad}}(f)$ par rapport aux lignes de niveau de $f$ (lignes iso-$f$) ?",
+      "r": "Le gradient est orthogonal aux lignes de niveau car le long d'une ligne de niveau $\\text{d}f = 0 = \\vec{\\text{grad}}(f) \\cdot \\text{d}\\vec{\\ell}$.",
+      "mode": "qcm",
+      "attendu": "Il est orthogonal aux lignes de niveau",
+      "choix": [
+        "Il est tangent aux lignes de niveau",
+        "Il est colinéaire aux lignes de niveau",
+        "Il forme un angle quelconque de $\\pi/4$"
+      ]
+    },
+    {
+      "id": "mvungjm4encd",
+      "q": "Que peut-on conclure sur une fonction scalaire $f$ si $\\vec{\\text{grad}}(f) = \\vec{0}$ en tout point d'un domaine ?",
+      "r": "$f$ est uniforme (c'est-à-dire constante sur tout le domaine).",
+      "attendu": "$f$ est uniforme"
+    },
+    {
+      "id": "mvungjm4wrv3",
+      "q": "Donner l'expression de $\\vec{\\text{grad}}(f)$ en coordonnées cartésiennes.",
+      "r": "$\\vec{\\text{grad}}(f) = \\frac{\\partial f}{\\partial x}\\vec{u}_x + \\frac{\\partial f}{\\partial y}\\vec{u}_y + \\frac{\\partial f}{\\partial z}\\vec{u}_z$.",
+      "attendu": "$\\vec{\\text{grad}}(f) = \\frac{\\partial f}{\\partial x}\\vec{u}_x + \\frac{\\partial f}{\\partial y}\\vec{u}_y + \\frac{\\partial f}{\\partial z}\\vec{u}_z$"
+    },
+    {
+      "id": "mvungjm4h2n7",
+      "q": "Énoncer le théorème d'Ostrogradsky pour un champ de vecteurs $\\vec{a}$ à travers une surface fermée $S$ délimitant le volume $V_{int}$.",
+      "r": "$\\oiint_S \\vec{a} \\cdot \\text{d}\\vec{S} = \\iiint_{V_{int}} \\text{div}(\\vec{a}) \\text{d}\\tau$, avec $\\text{d}\\vec{S}$ orienté vers l'extérieur de la surface fermée.",
+      "attendu": "$\\oiint_S \\vec{a} \\cdot \\text{d}\\vec{S} = \\iiint_{V_{int}} \\text{div}(\\vec{a}) \\text{d}\\tau$"
+    },
+    {
+      "id": "mvungjm4k2k8",
+      "q": "Que traduit physiquement une divergence strictement positive ($\\text{div}(\\vec{a}) > 0$) en un point $M$ ?",
+      "r": "Les lignes de champ de $\\vec{a}$ divergent du point $M$ (le flux sortant d'une surface fermée l'entourant est positif).",
+      "mode": "qcm",
+      "attendu": "Les lignes de champ divergent du point M",
+      "choix": [
+        "Les lignes de champ convergent vers le point M",
+        "Les lignes de champ s'enroulent autour du point M",
+        "Le flux du champ est strictement conservatif"
+      ]
+    },
+    {
+      "id": "mvungjm4ejb1",
+      "q": "Donner l'expression de $\\text{div}(\\vec{a})$ en coordonnées cartésiennes pour $\\vec{a} = a_x\\vec{u}_x + a_y\\vec{u}_y + a_z\\vec{u}_z$.",
+      "r": "$\\text{div}(\\vec{a}) = \\frac{\\partial a_x}{\\partial x} + \\frac{\\partial a_y}{\\partial y} + \\frac{\\partial a_z}{\\partial z}$.",
+      "attendu": "$\\text{div}(\\vec{a}) = \\frac{\\partial a_x}{\\partial x} + \\frac{\\partial a_y}{\\partial y} + \\frac{\\partial a_z}{\\partial z}$"
+    },
+    {
+      "id": "mvungjm4uwxk",
+      "q": "Énoncer le théorème de Stokes pour un champ de vecteurs $\\vec{a}$ sur un contour fermé et orienté $\\Gamma$ s'appuyant sur une surface $S_\\Gamma$.",
+      "r": "$\\oint_\\Gamma \\vec{a} \\cdot \\text{d}\\vec{\\ell} = \\iint_{S_\\Gamma} \\vec{\\text{rot}}(\\vec{a}) \\cdot \\text{d}\\vec{S}$, l'orientation de $\\text{d}\\vec{S}$ suivant la règle de la main droite.",
+      "attendu": "$\\oint_\\Gamma \\vec{a} \\cdot \\text{d}\\vec{\\ell} = \\iint_{S_\\Gamma} \\vec{\\text{rot}}(\\vec{a}) \\cdot \\text{d}\\vec{S}$"
+    },
+    {
+      "id": "mvungjm4f74h",
+      "q": "Que signifie physiquement le fait que $\\vec{\\text{rot}}(\\vec{a}) = \\vec{0}$ en tout point d'un domaine ?",
+      "r": "Le champ est à circulation conservative : sa circulation sur n'importe quel contour fermé est nulle.",
+      "mode": "qcm",
+      "attendu": "Le champ est à circulation conservative",
+      "choix": [
+        "Le champ est à flux conservatif",
+        "Le champ est nécessairement uniforme",
+        "Le champ est purement divergent"
+      ]
+    },
+    {
+      "id": "mvungjm4dlpw",
+      "q": "Donner l'expression de la composante selon $\\vec{u}_z$ du rotationnel $\\vec{\\text{rot}}(\\vec{a})$ en coordonnées cartésiennes.",
+      "r": "$[\\vec{\\text{rot}}(\\vec{a})]_z = \\frac{\\partial a_y}{\\partial x} - \\frac{\\partial a_x}{\\partial y}$.",
+      "attendu": "$\\frac{\\partial a_y}{\\partial x} - \\frac{\\partial a_x}{\\partial y}$"
+    },
+    {
+      "id": "mvungjm4a15c",
+      "q": "En coordonnées cartésiennes, comment s'exprime l'opérateur rotationnel à l'aide de l'opérateur nabla $\\vec{\\nabla}$ ?",
+      "r": "$\\vec{\\text{rot}}(\\vec{a}) = \\vec{\\nabla} \\wedge \\vec{a}$, qui représente formellement le produit vectoriel de $\\vec{\\nabla}$ avec $\\vec{a}$.",
+      "mode": "qcm",
+      "attendu": "$\\vec{\\text{rot}}(\\vec{a}) = \\vec{\\nabla} \\wedge \\vec{a}$",
+      "choix": [
+        "$\\vec{\\text{rot}}(\\vec{a}) = \\vec{\\nabla} \\cdot \\vec{a}$",
+        "$\\vec{\\text{rot}}(\\vec{a}) = \\vec{\\nabla} a$",
+        "$\\vec{\\text{rot}}(\\vec{a}) = \\Delta \\vec{a}$"
+      ]
+    }
+  ]
 }
