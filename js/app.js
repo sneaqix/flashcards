@@ -1,16 +1,17 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030105406';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030105406';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030105406';
-import { renderHome, bindReview } from './review.js?v=20261030105406';
-import { renderCartes, bindEditor } from './editor.js?v=20261030105406';
-import { renderCram, bindPractice } from './practice.js?v=20261030105406';
-import { bindImport, restoreImport } from './importer.js?v=20261030105406';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030105406';
-import { bindViewer } from './viewer.js?v=20261030105406';
-import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030105406';
-import { renderStats } from './stats.js?v=20261030105406';
-import { renderSettings, bindSettings } from './settings.js?v=20261030105406';
+import { GitHub } from './github.js?v=20261030121503';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030121503';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030121503';
+import { renderHome, bindReview } from './review.js?v=20261030121503';
+import { renderCartes, bindEditor } from './editor.js?v=20261030121503';
+import { renderCram, bindPractice } from './practice.js?v=20261030121503';
+import { bindImport, restoreImport } from './importer.js?v=20261030121503';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030121503';
+import { bindViewer } from './viewer.js?v=20261030121503';
+import { bindCarnets } from './carnets.js?v=20261030121503';
+import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030121503';
+import { renderStats } from './stats.js?v=20261030121503';
+import { renderSettings, bindSettings } from './settings.js?v=20261030121503';
 
 state.views = {
   reviser: renderHome,
@@ -39,6 +40,7 @@ function bindEvents() {
   bindClasseur();
   bindViewer();
   bindAgenda();
+  bindCarnets();
 
   // Sauvegarde quand on quitte l'appli, récupération des changements de l'autre appareil au retour.
   document.addEventListener('visibilitychange', () => {

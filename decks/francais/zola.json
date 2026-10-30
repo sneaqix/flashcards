@@ -1,0 +1,11 @@
+{
+  "id": "francais-zola",
+  "nom": "Zola : L'Œuvre",
+  "oeuvre": {
+    "auteur": "Émile Zola",
+    "titre": "L'Œuvre",
+    "court": "Zola"
+  },
+  "carnet": "citations",
+  "cartes": []
+}

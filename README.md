@@ -12,6 +12,8 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
   notes, dessin à main levée et création de cartes depuis un passage surligné.
 - Calendrier (vue Semaine, inspiré de Rappels) : devoirs, DS, colles et tâches avec matière, chapitres, heure,
   priorité, drapeau, étapes et notes ; bachotage des chapitres d'un DS ou d'une colle.
+- Carnets de français-philo (thème « Les arcanes de la création ») : citations par œuvre (page, citation,
+  contexte, justification, triées par page) et résumés des chapitres, un onglet par œuvre.
 - Statistiques détaillées (depuis les Réglages) et réglages par matière.
 - Progression synchronisée dans un dépôt privé GitHub.
 
@@ -34,6 +36,7 @@ js/gemini.js          génération de cartes depuis un PDF (API Gemini)
 js/importer.js        écran d'import et de relecture
 js/classeur.js        onglet Classeur : liste, ajout, modification des documents
 js/viewer.js          lecteur PDF (PDF.js) et annotations
+js/carnets.js         carnets de citations et de résumés (carnets/*.json du dépôt privé)
 js/agenda.js          onglet Calendrier (stocké dans agenda.json du dépôt privé)
 tools/bump_version.py numéro de version anti-cache, à lancer avant chaque publication
 decks/index.json      liste des matières et de leurs chapitres

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030105406">
+<link rel="stylesheet" href="css/app.css?v=20261030121503">
 </head>
 <body>
 <div class="app">
@@ -419,6 +419,61 @@
     </div>
   </section>
 
+  <section id="view-carnet" class="view" hidden>
+    <div class="bar-top">
+      <button id="cnBack" class="ghost" type="button">Retour</button>
+      <span class="mode-label" id="cnTitle">Carnet</span>
+      <span class="counter" id="cnCount"></span>
+    </div>
+    <p class="cn-sub" id="cnSub"></p>
+    <div id="cnTabs" class="chips cn-tabs" role="group" aria-label="Œuvre" hidden></div>
+    <ul id="cnList" class="cn-list"></ul>
+    <div class="cn-addbar">
+      <button id="cnAdd" class="primary" type="button">+ Nouvelle citation</button>
+    </div>
+  </section>
+
+  <section id="view-entree" class="view" hidden>
+    <div class="bar-top">
+      <button id="enBack" class="ghost" type="button">Annuler</button>
+      <span class="mode-label" id="enTitle">Nouvelle citation</span>
+      <button id="enSave" class="primary" type="button">OK</button>
+    </div>
+    <div id="enCitation" class="panel form">
+      <label for="enPage">Page</label>
+      <input id="enPage" type="text" inputmode="numeric" autocomplete="off" class="en-page" placeholder="42">
+      <label for="enTexte">Citation</label>
+      <textarea id="enTexte" rows="4" placeholder="Recopie la citation exacte"></textarea>
+      <label for="enContexte">Contexte</label>
+      <textarea id="enContexte" rows="3" placeholder="Qui parle, à quel moment de l'œuvre, dans quelle situation"></textarea>
+      <label for="enJustif">Pourquoi cette citation</label>
+      <textarea id="enJustif" rows="3" placeholder="Ce qu'elle montre, à quelle notion du thème elle se rattache"></textarea>
+    </div>
+    <div id="enResume" class="panel form" hidden>
+      <p class="sub" id="enOeuvre"></p>
+      <div class="en-row">
+        <div class="field en-num"><label for="enNum">Chapitre</label><input id="enNum" type="text" inputmode="numeric" autocomplete="off" placeholder="1"></div>
+        <div class="field en-pages"><label for="enPages">Pages</label><input id="enPages" type="text" autocomplete="off" placeholder="12-25"></div>
+      </div>
+      <label for="enChTitre">Titre du chapitre (facultatif)</label>
+      <input id="enChTitre" type="text" autocomplete="off">
+      <label for="enResTexte">Résumé</label>
+      <textarea id="enResTexte" rows="9" placeholder="Événements, personnages, idées importantes"></textarea>
+    </div>
+    <p class="status" id="enStatus" role="status"></p>
+    <div class="row">
+      <button id="enSaveNext" class="ghost" type="button">Enregistrer et ajouter une autre</button>
+      <button id="enDelete" class="again" type="button">Supprimer</button>
+    </div>
+    <div id="enDeleteConfirm" class="confirm-inline danger" hidden>
+      <p>Supprimer définitivement ?</p>
+      <div class="row">
+        <button id="enDeleteYes" class="again small" type="button">Oui, supprimer</button>
+        <button id="enDeleteNo" class="ghost small" type="button">Annuler</button>
+      </div>
+    </div>
+  </section>
+
   <section id="view-lecteur" class="view lecteur" hidden>
     <div id="lecBar" class="lec-bar">
       <div class="lec-row">
@@ -699,6 +754,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030105406"></script>
+<script type="module" src="js/app.js?v=20261030121503"></script>
 </body>
 </html>

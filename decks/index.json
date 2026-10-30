@@ -55,6 +55,19 @@
         "anglais/manifestations-trous.json",
         "anglais/connecteurs-trous.json"
       ]
+    },
+    {
+      "id": "francais",
+      "nom": "Français-philo",
+      "theme": "Les arcanes de la création",
+      "carnets": [
+        "resumes"
+      ],
+      "chapitres": [
+        "francais/platon.json",
+        "francais/zola.json",
+        "francais/woolf.json"
+      ]
     }
   ]
 }

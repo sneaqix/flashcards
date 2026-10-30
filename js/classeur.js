@@ -1,11 +1,12 @@
 // Onglet Classeur : documents PDF (cours, TD, DS) rangés par matière et chapitre,
 // stockés dans le dépôt privé de sauvegarde.
-import { isConflict } from './github.js?v=20261030105406';
-import { fileToBase64 } from './gemini.js?v=20261030105406';
-import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261030105406';
-import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261030105406';
-import { openViewer } from './viewer.js?v=20261030105406';
-import { openImportWithDoc } from './importer.js?v=20261030105406';
+import { isConflict } from './github.js?v=20261030121503';
+import { fileToBase64 } from './gemini.js?v=20261030121503';
+import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261030121503';
+import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261030121503';
+import { openViewer } from './viewer.js?v=20261030121503';
+import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261030121503';
+import { openImportWithDoc } from './importer.js?v=20261030121503';
 
 export const DOC_TYPES = { cours: 'Cours', td: 'TD / exercices', ds: 'DS / colles' };
 const INDEX = 'classeur/index.json';
@@ -109,6 +110,30 @@ export async function renderClasseur() {
     }
   }
   renderList();
+  preloadCarnets();
+}
+
+// Les carnets sont lus une fois en arrière-plan pour afficher leur nombre d'entrées.
+let carnetsPreloaded = false;
+function preloadCarnets() {
+  if (carnetsPreloaded) return;
+  carnetsPreloaded = true;
+  const ids = [];
+  state.matieres.forEach((m) => {
+    if ((m.carnets || []).includes('resumes')) ids.push(resumesId(m.id));
+    oeuvresOf(m.id).forEach((c) => ids.push(citationsId(c)));
+  });
+  if (ids.length) Promise.all(ids.map(loadCarnet)).then(() => { if (!$('view-classeur').hidden) renderList(); });
+}
+
+function carnetRow(label, sub, onOpen) {
+  const li = document.createElement('li');
+  li.className = 'cls-doc';
+  li.innerHTML = '<button class="cls-open carnet" type="button"><span class="badge t-carnet">Carnet</span><span class="cls-name"></span><span class="cls-meta"></span></button>';
+  li.querySelector('.cls-name').textContent = label;
+  li.querySelector('.cls-meta').textContent = sub;
+  li.querySelector('button').addEventListener('click', onOpen);
+  return li;
 }
 
 function renderList() {
@@ -144,6 +169,13 @@ function renderList() {
     sec.innerHTML = '<div class="matiere-head"><div class="name-slot"></div></div><div class="cls-chaps"></div>';
     sec.querySelector('.name-slot').appendChild(nameButton('h2', m.nom, () => editMatiereName(sec, m)));
     const box = sec.querySelector('.cls-chaps');
+    if (!filtered && (m.carnets || []).includes('resumes')) {
+      const wrap = document.createElement('ul');
+      wrap.className = 'cls-docs cls-mat-carnets';
+      const n = countResumes(m.id);
+      wrap.appendChild(carnetRow('Résumés des chapitres', n ? plural(n, 'résumé', 'résumés') + ' · un onglet par œuvre' : 'Un onglet par œuvre', () => openResumes(m.id)));
+      box.appendChild(wrap);
+    }
     chs.forEach((c) => box.appendChild(chapterBox(c, byChap.get(c.id) || [], !filtered)));
     list.appendChild(sec);
   });
@@ -189,8 +221,13 @@ function chapterBox(c, docs, manageable) {
   box.querySelector('.name-slot').appendChild(nameButton('h3', c.nom, () => editChapterName(box, c, docs)));
   box.querySelector('.cls-count').textContent = plural(c.cartes.length, 'carte', 'cartes');
   const ul = box.querySelector('ul');
+  const hasCarnet = c.meta && c.meta.carnet === 'citations' && !filters.type && !filters.text;
+  if (hasCarnet) {
+    const n = countCitations(c);
+    ul.appendChild(carnetRow('Citations', n ? plural(n, 'citation', 'citations') + ' · triées par page' : 'Relevé de citations, trié par page', () => openCitations(c)));
+  }
   if (docs.length) sortDocs(docs).forEach((d) => ul.appendChild(docRow(d)));
-  else ul.innerHTML = '<li class="sub cls-empty">Aucun document</li>';
+  else if (!hasCarnet) ul.innerHTML = '<li class="sub cls-empty">Aucun document</li>';
   if (manageable) enableDrag(box);
   return box;
 }

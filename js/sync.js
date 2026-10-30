@@ -1,7 +1,7 @@
 // Synchronisation de la progression avec le dépôt privé, et chargement des cartes.
-import { isConflict } from './github.js?v=20261030105406';
-import * as S from './store.js?v=20261030105406';
-import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261030105406';
+import { isConflict } from './github.js?v=20261030121503';
+import * as S from './store.js?v=20261030121503';
+import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261030121503';
 
 export function setChip(kind, detail) {
   const chip = $('syncChip');
@@ -83,13 +83,15 @@ export async function loadDecks() {
           if (res.ok) data = await res.json();
         }
         if (!data) return null;
-        return { id: data.id, nom: data.nom, cartes: data.cartes || [], matiere: m.id, matiereNom: m.nom, file, sha };
+        // meta : informations propres au chapitre (œuvre étudiée, carnet associé…), conservées à l'écriture.
+        const { id, nom, cartes, ...meta } = data;
+        return { id, nom, cartes: cartes || [], matiere: m.id, matiereNom: m.nom, file, sha, meta };
       } catch (e) {
         console.warn('Chapitre illisible : ' + file, e);
         return null;
       }
     }));
-    return { id: m.id, nom: m.nom, chapitres: chapitres.filter(Boolean) };
+    return { id: m.id, nom: m.nom, carnets: m.carnets || [], chapitres: chapitres.filter(Boolean) };
   }));
   state.matieres = matieres;
   state.chapters = matieres.flatMap((m) => m.chapitres);
@@ -101,10 +103,10 @@ export async function updateChapterFile(ch, mutate, message, retry = true) {
   const { gh, config } = state;
   if (!ch.sha) {
     const f = await gh.getFile(config.contentRepo, 'decks/' + ch.file);
-    if (f) { const d = JSON.parse(f.text); ch.cartes = d.cartes || []; ch.sha = f.sha; }
+    if (f) { const { id, nom, cartes: c, ...meta } = JSON.parse(f.text); ch.cartes = c || []; ch.meta = { ...meta, ...(ch.meta || {}) }; ch.sha = f.sha; }
   }
   const cartes = mutate(ch.cartes.map((c) => ({ ...c })));
-  const data = { id: ch.id, nom: ch.nom, cartes };
+  const data = { id: ch.id, nom: ch.nom, ...(ch.meta || {}), cartes };
   try {
     ch.sha = await gh.putFile(config.contentRepo, 'decks/' + ch.file, JSON.stringify(data, null, 2) + '\n', ch.sha, message);
     ch.cartes = cartes;

@@ -1,9 +1,9 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261030105406';
-import * as S from './store.js?v=20261030105406';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030105406';
-import { startPractice } from './practice.js?v=20261030105406';
+import { isConflict } from './github.js?v=20261030121503';
+import * as S from './store.js?v=20261030121503';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030121503';
+import { startPractice } from './practice.js?v=20261030121503';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
@@ -15,7 +15,7 @@ export const PALETTE = {
   bleu: '#2f6fe4', ciel: '#0ea5e9', turquoise: '#0f9fb5', vert: '#1f9d55', olive: '#65a30d', jaune: '#ca8a04',
   orange: '#e8730c', rouge: '#dc2626', rose: '#d6336c', violet: '#8a4fd8', indigo: '#4f46e5', gris: '#6b7280',
 };
-const DEFAULT_COLORS = { maths: 'bleu', physique: 'orange', chimie: 'vert', si: 'violet', anglais: 'rose' };
+const DEFAULT_COLORS = { maths: 'bleu', physique: 'orange', chimie: 'vert', si: 'violet', anglais: 'rose', francais: 'rouge' };
 const SPARE = ['turquoise', 'jaune', 'rouge', 'indigo', 'olive', 'ciel'];
 
 let agenda = { items: [], deleted: [] };
