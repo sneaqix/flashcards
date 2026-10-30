@@ -10,7 +10,7 @@ version = time.strftime('%Y%m%d%H%M%S')
 
 html = root / 'index.html'
 text = html.read_text(encoding='utf-8')
-for pat in [r'(css/app\.css)(\?v=\w+)?', r'(js/app\.js)(\?v=\w+)?']:
+for pat in [r'(css/app\.css)(\?v=\w+)?', r'(css/themes\.css)(\?v=\w+)?', r'(js/app\.js)(\?v=\w+)?']:
     text, n = re.subn(pat, lambda m: m.group(1) + '?v=' + version, text)
     assert n == 1, pat
 html.write_text(text, encoding='utf-8')

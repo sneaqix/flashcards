@@ -16,6 +16,7 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
   contexte, justification, triées par page) et résumés des chapitres, un onglet par œuvre.
 - Statistiques détaillées (depuis les Réglages) et réglages par matière.
 - Notifications de rappel (cartes du jour, série) envoyées par GitHub Actions ; sur iPhone, depuis l'appli ajoutée à l'écran d'accueil.
+- Sept chartes graphiques au choix (Cahier, Tableau, Épuré, Bibliothèque, Néo-brutal, Pastel, Terminal), chacune en clair et en sombre.
 - Progression synchronisée dans un dépôt privé GitHub.
 
 ## Organisation
@@ -23,6 +24,8 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 ```
 index.html            page de l'appli
 css/app.css           styles
+css/themes.css        chartes graphiques (générées par tools/gen_themes.py)
+js/theme.js           choix de la charte et du mode clair / sombre
 js/app.js             point d'entrée et navigation
 js/scheduler.js       algorithme de planification (FSRS + étapes d'apprentissage)
 js/store.js           progression, journal quotidien, fusion entre appareils, file du jour
