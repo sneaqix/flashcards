@@ -1,20 +1,20 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import * as S from './store.js?v=20261030224031';
-import { GitHub } from './github.js?v=20261030224031';
-import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030224031';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030224031';
-import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261030224031';
-import { renderCartes, bindEditor } from './editor.js?v=20261030224031';
-import { renderCram, bindPractice } from './practice.js?v=20261030224031';
-import { bindImport, restoreImport } from './importer.js?v=20261030224031';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030224031';
-import { bindViewer } from './viewer.js?v=20261030224031';
-import { bindCarnets } from './carnets.js?v=20261030224031';
-import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030224031';
-import { renderStats } from './stats.js?v=20261030224031';
-import { renderSettings, bindSettings } from './settings.js?v=20261030224031';
-import { bindTheme } from './theme.js?v=20261030224031';
-import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030224031';
+import * as S from './store.js?v=20261030225001';
+import { GitHub } from './github.js?v=20261030225001';
+import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030225001';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030225001';
+import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261030225001';
+import { renderCartes, bindEditor } from './editor.js?v=20261030225001';
+import { renderCram, bindPractice } from './practice.js?v=20261030225001';
+import { bindImport, restoreImport } from './importer.js?v=20261030225001';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030225001';
+import { bindViewer } from './viewer.js?v=20261030225001';
+import { bindCarnets } from './carnets.js?v=20261030225001';
+import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030225001';
+import { renderStats } from './stats.js?v=20261030225001';
+import { renderSettings, bindSettings } from './settings.js?v=20261030225001';
+import { bindTheme } from './theme.js?v=20261030225001';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030225001';
 
 state.views = {
   reviser: renderHome,
@@ -98,8 +98,39 @@ function bindPhone() {
   });
 }
 
+// Ordinateur : isole le symbole en tête des boutons (‹ › ✎ ↶ + …) pour l'animer au survol.
+const GLYPH = /^(\s*)([‹›←→✎↶+⚑×✕]|i(?=$))(\s*)/;
+function wrapGlyphs(root = document) {
+  root.querySelectorAll('button:not([data-gly])').forEach((b) => {
+    b.dataset.gly = '1';
+    const t = b.firstChild;
+    if (!t || t.nodeType !== 3) return;
+    const m = t.nodeValue.match(GLYPH);
+    if (!m) return;
+    const span = document.createElement('span');
+    span.className = 'gly';
+    span.dataset.g = m[2];
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = m[2];
+    t.nodeValue = t.nodeValue.slice(m[0].length);
+    b.insertBefore(span, t);
+    if (t.nodeValue) b.insertBefore(document.createTextNode(m[3] || ' '), t);
+  });
+}
+function bindGlyphs() {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  wrapGlyphs();
+  let queued = false;
+  new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; wrapGlyphs(); });
+  }).observe(document.body, { childList: true, subtree: true });
+}
+
 function bindEvents() {
   bindSidebar();
+  bindGlyphs();
   bindPhone();
   window.addEventListener('hashchange', route);
   document.addEventListener('mathjax-ready', () => {

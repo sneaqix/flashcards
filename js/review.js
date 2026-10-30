@@ -1,13 +1,13 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030224031';
+import * as S from './store.js?v=20261030225001';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030224031';
-import { scheduleSync } from './sync.js?v=20261030224031';
-import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030224031';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030224031';
-import { openEditor } from './editor.js?v=20261030224031';
+} from './ui.js?v=20261030225001';
+import { scheduleSync } from './sync.js?v=20261030225001';
+import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030225001';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030225001';
+import { openEditor } from './editor.js?v=20261030225001';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
