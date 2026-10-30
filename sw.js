@@ -10,8 +10,8 @@ self.addEventListener('push', (e) => {
   e.waitUntil(self.registration.showNotification(data.title || 'Flashcards prépa', {
     body: data.body || '',
     tag: data.tag || 'flashcards',
-    icon: 'icons/icon-192.png',
-    badge: 'icons/icon-192.png',
+    icon: 'icons/icon-192.png?v=2',
+    badge: 'icons/icon-192.png?v=2',
     data: { url },
   }));
 });
