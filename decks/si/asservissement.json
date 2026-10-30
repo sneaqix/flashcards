@@ -3,18 +3,6 @@
   "nom": "Systèmes asservis",
   "cartes": [
     {
-      "id": "premier-ordre",
-      "q": "Fonction de transfert canonique d'un système du 1er ordre et temps de réponse à 5 %",
-      "r": "$$H(p) = \\frac{K}{1 + \\tau p}, \\qquad t_{5\\%} = 3\\tau$$",
-      "mode": "qcm",
-      "attendu": "$H(p) = \\dfrac{K}{1 + \\tau p}$ et $t_{5\\%} = 3\\tau$",
-      "choix": [
-        "$H(p) = \\dfrac{K}{1 + \\tau p}$ et $t_{5\\%} = \\tau$",
-        "$H(p) = \\dfrac{K}{\\tau p}$ et $t_{5\\%} = 3\\tau$",
-        "$H(p) = \\dfrac{K}{1 + \\tau p}$ et $t_{5\\%} = 5\\tau$"
-      ]
-    },
-    {
       "id": "second-ordre",
       "q": "Fonction de transfert canonique d'un système du 2nd ordre",
       "r": "$$H(p) = \\frac{K}{1 + \\frac{2\\xi}{\\omega_0}p + \\frac{p^2}{\\omega_0^2}}$$"
