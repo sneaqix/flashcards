@@ -8,6 +8,8 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 - Bachotage (cartes, QCM ou associations), sans toucher à la progression.
 - Éditeur de cartes intégré (formules LaTeX, images), utilisable pendant la révision, avec recherche globale et filtres.
 - Import d'un cours en PDF : Gemini génère des cartes (classiques, QCM, textes à trous, à taper) à relire avant ajout.
+- Classeur : cours, TD et DS en PDF rangés par chapitre (dépôt privé), lecteur intégré avec surlignage,
+  notes, dessin à main levée et création de cartes depuis un passage surligné.
 - Statistiques détaillées et réglages par matière.
 - Progression synchronisée dans un dépôt privé GitHub.
 
@@ -28,6 +30,8 @@ js/sync.js            synchronisation et chargement des cartes
 js/github.js          accès à l'API GitHub
 js/gemini.js          génération de cartes depuis un PDF (API Gemini)
 js/importer.js        écran d'import et de relecture
+js/classeur.js        onglet Classeur : liste, ajout, modification des documents
+js/viewer.js          lecteur PDF (PDF.js) et annotations
 tools/bump_version.py numéro de version anti-cache, à lancer avant chaque publication
 decks/index.json      liste des matières et de leurs chapitres
 decks/<matière>/*.json  un fichier par chapitre
@@ -66,3 +70,15 @@ La progression est stockée dans `progress.json` du dépôt privé. Le jeton res
 3. Onglet Cartes, « Importer un cours (PDF) » : choisir le PDF, la destination, le nombre et les types de cartes, puis relire.
 
 La clé reste dans le navigateur de l'appareil. Avec l'offre gratuite, Google peut utiliser les documents envoyés pour améliorer ses modèles.
+
+## Classeur
+
+Les PDF sont stockés dans le dépôt privé de sauvegarde :
+
+```
+classeur/index.json          liste des documents (nom, type, chapitre…)
+classeur/files/<id>.pdf      les PDF
+classeur/notes/<id>.json     surlignages, notes et dessins de chaque document
+```
+
+Chaque cours importé pour générer des cartes y est rangé automatiquement, dans le chapitre de ses cartes.

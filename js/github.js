@@ -81,6 +81,30 @@ export class GitHub {
     }
   }
 
+  // Lit un fichier binaire (PDF…) en entier. Renvoie un ArrayBuffer.
+  async getBinary(repo, path) {
+    let res;
+    try {
+      res = await fetch(API + '/repos/' + repo + '/contents/' + encodePath(path), {
+        cache: 'no-store',
+        headers: {
+          Authorization: 'Bearer ' + this.token,
+          Accept: 'application/vnd.github.raw+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      });
+    } catch (e) {
+      throw new GitHubError(0, 'Pas de connexion à GitHub.');
+    }
+    if (!res.ok) throw new GitHubError(res.status, res.status === 404 ? 'Fichier introuvable sur GitHub.' : 'Erreur GitHub ' + res.status);
+    return res.arrayBuffer();
+  }
+
+  // Supprime un fichier (sha requis).
+  async deleteFile(repo, path, sha, message) {
+    return this.request('DELETE', '/repos/' + repo + '/contents/' + encodePath(path), { message, sha });
+  }
+
   // Crée ou remplace un fichier. `content` est du texte, sauf si isBase64 est vrai.
   // Renvoie le nouveau sha du fichier.
   async putFile(repo, path, content, sha, message, isBase64 = false) {

@@ -1,18 +1,21 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030004829';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030004829';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030004829';
-import { renderHome, bindReview } from './review.js?v=20261030004829';
-import { renderCartes, bindEditor } from './editor.js?v=20261030004829';
-import { renderCram, bindPractice } from './practice.js?v=20261030004829';
-import { bindImport, restoreImport } from './importer.js?v=20261030004829';
-import { renderStats } from './stats.js?v=20261030004829';
-import { renderSettings, bindSettings } from './settings.js?v=20261030004829';
+import { GitHub } from './github.js?v=20261030092917';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030092917';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030092917';
+import { renderHome, bindReview } from './review.js?v=20261030092917';
+import { renderCartes, bindEditor } from './editor.js?v=20261030092917';
+import { renderCram, bindPractice } from './practice.js?v=20261030092917';
+import { bindImport, restoreImport } from './importer.js?v=20261030092917';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030092917';
+import { bindViewer } from './viewer.js?v=20261030092917';
+import { renderStats } from './stats.js?v=20261030092917';
+import { renderSettings, bindSettings } from './settings.js?v=20261030092917';
 
 state.views = {
   reviser: renderHome,
   bachotage: renderCram,
   cartes: renderCartes,
+  classeur: renderClasseur,
   stats: renderStats,
   parametres: renderSettings,
 };
@@ -31,6 +34,8 @@ function bindEvents() {
   bindPractice();
   bindSettings();
   bindImport();
+  bindClasseur();
+  bindViewer();
 
   // Sauvegarde quand on quitte l'appli, récupération des changements de l'autre appareil au retour.
   document.addEventListener('visibilitychange', () => {
@@ -52,6 +57,12 @@ async function init() {
   route();
   restoreImport(); // relecture ou génération laissée en plan
   if (canSync()) syncNow();
+  // Le classeur est chargé en arrière-plan pour afficher les documents de chaque chapitre.
+  if (canSync()) loadClasseur().then(() => { if (!state.session && currentTabIsHome()) route(); }).catch(() => {});
+}
+
+function currentTabIsHome() {
+  return !$('view-reviser').hidden;
 }
 
 init();

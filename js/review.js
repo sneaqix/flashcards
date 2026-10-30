@@ -1,11 +1,12 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030004829';
+import * as S from './store.js?v=20261030092917';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030004829';
-import { scheduleSync } from './sync.js?v=20261030004829';
-import { openEditor } from './editor.js?v=20261030004829';
+} from './ui.js?v=20261030092917';
+import { scheduleSync } from './sync.js?v=20261030092917';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030092917';
+import { openEditor } from './editor.js?v=20261030092917';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -64,6 +65,15 @@ export function renderHome() {
         plural(ch.cartes.length, 'carte', 'cartes') + (off.has(ch.id) ? ' · hors révision du jour' : '') + '</div></div>' +
         '<button class="primary small" type="button">Réviser</button>' + boxesHtml(chapterCounts(ch));
       li.querySelector('h3').textContent = ch.nom;
+      const docs = docsOfChapter(ch.id);
+      if (docs.length) {
+        const link = document.createElement('button');
+        link.type = 'button';
+        link.className = 'linklike';
+        link.textContent = plural(docs.length, 'document', 'documents');
+        link.addEventListener('click', () => showChapterDocs(ch.id));
+        li.querySelector('.due').append(' · ', link);
+      }
       const btn = li.querySelector('button');
       btn.disabled = q.items.length === 0;
       btn.addEventListener('click', () => startSession(S.dailyQueue(state.progress, [ch]).items, 'srs', ch.nom));

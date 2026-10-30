@@ -1,13 +1,14 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261030004829';
-import { retrievability } from './scheduler.js?v=20261030004829';
+import * as S from './store.js?v=20261030092917';
+import { retrievability } from './scheduler.js?v=20261030092917';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
   showView, route, firstLine, imageUrl, faceContent,
-} from './ui.js?v=20261030004829';
-import { updateChapterFile, createChapterFile } from './sync.js?v=20261030004829';
-import { resumeSession } from './review.js?v=20261030004829';
-import { startPractice } from './practice.js?v=20261030004829';
+} from './ui.js?v=20261030092917';
+import { updateChapterFile, createChapterFile } from './sync.js?v=20261030092917';
+import { returnToViewer } from './viewer.js?v=20261030092917';
+import { resumeSession } from './review.js?v=20261030092917';
+import { startPractice } from './practice.js?v=20261030092917';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
@@ -254,14 +255,14 @@ function renderCardStats(ch, card) {
 
 function updateEditorNav() {
   const ed = state.edit;
-  const fromSession = state.editReturn === 'session';
+  const fromSession = state.editReturn === 'session' || state.editReturn === 'classeur';
   const i = !fromSession && ed.cardId ? results.findIndex((x) => x.card.id === ed.cardId && x.chapter.id === ed.chId) : -1;
   $('editTitle').textContent = fromSession ? 'Modifier la carte' : i >= 0 ? 'Carte ' + (i + 1) + ' / ' + results.length : (ed.cardId ? 'Modifier la carte' : 'Nouvelle carte');
   $('editPrev').hidden = $('editNext').hidden = fromSession;
   $('editPrev').disabled = ed.busy || i <= 0;
   $('editNext').disabled = ed.busy || i < 0 || i >= results.length - 1;
   $('swipeHint').hidden = i < 0 || results.length < 2;
-  $('editBack').textContent = fromSession ? 'Retour à la révision' : 'Retour';
+  $('editBack').textContent = state.editReturn === 'session' ? 'Retour à la révision' : state.editReturn === 'classeur' ? 'Retour au document' : 'Retour';
 }
 
 function isEditorDirty() {
@@ -288,6 +289,7 @@ function goToCard(dir) {
 function closeEditor(card) {
   state.edit = null;
   if (state.editReturn === 'session') return resumeSession(card);
+  if (state.editReturn === 'classeur') return returnToViewer();
   route();
 }
 
@@ -426,7 +428,7 @@ async function saveCard() {
     }, (isNew ? 'Ajoute' : 'Modifie') + ' une carte : ' + ch.nom);
     toast(isNew ? 'Carte ajoutée.' : 'Carte enregistrée.');
     const saved = ch.cartes.find((c) => c.id === card.id) || card;
-    if (state.editReturn === 'session') return closeEditor(saved);
+    if (state.editReturn === 'session' || state.editReturn === 'classeur') return closeEditor(saved);
     if (isNew) results = filteredCards();
     openEditor(ch, saved); // on reste sur la carte pour pouvoir continuer à défiler
   } catch (e) {

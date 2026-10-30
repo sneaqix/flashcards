@@ -1,11 +1,12 @@
 // Import d'un cours en PDF : génération des cartes par Gemini, relecture, puis ajout dans un chapitre.
-import * as G from './gemini.js?v=20261030004829';
+import * as G from './gemini.js?v=20261030092917';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId, showView,
-  faceContent, route,
-} from './ui.js?v=20261030004829';
-import { updateChapterFile, createChapterFile } from './sync.js?v=20261030004829';
-import { showChapterCards } from './editor.js?v=20261030004829';
+  faceContent, route, canSync,
+} from './ui.js?v=20261030092917';
+import { updateChapterFile, createChapterFile } from './sync.js?v=20261030092917';
+import { addDocument } from './classeur.js?v=20261030092917';
+import { showChapterCards } from './editor.js?v=20261030092917';
 
 const MAX_MB = 30;
 const TYPES = ['classique', 'qcm', 'trou', 'saisie'];
@@ -18,7 +19,8 @@ let abort = null;
 let running = false;  // génération en cours
 let hiddenDuring = false; // la page a été quittée pendant la génération
 let userCancel = false;
-let pendingJob = null; // génération interrompue, à relancer au retour sur la page
+let pendingJob = null;
+let importDocId = null; // document du classeur utilisé pour l'import (pas besoin de le ranger à nouveau) // génération interrompue, à relancer au retour sur la page
 let wakeLock = null;
 
 // ---------- Conservation sur l'appareil ----------
@@ -58,6 +60,10 @@ async function jobStore(mode, fn) {
 const saveJob = (job) => jobStore('readwrite', (st) => st.put(job, 'job')).catch(() => {});
 const loadJob = () => jobStore('readonly', (st) => st.get('job')).catch(() => null);
 const clearJob = () => jobStore('readwrite', (st) => st.delete('job')).catch(() => {});
+// PDF de la relecture en cours, rangé dans le classeur au moment de l'ajout des cartes.
+const saveDraftPdf = (p) => jobStore('readwrite', (st) => st.put(p, 'draftPdf')).catch(() => {});
+const loadDraftPdf = () => jobStore('readonly', (st) => st.get('draftPdf')).catch(() => null);
+const clearDraftPdf = () => jobStore('readwrite', (st) => st.delete('draftPdf')).catch(() => {});
 
 // ---------- Écran allumé pendant la génération ----------
 async function keepAwake() {
@@ -82,6 +88,26 @@ export function updateImportBanner() {
   } else {
     box.hidden = true;
   }
+}
+
+// Ouvre l'import avec un document du classeur déjà choisi.
+export function openImportWithDoc(doc, file) {
+  openImport();
+  if (draft || running || pendingJob) { toast('Termine d\'abord l\'import en cours.'); return; }
+  pdfFile = file;
+  importDocId = doc.id;
+  $('impFileName').textContent = doc.nom + ' (classeur)';
+  $('impPick').textContent = 'Changer de PDF';
+  const ch = state.byId.get(doc.chapId);
+  if (ch) {
+    $('impMat').value = ch.matiere;
+    fillChapters();
+    $('impDestOld').checked = true;
+    $('impChap').value = ch.id;
+    updateDest();
+  }
+  setStatus('impStatus', '');
+  updateGenerate();
 }
 
 export function openImport() {
@@ -166,6 +192,7 @@ function pickPdf(input) {
   if (f.type !== 'application/pdf' && !/\.pdf$/i.test(f.name)) { setStatus('impStatus', 'Choisis un fichier PDF.', 'error'); return; }
   if (f.size > MAX_MB * 1024 * 1024) { setStatus('impStatus', 'Ce PDF dépasse ' + MAX_MB + ' Mo : découpe-le en plusieurs parties.', 'error'); return; }
   pdfFile = f;
+  importDocId = null;
   $('impFileName').textContent = f.name + ' · ' + (f.size / 1048576).toFixed(1).replace('.', ',') + ' Mo';
   $('impPick').textContent = 'Changer de PDF';
   if (!$('impNewName').value) $('impNewName').placeholder = 'Par défaut : titre proposé par Gemini';
@@ -189,6 +216,8 @@ async function generate() {
     dest: $('impDestNew').checked ? 'new' : 'old',
     newName: $('impNewName').value.trim(),
     chap: $('impChap').value,
+    docId: importDocId,
+    size: pdfFile.size,
   };
   await saveJob(job); // permet de reprendre même si la page est fermée
   runJob(job);
@@ -221,9 +250,11 @@ async function runJob(job) {
     draft = {
       titre, fileName: job.fileName, mat: job.mat, dest: job.dest, chap: job.chap,
       newName: job.newName || titre,
+      docId: job.docId || null,
       cards: cards.map((card) => ({ keep: true, card })),
     };
     saveDraft();
+    if (!job.docId) await saveDraftPdf({ base64: job.pdfBase64, size: job.size || Math.round(job.pdfBase64.length * 0.75), fileName: job.fileName });
     clearJob();
     pdfFile = null;
     if (!$('view-import').hidden) {
@@ -401,7 +432,22 @@ async function save() {
       ch = state.byId.get($('impChap').value);
     }
     await updateChapterFile(ch, (list) => [...list, ...kept], 'Ajoute ' + plural(kept.length, 'carte générée', 'cartes générées') + ' depuis ' + draft.fileName);
-    toast(plural(kept.length, 'carte ajoutée', 'cartes ajoutées') + ' à « ' + ch.nom + ' ».');
+    let stored = '';
+    if (!draft.docId) {
+      // Le cours importé est rangé dans le classeur, dans le même chapitre que ses cartes.
+      const pdf = await loadDraftPdf();
+      if (pdf && pdf.base64 && canSync()) {
+        setStatus('impSaveStatus', 'Rangement du cours dans le classeur…');
+        try {
+          await addDocument({ base64: pdf.base64, size: pdf.size, nom: draft.fileName.replace(/\.pdf$/i, ''), type: 'cours', chapId: ch.id, matiere: ch.matiere });
+          stored = ' Le cours est rangé dans le classeur.';
+        } catch (e) {
+          stored = ' Le PDF n\'a pas pu être rangé dans le classeur (' + e.message + ').';
+        }
+      }
+    }
+    clearDraftPdf();
+    toast(plural(kept.length, 'carte ajoutée', 'cartes ajoutées') + ' à « ' + ch.nom + ' ».' + stored);
     draft = null;
     saveDraft();
     pdfFile = null;
@@ -425,6 +471,7 @@ function resetSetup() {
 function discard() {
   draft = null;
   saveDraft();
+  clearDraftPdf();
   $('impDiscardConfirm').hidden = true;
   setStatus('impSaveStatus', '');
   showStep('setup');

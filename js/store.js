@@ -1,7 +1,7 @@
 // Progression, paramètres, journal quotidien et file de révision.
-import * as F from './scheduler.js?v=20261030004829';
+import * as F from './scheduler.js?v=20261030092917';
 
-export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261030004829';
+export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261030092917';
 
 const LS_PROGRESS = 'fc.progress.v2';
 const LS_CONFIG = 'fc.config.v1';

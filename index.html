@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030004829">
+<link rel="stylesheet" href="css/app.css?v=20261030092917">
 </head>
 <body>
 <div class="app">
@@ -350,6 +350,108 @@
     <p class="status" id="fStatus" role="status"></p>
   </section>
 
+  <!-- ============ Classeur ============ -->
+  <section id="view-classeur" class="view" hidden>
+    <div id="clsLocked" class="panel" hidden>
+      <p>Le classeur range tes PDF dans ton dépôt GitHub privé : renseigne d'abord ton jeton et tes deux dépôts dans les réglages.</p>
+      <a class="button ghost" href="#parametres">Ouvrir les réglages</a>
+    </div>
+    <div class="panel form">
+      <div class="cls-top">
+        <input id="clsSearch" type="search" placeholder="Rechercher un document" aria-label="Rechercher un document" autocomplete="off">
+        <button id="clsAdd" class="primary" type="button">Ajouter un PDF</button>
+      </div>
+      <div id="clsTypes" class="chips" role="group" aria-label="Type de document">
+        <button type="button" data-type="" class="on">Tous</button>
+        <button type="button" data-type="cours">Cours</button>
+        <button type="button" data-type="td">TD</button>
+        <button type="button" data-type="ds">DS / colles</button>
+      </div>
+      <div id="clsChapFilter" class="filter-pill" hidden>
+        <span id="clsChapFilterText"></span>
+        <button id="clsChapClear" class="ghost small" type="button">Tout afficher</button>
+      </div>
+    </div>
+    <div id="clsList" class="matieres"></div>
+  </section>
+
+  <section id="view-docform" class="view" hidden>
+    <div class="bar-top">
+      <button id="dfBack" class="ghost" type="button">Retour</button>
+      <span class="mode-label" id="dfTitle">Ajouter un document</span>
+      <span></span>
+    </div>
+    <div class="panel form">
+      <div id="dfFileBox" class="file-row">
+        <label class="button ghost file">Choisir un PDF<input id="dfFile" type="file" accept="application/pdf,.pdf"></label>
+        <span class="sub" id="dfFileName">Aucun fichier choisi</span>
+      </div>
+      <label for="dfNom">Nom du document</label>
+      <input id="dfNom" type="text" autocomplete="off" placeholder="Par exemple : Cours EM1 - Champ électrostatique">
+      <label for="dfType">Type</label>
+      <select id="dfType">
+        <option value="cours">Cours</option>
+        <option value="td">TD / exercices</option>
+        <option value="ds">DS / colles</option>
+      </select>
+      <label for="dfMat">Matière</label>
+      <select id="dfMat"></select>
+      <label for="dfChap">Chapitre</label>
+      <select id="dfChap"></select>
+      <div id="dfNewChapBox" class="field" hidden>
+        <label for="dfNewChap">Nom du nouveau chapitre</label>
+        <input id="dfNewChap" type="text" autocomplete="off">
+      </div>
+      <div class="row">
+        <button id="dfSave" class="primary" type="button">Enregistrer</button>
+        <button id="dfCards" class="ghost" type="button" hidden>Générer des cartes</button>
+        <button id="dfDelete" class="again" type="button" hidden>Supprimer</button>
+      </div>
+      <div id="dfDeleteConfirm" class="confirm-inline" hidden>
+        <p>Supprimer ce document et toutes ses annotations ? Les cartes du chapitre ne sont pas touchées.</p>
+        <div class="row">
+          <button id="dfDeleteYes" class="again small" type="button">Oui, supprimer</button>
+          <button id="dfDeleteNo" class="ghost small" type="button">Annuler</button>
+        </div>
+      </div>
+      <p class="status" id="dfStatus" role="status"></p>
+    </div>
+  </section>
+
+  <section id="view-lecteur" class="view lecteur" hidden>
+    <div id="lecBar" class="lec-bar">
+      <div class="lec-row">
+        <button id="lecBack" class="ghost small" type="button">Retour</button>
+        <span id="lecTitle" class="lec-title"></span>
+        <span id="lecPage" class="counter"></span>
+      </div>
+      <div class="lec-row lec-tools">
+        <div id="lecModes" class="seg" role="group" aria-label="Outil">
+          <button type="button" data-mode="lire" class="on">Lire</button>
+          <button type="button" data-mode="note">Note</button>
+          <button type="button" data-mode="dessin">Dessin</button>
+          <button type="button" data-mode="gomme">Gomme</button>
+        </div>
+        <div id="lecColors" class="swatches" role="group" aria-label="Couleur"></div>
+        <div class="zoom">
+          <button id="lecZoomOut" class="ghost small" type="button" aria-label="Dézoomer">−</button>
+          <span id="lecZoom">100 %</span>
+          <button id="lecZoomIn" class="ghost small" type="button" aria-label="Zoomer">+</button>
+        </div>
+        <button id="lecCards" class="ghost small" type="button">Générer des cartes</button>
+      </div>
+      <p id="lecHint" class="lec-hint"></p>
+    </div>
+    <p id="lecStatus" class="sub"></p>
+    <div id="lecScroll" class="lec-scroll"><div id="lecPages" class="lec-pages"></div></div>
+    <div id="lecSelBar" class="lec-selbar" hidden>
+      <div id="lecSelColors" class="swatches" role="group" aria-label="Couleur du surlignage"></div>
+      <button id="lecHl" class="primary small" type="button">Surligner</button>
+      <button id="lecHlCard" class="ghost small" type="button">Surligner et créer une carte</button>
+    </div>
+    <div id="lecSheet" class="lec-sheet panel" hidden></div>
+  </section>
+
   <!-- ============ Statistiques ============ -->
   <section id="view-stats" class="view" hidden>
     <div class="tiles" id="statTiles"></div>
@@ -466,6 +568,7 @@
   <a href="#reviser" data-tab="reviser">Réviser</a>
   <a href="#bachotage" data-tab="bachotage">Bachotage</a>
   <a href="#cartes" data-tab="cartes">Cartes</a>
+  <a href="#classeur" data-tab="classeur">Classeur</a>
   <a href="#stats" data-tab="stats">Stats</a>
   <a href="#parametres" data-tab="parametres">Réglages</a>
 </nav>
@@ -486,6 +589,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030004829"></script>
+<script type="module" src="js/app.js?v=20261030092917"></script>
 </body>
 </html>
