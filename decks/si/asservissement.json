@@ -44,18 +44,6 @@
       ]
     },
     {
-      "id": "valeur-finale",
-      "q": "Théorème de la valeur finale",
-      "r": "$$\\lim_{t \\to +\\infty} f(t) = \\lim_{p \\to 0} p\\,F(p)$$",
-      "mode": "qcm",
-      "attendu": "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to 0} p\\,F(p)$",
-      "choix": [
-        "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to +\\infty} p\\,F(p)$",
-        "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to 0} F(p)$",
-        "$\\lim\\limits_{t \\to +\\infty} f(t) = \\lim\\limits_{p \\to 0} \\dfrac{F(p)}{p}$"
-      ]
-    },
-    {
       "id": "valeur-initiale",
       "q": "Théorème de la valeur initiale",
       "r": "$$\\lim_{t \\to 0^+} f(t) = \\lim_{p \\to +\\infty} p\\,F(p)$$"
