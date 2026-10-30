@@ -1,20 +1,20 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import * as S from './store.js?v=20261030210746';
-import { GitHub } from './github.js?v=20261030210746';
-import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030210746';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030210746';
-import { renderHome, bindReview, startDailyReview } from './review.js?v=20261030210746';
-import { renderCartes, bindEditor } from './editor.js?v=20261030210746';
-import { renderCram, bindPractice } from './practice.js?v=20261030210746';
-import { bindImport, restoreImport } from './importer.js?v=20261030210746';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030210746';
-import { bindViewer } from './viewer.js?v=20261030210746';
-import { bindCarnets } from './carnets.js?v=20261030210746';
-import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030210746';
-import { renderStats } from './stats.js?v=20261030210746';
-import { renderSettings, bindSettings } from './settings.js?v=20261030210746';
-import { bindTheme } from './theme.js?v=20261030210746';
-import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030210746';
+import * as S from './store.js?v=20261030215123';
+import { GitHub } from './github.js?v=20261030215123';
+import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030215123';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030215123';
+import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261030215123';
+import { renderCartes, bindEditor } from './editor.js?v=20261030215123';
+import { renderCram, bindPractice } from './practice.js?v=20261030215123';
+import { bindImport, restoreImport } from './importer.js?v=20261030215123';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030215123';
+import { bindViewer } from './viewer.js?v=20261030215123';
+import { bindCarnets } from './carnets.js?v=20261030215123';
+import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030215123';
+import { renderStats } from './stats.js?v=20261030215123';
+import { renderSettings, bindSettings } from './settings.js?v=20261030215123';
+import { bindTheme } from './theme.js?v=20261030215123';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030215123';
 
 state.views = {
   reviser: renderHome,
@@ -37,7 +37,7 @@ function setMini(on) {
 function refreshNav() {
   if (!wide.matches || !state.chapters) return;
   const setCount = (id, n) => { const el = $(id); el.textContent = n; el.hidden = !n; };
-  setCount('cnt-reviser', S.dailyQueue(state.progress, dailyChapters()).items.length);
+  setCount('cnt-reviser', dailyToday().items.length);
   setCount('cnt-calendrier', dueNow().length);
   if (wider.matches && !state.session) renderTodayPanel($('todayPanel'));
 }

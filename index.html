@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030210746">
-<link rel="stylesheet" href="css/themes.css?v=20261030210746">
+<link rel="stylesheet" href="css/app.css?v=20261030215123">
+<link rel="stylesheet" href="css/themes.css?v=20261030215123">
 </head>
 <body>
 <div class="app">
@@ -37,6 +37,7 @@
       </div>
       <button id="startDaily" class="primary" type="button">Révision du jour</button>
     </div>
+    <div id="examPlans" class="exam-plans" hidden></div>
     <div id="todoBox" class="panel todo" hidden></div>
     <div id="chapterList" class="matieres"></div>
     <p class="legend">Les barres montrent où en sont les cartes : N pour les cartes jamais vues, puis le temps avant leur prochain passage (j1 = 1 jour, j2 = 2 à 3 jours, j4 = 4 à 7 jours… j32+ = plus d'un mois). Les cartes en cours d'apprentissage reviennent dans la journée et comptent dans j1.</p>
@@ -813,6 +814,23 @@
     
         </div>
       </details>
+      <details class="acc" data-acc="anki">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="14" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v12"/><path d="m7 13 2 2 4-4"/></svg></span><span class="acc-t"><b>Paquets Anki</b><span class="acc-sum" id="sum-anki"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+          <h3>Importer un paquet (.apkg)</h3>
+          <p class="sub">Les cartes, les textes à trous et les images sont repris ; chaque sous-paquet devient un chapitre de la matière choisie.</p>
+          <label for="ankiMat">Matière</label>
+          <select id="ankiMat"></select>
+          <label class="button ghost file">Choisir un fichier .apkg<input id="ankiFile" type="file" accept=".apkg,.colpkg,application/zip"></label>
+          <div id="ankiPreview" class="anki-preview" hidden></div>
+          <p class="status" id="ankiStatus" role="status"></p>
+          <h3>Exporter vers Anki</h3>
+          <p class="sub">Coche les chapitres à exporter : Anki ouvre le fichier avec un sous-paquet par matière et par chapitre.</p>
+          <div id="ankiChapters" class="checklist"></div>
+          <button id="ankiExport" class="primary" type="button">Exporter (.apkg)</button>
+          <p class="status" id="ankiXStatus" role="status"></p>
+        </div>
+      </details>
     </div>
     </div>
   </section>
@@ -850,6 +868,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030210746"></script>
+<script type="module" src="js/app.js?v=20261030215123"></script>
 </body>
 </html>

@@ -1,13 +1,13 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030210746';
+import * as S from './store.js?v=20261030215123';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030210746';
-import { scheduleSync } from './sync.js?v=20261030210746';
-import { renderTodo } from './agenda.js?v=20261030210746';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030210746';
-import { openEditor } from './editor.js?v=20261030210746';
+} from './ui.js?v=20261030215123';
+import { scheduleSync } from './sync.js?v=20261030215123';
+import { renderTodo, examsAhead, openAgendaItem, TYPES } from './agenda.js?v=20261030215123';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030215123';
+import { openEditor } from './editor.js?v=20261030215123';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -29,19 +29,68 @@ function countsText(q) {
 }
 
 // Lance la « Révision du jour » (bouton de l'accueil et de la barre latérale sur ordinateur).
+// File du jour, préparation des DS et colles comprise.
+export function dailyToday() {
+  return S.dailyWithExams(state.progress, dailyChapters(), examsAhead(), state.byId);
+}
+
 export function startDailyReview() {
-  const items = S.dailyQueue(state.progress, dailyChapters()).items;
+  const items = dailyToday().items;
   if (!items.length) { toast('Rien à réviser pour l\'instant.'); return; }
   startSession(items, 'srs', 'Révision du jour');
+}
+
+// Bandeau « Prépa DS » : avancement de chaque DS ou colle du calendrier.
+function renderExamPlans(plans) {
+  const box = $('examPlans');
+  box.innerHTML = '';
+  const fmt = (d) => new Date(d + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+  const lines = [];
+  plans.forEach((pl) => {
+    const ex = pl.exam;
+    let detail;
+    if (!pl.total) {
+      detail = 'Les chapitres choisis n\'ont pas encore de cartes.';
+    } else if (pl.final) {
+      detail = pl.items.length
+        ? 'Dernière revue : ' + plural(pl.items.length, 'carte', 'cartes') + ' aujourd\'hui' + (pl.pendingLeft > pl.items.length ? ', ' + (pl.pendingLeft - pl.items.length) + ' les jours suivants' : '')
+        : 'Dernière revue faite pour aujourd\'hui.';
+      if (pl.freshLeft) detail += ' · ' + plural(pl.freshLeft, 'carte jamais vue', 'cartes jamais vues');
+    } else if (pl.freshLeft) {
+      detail = plural(pl.items.length, 'nouvelle carte', 'nouvelles cartes') + ' aujourd\'hui · ' + pl.freshLeft + ' à découvrir en tout';
+    } else {
+      detail = 'Tout est découvert. Dernière revue à partir du ' + fmt(S.addDays(ex.date, -S.EXAM_WINDOW)) + '.';
+    }
+    lines.push({ ex, days: pl.daysLeft, detail });
+  });
+  // DS et colles proches sans chapitres : rappel pour les compléter.
+  examsAhead().filter((ex) => !(ex.chaps || []).length && S.daysBetween(S.today(), ex.date) <= 14)
+    .forEach((ex) => lines.push({ ex, days: S.daysBetween(S.today(), ex.date), detail: 'Ajoute les chapitres qui tombent pour que la préparation commence.', missing: true }));
+  box.hidden = !lines.length;
+  lines.sort((a, b) => a.days - b.days);
+  lines.forEach(({ ex, days, detail, missing }) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'exam-plan' + (missing ? ' missing' : '');
+    b.innerHTML = '<span class="ep-when"></span><span class="ep-main"><b></b><span class="ep-detail"></span></span>';
+    b.querySelector('.ep-when').textContent = days === 1 ? 'demain' : 'J-' + days;
+    b.querySelector('b').textContent = 'Prépa ' + TYPES[ex.type] + ' · ' + ex.title + ' · ' + fmt(ex.date);
+    b.querySelector('.ep-detail').textContent = detail;
+    b.setAttribute('aria-label', b.querySelector('b').textContent + '. ' + detail + ' Ouvrir dans le calendrier.');
+    b.addEventListener('click', () => openAgendaItem(ex));
+    box.appendChild(b);
+  });
 }
 
 export function renderHome() {
   const p = state.progress;
   $('date').textContent = new Date(Date.now() - 4 * 3600000).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   renderTodo($('todoBox'));
-  const daily = S.dailyQueue(p, dailyChapters());
+  const daily = dailyToday();
   $('dueTotal').textContent = daily.items.length;
-  $('dueDetail').textContent = countsText({ reviews: daily.reviewsDue, fresh: daily.newAvailable, learn: daily.learn });
+  $('dueDetail').textContent = countsText({ reviews: daily.reviewsDue, fresh: daily.newAvailable, learn: daily.learn }) +
+    (daily.extra ? ' · ' + daily.extra + ' pour les DS' : '');
+  renderExamPlans(daily.plans);
   $('startDaily').disabled = daily.items.length === 0;
 
   const off = new Set(p.settings.inactive || []);

@@ -1,13 +1,14 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030210746';
-import * as S from './store.js?v=20261030210746';
-import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030210746';
-import { renderAppearance, themeLabel } from './theme.js?v=20261030210746';
-import { renderNotifs, notifSummary } from './notifs.js?v=20261030210746';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030210746';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030210746';
-import { PALETTE, matColorKey } from './agenda.js?v=20261030210746';
-import { buildChecklist } from './practice.js?v=20261030210746';
+import { GitHub } from './github.js?v=20261030215123';
+import * as S from './store.js?v=20261030215123';
+import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030215123';
+import { renderAppearance, themeLabel } from './theme.js?v=20261030215123';
+import { renderAnki, bindAnki } from './anki.js?v=20261030215123';
+import { renderNotifs, notifSummary } from './notifs.js?v=20261030215123';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030215123';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030215123';
+import { PALETTE, matColorKey } from './agenda.js?v=20261030215123';
+import { buildChecklist } from './practice.js?v=20261030215123';
 
 export function renderSettings() {
   const s = state.progress.settings;
@@ -15,6 +16,7 @@ export function renderSettings() {
   renderMatColors();
   renderNotifs();
   renderAppearance();
+  renderAnki();
   $('sRetention').value = String(Math.round(s.retention * 100));
   $('sMaxIvl').value = s.maxIvl;
   $('sLearn').value = (s.learnSteps || []).join(' ');
@@ -66,6 +68,7 @@ function renderSummaries() {
   const model = (MODELS.find(([v]) => v === (state.config.geminiModel || DEFAULT_MODEL)) || [, ''])[1].replace(/ \(.*\)$/, '');
   set('gemini', state.config.geminiKey ? 'Clé enregistrée · ' + model : 'Aucune clé sur cet appareil');
   set('sauvegarde', 'Exporter ou importer un fichier');
+  set('anki', 'Importer ou exporter des paquets .apkg');
 }
 
 function bindAccordion() {
@@ -273,6 +276,7 @@ async function importProgress(input) {
 
 export function bindSettings() {
   bindAccordion();
+  bindAnki();
   $('sRetention').addEventListener('change', () => updateSettings({ retention: Number($('sRetention').value) / 100 }, 'algoStatus'));
   $('sMaxIvl').addEventListener('change', () => {
     const v = readNumber('sMaxIvl', 7, 3650, state.progress.settings.maxIvl);

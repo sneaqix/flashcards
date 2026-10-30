@@ -1,7 +1,7 @@
 // Progression, paramètres, journal quotidien et file de révision.
-import * as F from './scheduler.js?v=20261030210746';
+import * as F from './scheduler.js?v=20261030215123';
 
-export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261030210746';
+export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261030215123';
 
 const LS_PROGRESS = 'fc.progress.v2';
 const LS_CONFIG = 'fc.config.v1';
@@ -208,6 +208,76 @@ export function dailyQueue(p, chapters) {
   return { items: shuffle(items), reviewsDue, newAvailable, learn, bySubject };
 }
 
+// ---------- Planificateur d'examen (DS et colles du calendrier) ----------
+// Objectif : toutes les faces des chapitres du DS découvertes avant les 3 derniers jours,
+// puis chacune revue au moins une fois pendant ces 3 derniers jours.
+// exams : [{ id, title, type, date: 'AAAA-MM-JJ', chaps: [ids] }] ; byId : Map id -> chapitre.
+export const EXAM_WINDOW = 3;
+export function examPlan(p, exams, byId, day = F.today()) {
+  const plans = [];
+  const taken = new Set();
+  const sorted = exams.filter((e) => e && e.date && (e.chaps || []).length && F.daysBetween(day, e.date) >= 1)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  for (const ex of sorted) {
+    const n = F.daysBetween(day, ex.date); // jours restants avant le DS (le jour J n'est pas compté)
+    const chs = ex.chaps.map((id) => byId.get(id)).filter(Boolean);
+    const faces = chs.flatMap((ch) => faces_(ch)).filter((f) => !taken.has(f.key));
+    faces.forEach((f) => taken.add(f.key));
+    const fresh = [], introducedToday = [], pending = [], doneToday = [];
+    const windowStart = F.addDays(ex.date, -EXAM_WINDOW);
+    faces.forEach((f) => {
+      const st = stateOf(p, f.key);
+      if (!st) { fresh.push(f); return; }
+      if (st.fd === day) introducedToday.push(f);
+      if (n <= EXAM_WINDOW && st.state === 'review') {
+        if (st.lastDay === day) doneToday.push(f);
+        else if (!st.lastDay || st.lastDay < windowStart) pending.push({ f, st });
+      }
+    });
+    // Nouvelles faces : réparties sur les jours avant la fenêtre finale (ou sur les jours restants).
+    const daysForNew = n > EXAM_WINDOW ? n - EXAM_WINDOW : n;
+    const newTarget = Math.ceil((fresh.length + introducedToday.length) / daysForNew);
+    const newToday = Math.max(0, Math.min(fresh.length, newTarget - introducedToday.length));
+    // Dernière revue : les faces pas encore revues pendant la fenêtre, réparties sur les jours restants.
+    let recheck = [];
+    if (n <= EXAM_WINDOW) {
+      const target = Math.ceil((pending.length + doneToday.length) / n);
+      const k = Math.max(0, Math.min(pending.length, target - doneToday.length));
+      recheck = pending.sort((a, b) => (a.st.due || '').localeCompare(b.st.due || '')).slice(0, k).map((x) => x.f);
+    }
+    const items = [
+      ...fresh.slice(0, newToday).map((f) => ({ ...f, kind: 'new', exam: ex.id })),
+      ...recheck.map((f) => ({ ...f, kind: 'review', exam: ex.id })),
+    ];
+    plans.push({ exam: ex, daysLeft: n, items, freshLeft: fresh.length, pendingLeft: pending.length, total: faces.length, final: n <= EXAM_WINDOW });
+  }
+  return plans;
+}
+const faces_ = (ch) => faces(ch);
+
+// File de la « Révision du jour » avec la préparation des DS : les faces du planificateur
+// s'ajoutent à la file normale (sans compter dans les limites quotidiennes des matières).
+export function dailyWithExams(p, chapters, exams, byId) {
+  const q = dailyQueue(p, chapters);
+  const plans = examPlan(p, exams || [], byId);
+  const have = new Set(q.items.map((it) => it.key));
+  let extra = 0;
+  plans.forEach((pl) => {
+    pl.added = 0;
+    pl.items.forEach((it) => {
+      if (have.has(it.key)) return;
+      have.add(it.key);
+      q.items.push(it);
+      pl.added++;
+      extra++;
+    });
+  });
+  if (extra) shuffle(q.items);
+  q.plans = plans;
+  q.extra = extra;
+  return q;
+}
+
 // Enregistre une réponse (g de 1 à 4). `first` : premier passage de cette face dans la session.
 // `ms` : temps passé sur la carte. Renvoie de quoi annuler cette réponse avec undoAnswer.
 export function recordAnswer(p, item, g, first, ms = 0, now = Date.now()) {
@@ -221,6 +291,9 @@ export function recordAnswer(p, item, g, first, ms = 0, now = Date.now()) {
   };
   const prev = stateOf(p, key);
   p.cards[key] = F.schedule(prev, g, now, p.settings, key);
+  // Jour de découverte de la face (sert au planificateur d'examen).
+  const fd = prev ? prev.fd : day;
+  if (fd) p.cards[key].fd = fd;
 
   const l = dayLog(p, dev, day);
   const mat = item.chapter.matiere;

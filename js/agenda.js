@@ -1,9 +1,9 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261030210746';
-import * as S from './store.js?v=20261030210746';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030210746';
-import { startPractice } from './practice.js?v=20261030210746';
+import { isConflict } from './github.js?v=20261030215123';
+import * as S from './store.js?v=20261030215123';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030215123';
+import { startPractice } from './practice.js?v=20261030215123';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
@@ -138,6 +138,13 @@ function remove(id) {
 }
 
 // Éléments à faire aujourd'hui et en retard (pour l'écran Réviser).
+// DS et colles à venir, pour le planificateur d'examen (avec ou sans chapitres).
+export function examsAhead() {
+  const t = todayIso();
+  return agenda.items.filter((it) => !it.done && (it.type === 'ds' || it.type === 'colle') && it.date && it.date > t).sort(compare);
+}
+export { openItem as openAgendaItem };
+
 export function dueNow() {
   const t = todayIso();
   return agenda.items.filter((it) => !it.done && it.date && it.date <= t).sort(compare);
@@ -471,7 +478,8 @@ function updatePrep() {
   $('tkPrep').hidden = !exam;
   $('tkPrepBtn').disabled = !editing.chaps.length;
   $('tkPrepHint').textContent = editing.chaps.length
-    ? 'Lance un bachotage sur ' + plural(editing.chaps.length, 'chapitre coché', 'chapitres cochés') + ', sans toucher à ta progression.'
+    ? ((editing.type === 'ds' || editing.type === 'colle') ? 'Avec une date, les cartes de ces chapitres s\'ajoutent chaque jour à ta révision du jour jusqu\'au ' + (editing.type === 'ds' ? 'DS' : 'jour de la colle') + '. ' : '') +
+      'Le bouton lance un bachotage sur ' + plural(editing.chaps.length, 'chapitre coché', 'chapitres cochés') + ', sans toucher à ta progression.'
     : 'Coche les chapitres au programme pour pouvoir les réviser d\'ici le ' + (TYPES[editing.type] || '') + '.';
 }
 

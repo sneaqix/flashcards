@@ -47,7 +47,21 @@ const inactive = new Set(progress.settings.inactive || []);
 const chapters = loadChapters().filter((c) => !inactive.has(c.id));
 const matNames = new Map(chapters.map((c) => [c.matiere, c.matiereNom]));
 const day = S.today();
-const q = S.dailyQueue(progress, chapters);
+// Comme dans l'appli : la Révision du jour inclut la préparation des DS et colles du calendrier.
+const allChapters = loadChapters();
+const byId = new Map(allChapters.map((c) => [c.id, c]));
+const agendaData = readJson(path.join(dataDir, 'agenda.json'), { items: [] });
+const exams = (agendaData.items || []).filter((it) => !it.done && (it.type === 'ds' || it.type === 'colle') && it.date);
+const off = new Set(Array.isArray(progress.settings.dailyOff) ? progress.settings.dailyOff : ['francais']);
+const q = S.dailyWithExams(progress, chapters.filter((c) => !off.has(c.matiere)), exams, byId);
+// Compte par matière : la file du jour (préparation des DS comprise).
+q.bySubject = {};
+q.items.forEach((it) => {
+  const m = it.chapter.matiere;
+  q.bySubject[m] = q.bySubject[m] || { total: 0, fresh: 0 };
+  q.bySubject[m].total++;
+  if (it.kind === 'new') q.bySubject[m].fresh++;
+});
 const subjects = Object.entries(q.bySubject).filter(([, v]) => v.total > 0).sort((a, b) => b[1].total - a[1].total);
 const total = subjects.reduce((s, [, v]) => s + v.total, 0);
 const fresh = subjects.reduce((s, [, v]) => s + v.fresh, 0);

@@ -17,6 +17,8 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 - Statistiques détaillées (depuis les Réglages) et réglages par matière.
 - Notifications de rappel (cartes du jour, série) envoyées par GitHub Actions ; sur iPhone, depuis l'appli ajoutée à l'écran d'accueil.
 - Sept chartes graphiques au choix (Cahier, Tableau, Épuré, Bibliothèque, Néo-brutal, Pastel, Terminal), chacune en clair et en sombre.
+- Planificateur d'examen : pour chaque DS ou colle du calendrier avec ses chapitres, une dose quotidienne de cartes s'ajoute à la révision du jour (tout découvert avant les 3 derniers jours, puis tout revu une dernière fois).
+- Import et export de paquets Anki (.apkg), images et textes à trous compris (Réglages › Paquets Anki).
 - Progression synchronisée dans un dépôt privé GitHub.
 
 ## Organisation
@@ -41,6 +43,8 @@ js/importer.js        écran d'import et de relecture
 js/classeur.js        onglet Classeur : liste, ajout, modification des documents
 js/viewer.js          lecteur PDF (PDF.js) et annotations
 js/carnets.js         carnets de citations et de résumés (carnets/*.json du dépôt privé)
+js/anki.js            import et export de paquets Anki (.apkg)
+vendor/               JSZip, sql.js et fzstd (lecture et écriture des paquets Anki)
 js/agenda.js          onglet Calendrier (stocké dans agenda.json du dépôt privé)
 js/notifs.js          réglages des notifications et abonnement de l'appareil
 sw.js                 service worker : affiche les notifications reçues
