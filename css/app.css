@@ -626,7 +626,16 @@ body.cal .toast { bottom: calc(var(--tabs-h) + 72px + env(safe-area-inset-bottom
 .cn-num { font: 700 0.82rem var(--font-mono); color: var(--accent); background: var(--accent-soft); padding: 3px 7px; border-radius: 6px; }
 .cn-res-title { font-weight: 600; }
 .cn-res-pages { margin-left: auto; font: 500 0.75rem var(--font-mono); color: var(--muted); }
-.cn-res-text { white-space: pre-line; overflow-wrap: anywhere; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.cn-res-text { white-space: pre-line; overflow-wrap: anywhere; line-height: 1.5; }
+.cn-clamp { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; -webkit-line-clamp: 2; }
+.cn-quote.cn-clamp { -webkit-line-clamp: 4; }
+.cn-res-text.cn-clamp { -webkit-line-clamp: 6; }
+.cn-item.open .cn-clamp { display: block; -webkit-line-clamp: unset; overflow: visible; }
+.cn-more { display: none; font: 600 0.8rem var(--font-mono); color: var(--accent); }
+.cn-item.cut:not(.open) .cn-more { display: block; }
+.cn-item.open .cn-card { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.cn-actions { display: flex; justify-content: flex-end; padding: 6px 10px; background: var(--card); border: 1px solid var(--accent); border-top: 0; border-radius: 0 0 10px 10px; }
+.cn-actions[hidden] { display: none; }
 .cn-item.flash .cn-card { animation: flash 1.6s ease-out; }
 @keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: 0 0 0 0 transparent; } }
 @media (prefers-reduced-motion: reduce) { .cn-item.flash .cn-card { animation: none; box-shadow: 0 0 0 2px var(--accent); } }

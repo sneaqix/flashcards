@@ -1,13 +1,14 @@
 // Carnets de français : relevé de citations (un carnet par œuvre, trié par page)
 // et résumés des chapitres (un carnet par matière, un onglet par œuvre).
 // Stockés dans le dépôt privé : carnets/<id>.json, fusionnés entre appareils.
-import { isConflict } from './github.js?v=20261030122825';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030122825';
+import { isConflict } from './github.js?v=20261030124834';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030124834';
 
 const stores = new Map(); // id du carnet -> { data: { items, deleted }, sha, dirty, loaded }
 let open = null;          // { kind: 'citations' | 'resumes', id, chap?, mat?, tab? }
 let entry = null;         // élément en cours de saisie
 let highlightId = null;
+const expanded = new Set(); // éléments dépliés dans la liste
 
 // =====================================================================
 // Données
@@ -185,6 +186,7 @@ function renderCarnet() {
     else if (!items.length) list.innerHTML = '<li class="cn-empty">Aucun résumé pour cette œuvre. Ajoute le premier chapitre avec le bouton en bas.</li>';
     items.forEach((it) => list.appendChild(resumeRow(it)));
   }
+  requestAnimationFrame(() => markTruncated(list));
   if (highlightId) {
     const el = list.querySelector('[data-id="' + highlightId + '"]');
     highlightId = null;
@@ -201,15 +203,15 @@ function citationRow(it) {
   li.dataset.id = it.id;
   li.innerHTML = '<button type="button" class="cn-card">' +
     '<span class="cn-page"></span>' +
-    '<span class="cn-main"><span class="cn-quote"></span>' +
-    '<span class="cn-field"><b>Contexte</b><span class="cn-ctx"></span></span>' +
-    '<span class="cn-field"><b>Pourquoi</b><span class="cn-why"></span></span></span></button>';
+    '<span class="cn-main"><span class="cn-quote cn-clamp"></span>' +
+    '<span class="cn-field"><b>Contexte</b><span class="cn-ctx cn-clamp"></span></span>' +
+    '<span class="cn-field"><b>Pourquoi</b><span class="cn-why cn-clamp"></span></span>' +
+    '<span class="cn-more" aria-hidden="true">Lire la suite</span></span></button>';
   li.querySelector('.cn-page').textContent = 'p. ' + it.page;
   li.querySelector('.cn-quote').textContent = '« ' + it.texte + ' »';
   li.querySelector('.cn-ctx').textContent = it.contexte || '—';
   li.querySelector('.cn-why').textContent = it.justification || '—';
-  li.querySelector('button').addEventListener('click', () => openEntry(it));
-  return li;
+  return foldable(li, it);
 }
 
 function resumeRow(it) {
@@ -218,14 +220,44 @@ function resumeRow(it) {
   li.dataset.id = it.id;
   li.innerHTML = '<button type="button" class="cn-card resume">' +
     '<span class="cn-res-head"><span class="cn-num"></span><span class="cn-res-title"></span><span class="cn-res-pages"></span></span>' +
-    '<span class="cn-res-text"></span></button>';
+    '<span class="cn-res-text cn-clamp"></span><span class="cn-more" aria-hidden="true">Lire la suite</span></button>';
   li.querySelector('.cn-num').textContent = it.num ? 'Ch. ' + it.num : 'Ch. ?';
   li.querySelector('.cn-res-title').textContent = it.titre || '';
   li.querySelector('.cn-res-pages').textContent = it.pages ? 'p. ' + it.pages : '';
   li.querySelector('.cn-res-text').textContent = it.texte;
-  li.querySelector('button').addEventListener('click', () => openEntry(it));
+  return foldable(li, it);
+}
+
+// Un toucher déplie l'élément en entier (lecture seule), un autre le replie.
+// Le bouton « Modifier » n'apparaît que sur un élément déplié.
+function foldable(li, it) {
+  const card = li.querySelector('.cn-card');
+  const bar = document.createElement('div');
+  bar.className = 'cn-actions';
+  bar.innerHTML = '<button type="button" class="ghost small">Modifier</button>';
+  bar.querySelector('button').addEventListener('click', () => openEntry(it));
+  li.appendChild(bar);
+  const set = (on) => {
+    li.classList.toggle('open', on);
+    card.setAttribute('aria-expanded', String(on));
+    bar.hidden = !on;
+    if (!on) requestAnimationFrame(() => markCut(li));
+  };
+  set(expanded.has(it.id));
+  card.addEventListener('click', () => {
+    const on = !expanded.has(it.id);
+    if (on) expanded.add(it.id); else expanded.delete(it.id);
+    set(on);
+  });
   return li;
 }
+
+// Après affichage : signale les éléments repliés dont le texte est coupé.
+function markCut(li) {
+  if (li.classList.contains('open')) return; // déplié : rien n'est coupé, on garde l'état précédent
+  li.classList.toggle('cut', [...li.querySelectorAll('.cn-clamp')].some((el) => el.scrollHeight > el.clientHeight + 1));
+}
+function markTruncated(list) { list.querySelectorAll('.cn-item').forEach(markCut); }
 
 // =====================================================================
 // Saisie d'une citation ou d'un résumé

@@ -1,17 +1,17 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030122825';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030122825';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030122825';
-import { renderHome, bindReview } from './review.js?v=20261030122825';
-import { renderCartes, bindEditor } from './editor.js?v=20261030122825';
-import { renderCram, bindPractice } from './practice.js?v=20261030122825';
-import { bindImport, restoreImport } from './importer.js?v=20261030122825';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030122825';
-import { bindViewer } from './viewer.js?v=20261030122825';
-import { bindCarnets } from './carnets.js?v=20261030122825';
-import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030122825';
-import { renderStats } from './stats.js?v=20261030122825';
-import { renderSettings, bindSettings } from './settings.js?v=20261030122825';
+import { GitHub } from './github.js?v=20261030124834';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030124834';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030124834';
+import { renderHome, bindReview } from './review.js?v=20261030124834';
+import { renderCartes, bindEditor } from './editor.js?v=20261030124834';
+import { renderCram, bindPractice } from './practice.js?v=20261030124834';
+import { bindImport, restoreImport } from './importer.js?v=20261030124834';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030124834';
+import { bindViewer } from './viewer.js?v=20261030124834';
+import { bindCarnets } from './carnets.js?v=20261030124834';
+import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030124834';
+import { renderStats } from './stats.js?v=20261030124834';
+import { renderSettings, bindSettings } from './settings.js?v=20261030124834';
 
 state.views = {
   reviser: renderHome,
