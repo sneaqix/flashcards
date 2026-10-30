@@ -1,0 +1,230 @@
+{
+  "id": "anglais-verbes-a-particule",
+  "nom": "Verbes à particule",
+  "cartes": [
+    {
+      "id": "pv-carry-out",
+      "q": "réaliser, mener à bien",
+      "r": "to carry out\nEx. : The police carried out an investigation.",
+      "attendu": "to carry out",
+      "inverse": true
+    },
+    {
+      "id": "pv-set-up",
+      "q": "mettre en place, créer",
+      "r": "to set up\nEx. : The city set up a tourist tax.",
+      "attendu": "to set up",
+      "inverse": true
+    },
+    {
+      "id": "pv-deal-with",
+      "q": "traiter, s'occuper de",
+      "r": "to deal with\nEx. : The government must deal with the crisis.",
+      "attendu": "to deal with",
+      "inverse": true
+    },
+    {
+      "id": "pv-cope-with",
+      "q": "faire face à, affronter",
+      "r": "to cope with\nEx. : Small towns cannot cope with mass tourism.",
+      "attendu": "to cope with",
+      "inverse": true
+    },
+    {
+      "id": "pv-carry-on",
+      "q": "continuer",
+      "r": "to carry on\nEx. : The protesters carried on despite the rain.",
+      "attendu": "to carry on",
+      "inverse": true
+    },
+    {
+      "id": "pv-give-up",
+      "q": "renoncer, abandonner",
+      "r": "to give up\nEx. : They refused to give up their demands.",
+      "attendu": "to give up",
+      "inverse": true
+    },
+    {
+      "id": "pv-find-out",
+      "q": "découvrir (une information)",
+      "r": "to find out\nEx. : Journalists found out the truth.",
+      "attendu": "to find out",
+      "inverse": true
+    },
+    {
+      "id": "pv-point-out",
+      "q": "signaler, faire remarquer",
+      "r": "to point out\nEx. : Experts point out the risks.",
+      "attendu": "to point out",
+      "inverse": true
+    },
+    {
+      "id": "pv-cut-down-on",
+      "q": "réduire, diminuer",
+      "r": "to cut down on\nEx. : We should cut down on plastic.",
+      "attendu": "to cut down on",
+      "inverse": true
+    },
+    {
+      "id": "pv-call-off",
+      "q": "annuler",
+      "r": "to call off\nEx. : The strike was called off.",
+      "attendu": "to call off",
+      "inverse": true
+    },
+    {
+      "id": "pv-call-for",
+      "q": "réclamer, appeler à",
+      "r": "to call for\nEx. : NGOs call for stricter rules.",
+      "attendu": "to call for",
+      "inverse": true
+    },
+    {
+      "id": "pv-break-down",
+      "q": "tomber en panne ; échouer (négociation)",
+      "r": "to break down\nEx. : Talks broke down last night.",
+      "attendu": "to break down",
+      "inverse": true
+    },
+    {
+      "id": "pv-break-out",
+      "q": "éclater (guerre, émeute)",
+      "r": "to break out\nEx. : Riots broke out in the capital.",
+      "attendu": "to break out",
+      "inverse": true
+    },
+    {
+      "id": "pv-get-away-with",
+      "q": "s'en sortir, s'en tirer",
+      "r": "to get away with\nEx. : They got away with breaking the law.",
+      "attendu": "to get away with",
+      "inverse": true
+    },
+    {
+      "id": "pv-get-over",
+      "q": "surmonter, se remettre de",
+      "r": "to get over\nEx. : The city never got over the crisis.",
+      "attendu": "to get over",
+      "inverse": true
+    },
+    {
+      "id": "pv-get-rid-of",
+      "q": "se débarrasser de",
+      "r": "to get rid of\nEx. : We must get rid of single-use plastic.",
+      "attendu": "to get rid of",
+      "inverse": true
+    },
+    {
+      "id": "pv-keep-up-with",
+      "q": "se tenir au courant",
+      "r": "to keep up with\nEx. : It is hard to keep up with the news.",
+      "attendu": "to keep up with",
+      "inverse": true
+    },
+    {
+      "id": "pv-look-forward-to",
+      "q": "attendre avec impatience",
+      "r": "to look forward to\nEx. : I look forward to hearing from you.",
+      "attendu": "to look forward to",
+      "inverse": true
+    },
+    {
+      "id": "pv-look-up",
+      "q": "chercher (une information)",
+      "r": "to look up\nEx. : Look up the word in a dictionary.",
+      "attendu": "to look up",
+      "inverse": true
+    },
+    {
+      "id": "pv-look-after",
+      "q": "prendre soin de, s'occuper de",
+      "r": "to look after\nEx. : Who will look after the elderly?",
+      "attendu": "to look after",
+      "inverse": true
+    },
+    {
+      "id": "pv-put-off",
+      "q": "reporter, repousser",
+      "r": "to put off\nEx. : The vote was put off until May.",
+      "attendu": "to put off",
+      "inverse": true
+    },
+    {
+      "id": "pv-put-up-with",
+      "q": "supporter, tolérer",
+      "r": "to put up with\nEx. : Locals put up with noise all summer.",
+      "attendu": "to put up with",
+      "inverse": true
+    },
+    {
+      "id": "pv-run-out-of",
+      "q": "manquer de, être à court de",
+      "r": "to run out of\nEx. : The city is running out of water.",
+      "attendu": "to run out of",
+      "inverse": true
+    },
+    {
+      "id": "pv-stand-out",
+      "q": "se démarquer, ressortir",
+      "r": "to stand out\nEx. : Venice stands out as an extreme case.",
+      "attendu": "to stand out",
+      "inverse": true
+    },
+    {
+      "id": "pv-stand-up-for",
+      "q": "soutenir, défendre",
+      "r": "to stand up for\nEx. : She stood up for workers' rights.",
+      "attendu": "to stand up for",
+      "inverse": true
+    },
+    {
+      "id": "pv-take-over",
+      "q": "reprendre (une entreprise) ; prendre le contrôle",
+      "r": "to take over\nEx. : Tourists have taken over the old town.",
+      "attendu": "to take over",
+      "inverse": true
+    },
+    {
+      "id": "pv-take-off",
+      "q": "décoller ; connaître un succès soudain",
+      "r": "to take off\nEx. : Low-cost travel took off in the 2000s.",
+      "attendu": "to take off",
+      "inverse": true
+    },
+    {
+      "id": "pv-turn-down",
+      "q": "refuser (une offre)",
+      "r": "to turn down\nEx. : The union turned down the offer.",
+      "attendu": "to turn down",
+      "inverse": true
+    },
+    {
+      "id": "pv-turn-out",
+      "q": "s'avérer, se révéler",
+      "r": "to turn out\nEx. : The plan turned out to be a failure.",
+      "attendu": "to turn out",
+      "inverse": true
+    },
+    {
+      "id": "pv-work-out",
+      "q": "trouver (une solution), résoudre",
+      "r": "to work out\nEx. : They worked out a compromise.",
+      "attendu": "to work out",
+      "inverse": true
+    },
+    {
+      "id": "pv-phase-out",
+      "q": "mettre fin à, éliminer progressivement",
+      "r": "to phase out\nEx. : The country will phase out coal by 2030.",
+      "attendu": "to phase out",
+      "inverse": true
+    },
+    {
+      "id": "pv-rely-on",
+      "q": "dépendre de, compter sur",
+      "r": "to rely on\nEx. : Many families rely on tourism.",
+      "attendu": "to rely on",
+      "inverse": true
+    }
+  ]
+}

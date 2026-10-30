@@ -51,9 +51,10 @@
       "chapitres": [
         "anglais/tourisme.json",
         "anglais/manifestations.json",
-        "anglais/tourisme-trous.json",
-        "anglais/manifestations-trous.json",
-        "anglais/connecteurs-trous.json"
+        "anglais/connecteurs-trous.json",
+        "anglais/verbes-irreguliers.json",
+        "anglais/verbes-usuels.json",
+        "anglais/verbes-a-particule.json"
       ]
     },
     {

@@ -1,0 +1,776 @@
+{
+  "id": "anglais-verbes-irreguliers",
+  "nom": "Verbes irréguliers",
+  "cartes": [
+    {
+      "id": "irr-arise",
+      "q": "to arise (survenir, s'élever)\nPrétérit et participe passé ?",
+      "r": "arose, arisen",
+      "mode": "saisie",
+      "attendu": "arose, arisen"
+    },
+    {
+      "id": "irr-awake",
+      "q": "to awake ((se) réveiller)\nPrétérit et participe passé ?",
+      "r": "awoke, awoken",
+      "mode": "saisie",
+      "attendu": "awoke, awoken"
+    },
+    {
+      "id": "irr-be",
+      "q": "to be (être)\nPrétérit et participe passé ?",
+      "r": "was/were, been",
+      "mode": "saisie",
+      "attendu": "was, been / were, been / was, were, been"
+    },
+    {
+      "id": "irr-bear",
+      "q": "to bear (supporter ; porter)\nPrétérit et participe passé ?",
+      "r": "bore, borne/born",
+      "mode": "saisie",
+      "attendu": "bore, borne / bore, born"
+    },
+    {
+      "id": "irr-beat",
+      "q": "to beat (battre)\nPrétérit et participe passé ?",
+      "r": "beat, beaten",
+      "mode": "saisie",
+      "attendu": "beat, beaten"
+    },
+    {
+      "id": "irr-become",
+      "q": "to become (devenir)\nPrétérit et participe passé ?",
+      "r": "became, become",
+      "mode": "saisie",
+      "attendu": "became, become"
+    },
+    {
+      "id": "irr-begin",
+      "q": "to begin (commencer)\nPrétérit et participe passé ?",
+      "r": "began, begun",
+      "mode": "saisie",
+      "attendu": "began, begun"
+    },
+    {
+      "id": "irr-bend",
+      "q": "to bend (plier, se courber)\nPrétérit et participe passé ?",
+      "r": "bent, bent",
+      "mode": "saisie",
+      "attendu": "bent, bent"
+    },
+    {
+      "id": "irr-bet",
+      "q": "to bet (parier)\nPrétérit et participe passé ?",
+      "r": "bet, bet",
+      "mode": "saisie",
+      "attendu": "bet, bet"
+    },
+    {
+      "id": "irr-bite",
+      "q": "to bite (mordre)\nPrétérit et participe passé ?",
+      "r": "bit, bitten",
+      "mode": "saisie",
+      "attendu": "bit, bitten"
+    },
+    {
+      "id": "irr-bleed",
+      "q": "to bleed (saigner)\nPrétérit et participe passé ?",
+      "r": "bled, bled",
+      "mode": "saisie",
+      "attendu": "bled, bled"
+    },
+    {
+      "id": "irr-blow",
+      "q": "to blow (souffler)\nPrétérit et participe passé ?",
+      "r": "blew, blown",
+      "mode": "saisie",
+      "attendu": "blew, blown"
+    },
+    {
+      "id": "irr-break",
+      "q": "to break (casser)\nPrétérit et participe passé ?",
+      "r": "broke, broken",
+      "mode": "saisie",
+      "attendu": "broke, broken"
+    },
+    {
+      "id": "irr-bring",
+      "q": "to bring (apporter)\nPrétérit et participe passé ?",
+      "r": "brought, brought",
+      "mode": "saisie",
+      "attendu": "brought, brought"
+    },
+    {
+      "id": "irr-build",
+      "q": "to build (construire)\nPrétérit et participe passé ?",
+      "r": "built, built",
+      "mode": "saisie",
+      "attendu": "built, built"
+    },
+    {
+      "id": "irr-burn",
+      "q": "to burn (brûler)\nPrétérit et participe passé ?",
+      "r": "burnt/burned, burnt/burned",
+      "mode": "saisie",
+      "attendu": "burnt, burnt / burnt, burned / burned, burnt / burned, burned"
+    },
+    {
+      "id": "irr-burst",
+      "q": "to burst (éclater)\nPrétérit et participe passé ?",
+      "r": "burst, burst",
+      "mode": "saisie",
+      "attendu": "burst, burst"
+    },
+    {
+      "id": "irr-buy",
+      "q": "to buy (acheter)\nPrétérit et participe passé ?",
+      "r": "bought, bought",
+      "mode": "saisie",
+      "attendu": "bought, bought"
+    },
+    {
+      "id": "irr-catch",
+      "q": "to catch (attraper)\nPrétérit et participe passé ?",
+      "r": "caught, caught",
+      "mode": "saisie",
+      "attendu": "caught, caught"
+    },
+    {
+      "id": "irr-choose",
+      "q": "to choose (choisir)\nPrétérit et participe passé ?",
+      "r": "chose, chosen",
+      "mode": "saisie",
+      "attendu": "chose, chosen"
+    },
+    {
+      "id": "irr-come",
+      "q": "to come (venir)\nPrétérit et participe passé ?",
+      "r": "came, come",
+      "mode": "saisie",
+      "attendu": "came, come"
+    },
+    {
+      "id": "irr-cost",
+      "q": "to cost (coûter)\nPrétérit et participe passé ?",
+      "r": "cost, cost",
+      "mode": "saisie",
+      "attendu": "cost, cost"
+    },
+    {
+      "id": "irr-cut",
+      "q": "to cut (couper)\nPrétérit et participe passé ?",
+      "r": "cut, cut",
+      "mode": "saisie",
+      "attendu": "cut, cut"
+    },
+    {
+      "id": "irr-deal",
+      "q": "to deal (traiter, distribuer)\nPrétérit et participe passé ?",
+      "r": "dealt, dealt",
+      "mode": "saisie",
+      "attendu": "dealt, dealt"
+    },
+    {
+      "id": "irr-dig",
+      "q": "to dig (creuser)\nPrétérit et participe passé ?",
+      "r": "dug, dug",
+      "mode": "saisie",
+      "attendu": "dug, dug"
+    },
+    {
+      "id": "irr-do",
+      "q": "to do (faire)\nPrétérit et participe passé ?",
+      "r": "did, done",
+      "mode": "saisie",
+      "attendu": "did, done"
+    },
+    {
+      "id": "irr-draw",
+      "q": "to draw (dessiner ; tirer)\nPrétérit et participe passé ?",
+      "r": "drew, drawn",
+      "mode": "saisie",
+      "attendu": "drew, drawn"
+    },
+    {
+      "id": "irr-dream",
+      "q": "to dream (rêver)\nPrétérit et participe passé ?",
+      "r": "dreamt/dreamed, dreamt/dreamed",
+      "mode": "saisie",
+      "attendu": "dreamt, dreamt / dreamt, dreamed / dreamed, dreamt / dreamed, dreamed"
+    },
+    {
+      "id": "irr-drink",
+      "q": "to drink (boire)\nPrétérit et participe passé ?",
+      "r": "drank, drunk",
+      "mode": "saisie",
+      "attendu": "drank, drunk"
+    },
+    {
+      "id": "irr-drive",
+      "q": "to drive (conduire)\nPrétérit et participe passé ?",
+      "r": "drove, driven",
+      "mode": "saisie",
+      "attendu": "drove, driven"
+    },
+    {
+      "id": "irr-eat",
+      "q": "to eat (manger)\nPrétérit et participe passé ?",
+      "r": "ate, eaten",
+      "mode": "saisie",
+      "attendu": "ate, eaten"
+    },
+    {
+      "id": "irr-fall",
+      "q": "to fall (tomber)\nPrétérit et participe passé ?",
+      "r": "fell, fallen",
+      "mode": "saisie",
+      "attendu": "fell, fallen"
+    },
+    {
+      "id": "irr-feed",
+      "q": "to feed (nourrir)\nPrétérit et participe passé ?",
+      "r": "fed, fed",
+      "mode": "saisie",
+      "attendu": "fed, fed"
+    },
+    {
+      "id": "irr-feel",
+      "q": "to feel (ressentir, se sentir)\nPrétérit et participe passé ?",
+      "r": "felt, felt",
+      "mode": "saisie",
+      "attendu": "felt, felt"
+    },
+    {
+      "id": "irr-fight",
+      "q": "to fight (se battre)\nPrétérit et participe passé ?",
+      "r": "fought, fought",
+      "mode": "saisie",
+      "attendu": "fought, fought"
+    },
+    {
+      "id": "irr-find",
+      "q": "to find (trouver)\nPrétérit et participe passé ?",
+      "r": "found, found",
+      "mode": "saisie",
+      "attendu": "found, found"
+    },
+    {
+      "id": "irr-flee",
+      "q": "to flee (fuir)\nPrétérit et participe passé ?",
+      "r": "fled, fled",
+      "mode": "saisie",
+      "attendu": "fled, fled"
+    },
+    {
+      "id": "irr-fly",
+      "q": "to fly (voler (dans les airs))\nPrétérit et participe passé ?",
+      "r": "flew, flown",
+      "mode": "saisie",
+      "attendu": "flew, flown"
+    },
+    {
+      "id": "irr-forbid",
+      "q": "to forbid (interdire)\nPrétérit et participe passé ?",
+      "r": "forbade, forbidden",
+      "mode": "saisie",
+      "attendu": "forbade, forbidden"
+    },
+    {
+      "id": "irr-forget",
+      "q": "to forget (oublier)\nPrétérit et participe passé ?",
+      "r": "forgot, forgotten",
+      "mode": "saisie",
+      "attendu": "forgot, forgotten"
+    },
+    {
+      "id": "irr-forgive",
+      "q": "to forgive (pardonner)\nPrétérit et participe passé ?",
+      "r": "forgave, forgiven",
+      "mode": "saisie",
+      "attendu": "forgave, forgiven"
+    },
+    {
+      "id": "irr-freeze",
+      "q": "to freeze (geler)\nPrétérit et participe passé ?",
+      "r": "froze, frozen",
+      "mode": "saisie",
+      "attendu": "froze, frozen"
+    },
+    {
+      "id": "irr-get",
+      "q": "to get (obtenir, devenir)\nPrétérit et participe passé ?",
+      "r": "got, got/gotten",
+      "mode": "saisie",
+      "attendu": "got, got / got, gotten"
+    },
+    {
+      "id": "irr-give",
+      "q": "to give (donner)\nPrétérit et participe passé ?",
+      "r": "gave, given",
+      "mode": "saisie",
+      "attendu": "gave, given"
+    },
+    {
+      "id": "irr-go",
+      "q": "to go (aller)\nPrétérit et participe passé ?",
+      "r": "went, gone",
+      "mode": "saisie",
+      "attendu": "went, gone"
+    },
+    {
+      "id": "irr-grow",
+      "q": "to grow (grandir, cultiver)\nPrétérit et participe passé ?",
+      "r": "grew, grown",
+      "mode": "saisie",
+      "attendu": "grew, grown"
+    },
+    {
+      "id": "irr-hang",
+      "q": "to hang (suspendre, accrocher)\nPrétérit et participe passé ?",
+      "r": "hung, hung",
+      "mode": "saisie",
+      "attendu": "hung, hung"
+    },
+    {
+      "id": "irr-have",
+      "q": "to have (avoir)\nPrétérit et participe passé ?",
+      "r": "had, had",
+      "mode": "saisie",
+      "attendu": "had, had"
+    },
+    {
+      "id": "irr-hear",
+      "q": "to hear (entendre)\nPrétérit et participe passé ?",
+      "r": "heard, heard",
+      "mode": "saisie",
+      "attendu": "heard, heard"
+    },
+    {
+      "id": "irr-hide",
+      "q": "to hide ((se) cacher)\nPrétérit et participe passé ?",
+      "r": "hid, hidden",
+      "mode": "saisie",
+      "attendu": "hid, hidden"
+    },
+    {
+      "id": "irr-hit",
+      "q": "to hit (frapper)\nPrétérit et participe passé ?",
+      "r": "hit, hit",
+      "mode": "saisie",
+      "attendu": "hit, hit"
+    },
+    {
+      "id": "irr-hold",
+      "q": "to hold (tenir)\nPrétérit et participe passé ?",
+      "r": "held, held",
+      "mode": "saisie",
+      "attendu": "held, held"
+    },
+    {
+      "id": "irr-hurt",
+      "q": "to hurt (blesser, faire mal)\nPrétérit et participe passé ?",
+      "r": "hurt, hurt",
+      "mode": "saisie",
+      "attendu": "hurt, hurt"
+    },
+    {
+      "id": "irr-keep",
+      "q": "to keep (garder)\nPrétérit et participe passé ?",
+      "r": "kept, kept",
+      "mode": "saisie",
+      "attendu": "kept, kept"
+    },
+    {
+      "id": "irr-know",
+      "q": "to know (savoir, connaître)\nPrétérit et participe passé ?",
+      "r": "knew, known",
+      "mode": "saisie",
+      "attendu": "knew, known"
+    },
+    {
+      "id": "irr-lay",
+      "q": "to lay (poser, étendre)\nPrétérit et participe passé ?",
+      "r": "laid, laid",
+      "mode": "saisie",
+      "attendu": "laid, laid"
+    },
+    {
+      "id": "irr-lead",
+      "q": "to lead (mener, diriger)\nPrétérit et participe passé ?",
+      "r": "led, led",
+      "mode": "saisie",
+      "attendu": "led, led"
+    },
+    {
+      "id": "irr-learn",
+      "q": "to learn (apprendre)\nPrétérit et participe passé ?",
+      "r": "learnt/learned, learnt/learned",
+      "mode": "saisie",
+      "attendu": "learnt, learnt / learnt, learned / learned, learnt / learned, learned"
+    },
+    {
+      "id": "irr-leave",
+      "q": "to leave (quitter, partir)\nPrétérit et participe passé ?",
+      "r": "left, left",
+      "mode": "saisie",
+      "attendu": "left, left"
+    },
+    {
+      "id": "irr-lend",
+      "q": "to lend (prêter)\nPrétérit et participe passé ?",
+      "r": "lent, lent",
+      "mode": "saisie",
+      "attendu": "lent, lent"
+    },
+    {
+      "id": "irr-let",
+      "q": "to let (laisser, permettre)\nPrétérit et participe passé ?",
+      "r": "let, let",
+      "mode": "saisie",
+      "attendu": "let, let"
+    },
+    {
+      "id": "irr-lie",
+      "q": "to lie (être allongé)\nPrétérit et participe passé ?",
+      "r": "lay, lain",
+      "mode": "saisie",
+      "attendu": "lay, lain"
+    },
+    {
+      "id": "irr-lose",
+      "q": "to lose (perdre)\nPrétérit et participe passé ?",
+      "r": "lost, lost",
+      "mode": "saisie",
+      "attendu": "lost, lost"
+    },
+    {
+      "id": "irr-make",
+      "q": "to make (fabriquer, faire)\nPrétérit et participe passé ?",
+      "r": "made, made",
+      "mode": "saisie",
+      "attendu": "made, made"
+    },
+    {
+      "id": "irr-mean",
+      "q": "to mean (signifier, vouloir dire)\nPrétérit et participe passé ?",
+      "r": "meant, meant",
+      "mode": "saisie",
+      "attendu": "meant, meant"
+    },
+    {
+      "id": "irr-meet",
+      "q": "to meet (rencontrer)\nPrétérit et participe passé ?",
+      "r": "met, met",
+      "mode": "saisie",
+      "attendu": "met, met"
+    },
+    {
+      "id": "irr-overcome",
+      "q": "to overcome (surmonter)\nPrétérit et participe passé ?",
+      "r": "overcame, overcome",
+      "mode": "saisie",
+      "attendu": "overcame, overcome"
+    },
+    {
+      "id": "irr-pay",
+      "q": "to pay (payer)\nPrétérit et participe passé ?",
+      "r": "paid, paid",
+      "mode": "saisie",
+      "attendu": "paid, paid"
+    },
+    {
+      "id": "irr-put",
+      "q": "to put (mettre)\nPrétérit et participe passé ?",
+      "r": "put, put",
+      "mode": "saisie",
+      "attendu": "put, put"
+    },
+    {
+      "id": "irr-read",
+      "q": "to read (lire)\nPrétérit et participe passé ?",
+      "r": "read, read",
+      "mode": "saisie",
+      "attendu": "read, read"
+    },
+    {
+      "id": "irr-ride",
+      "q": "to ride (aller à (vélo, cheval))\nPrétérit et participe passé ?",
+      "r": "rode, ridden",
+      "mode": "saisie",
+      "attendu": "rode, ridden"
+    },
+    {
+      "id": "irr-ring",
+      "q": "to ring (sonner)\nPrétérit et participe passé ?",
+      "r": "rang, rung",
+      "mode": "saisie",
+      "attendu": "rang, rung"
+    },
+    {
+      "id": "irr-rise",
+      "q": "to rise (s'élever, augmenter)\nPrétérit et participe passé ?",
+      "r": "rose, risen",
+      "mode": "saisie",
+      "attendu": "rose, risen"
+    },
+    {
+      "id": "irr-run",
+      "q": "to run (courir ; diriger)\nPrétérit et participe passé ?",
+      "r": "ran, run",
+      "mode": "saisie",
+      "attendu": "ran, run"
+    },
+    {
+      "id": "irr-say",
+      "q": "to say (dire)\nPrétérit et participe passé ?",
+      "r": "said, said",
+      "mode": "saisie",
+      "attendu": "said, said"
+    },
+    {
+      "id": "irr-see",
+      "q": "to see (voir)\nPrétérit et participe passé ?",
+      "r": "saw, seen",
+      "mode": "saisie",
+      "attendu": "saw, seen"
+    },
+    {
+      "id": "irr-seek",
+      "q": "to seek (chercher)\nPrétérit et participe passé ?",
+      "r": "sought, sought",
+      "mode": "saisie",
+      "attendu": "sought, sought"
+    },
+    {
+      "id": "irr-sell",
+      "q": "to sell (vendre)\nPrétérit et participe passé ?",
+      "r": "sold, sold",
+      "mode": "saisie",
+      "attendu": "sold, sold"
+    },
+    {
+      "id": "irr-send",
+      "q": "to send (envoyer)\nPrétérit et participe passé ?",
+      "r": "sent, sent",
+      "mode": "saisie",
+      "attendu": "sent, sent"
+    },
+    {
+      "id": "irr-set",
+      "q": "to set (fixer, placer)\nPrétérit et participe passé ?",
+      "r": "set, set",
+      "mode": "saisie",
+      "attendu": "set, set"
+    },
+    {
+      "id": "irr-shake",
+      "q": "to shake (secouer)\nPrétérit et participe passé ?",
+      "r": "shook, shaken",
+      "mode": "saisie",
+      "attendu": "shook, shaken"
+    },
+    {
+      "id": "irr-shine",
+      "q": "to shine (briller)\nPrétérit et participe passé ?",
+      "r": "shone, shone",
+      "mode": "saisie",
+      "attendu": "shone, shone"
+    },
+    {
+      "id": "irr-shoot",
+      "q": "to shoot (tirer (arme), filmer)\nPrétérit et participe passé ?",
+      "r": "shot, shot",
+      "mode": "saisie",
+      "attendu": "shot, shot"
+    },
+    {
+      "id": "irr-show",
+      "q": "to show (montrer)\nPrétérit et participe passé ?",
+      "r": "showed, shown/showed",
+      "mode": "saisie",
+      "attendu": "showed, shown / showed, showed"
+    },
+    {
+      "id": "irr-shut",
+      "q": "to shut (fermer)\nPrétérit et participe passé ?",
+      "r": "shut, shut",
+      "mode": "saisie",
+      "attendu": "shut, shut"
+    },
+    {
+      "id": "irr-sing",
+      "q": "to sing (chanter)\nPrétérit et participe passé ?",
+      "r": "sang, sung",
+      "mode": "saisie",
+      "attendu": "sang, sung"
+    },
+    {
+      "id": "irr-sink",
+      "q": "to sink (couler, sombrer)\nPrétérit et participe passé ?",
+      "r": "sank, sunk",
+      "mode": "saisie",
+      "attendu": "sank, sunk"
+    },
+    {
+      "id": "irr-sit",
+      "q": "to sit (être assis)\nPrétérit et participe passé ?",
+      "r": "sat, sat",
+      "mode": "saisie",
+      "attendu": "sat, sat"
+    },
+    {
+      "id": "irr-sleep",
+      "q": "to sleep (dormir)\nPrétérit et participe passé ?",
+      "r": "slept, slept",
+      "mode": "saisie",
+      "attendu": "slept, slept"
+    },
+    {
+      "id": "irr-speak",
+      "q": "to speak (parler)\nPrétérit et participe passé ?",
+      "r": "spoke, spoken",
+      "mode": "saisie",
+      "attendu": "spoke, spoken"
+    },
+    {
+      "id": "irr-spend",
+      "q": "to spend (dépenser ; passer (du temps))\nPrétérit et participe passé ?",
+      "r": "spent, spent",
+      "mode": "saisie",
+      "attendu": "spent, spent"
+    },
+    {
+      "id": "irr-spread",
+      "q": "to spread (répandre, étaler)\nPrétérit et participe passé ?",
+      "r": "spread, spread",
+      "mode": "saisie",
+      "attendu": "spread, spread"
+    },
+    {
+      "id": "irr-stand",
+      "q": "to stand (être debout)\nPrétérit et participe passé ?",
+      "r": "stood, stood",
+      "mode": "saisie",
+      "attendu": "stood, stood"
+    },
+    {
+      "id": "irr-steal",
+      "q": "to steal (voler (dérober))\nPrétérit et participe passé ?",
+      "r": "stole, stolen",
+      "mode": "saisie",
+      "attendu": "stole, stolen"
+    },
+    {
+      "id": "irr-stick",
+      "q": "to stick (coller)\nPrétérit et participe passé ?",
+      "r": "stuck, stuck",
+      "mode": "saisie",
+      "attendu": "stuck, stuck"
+    },
+    {
+      "id": "irr-strike",
+      "q": "to strike (frapper ; faire grève)\nPrétérit et participe passé ?",
+      "r": "struck, struck",
+      "mode": "saisie",
+      "attendu": "struck, struck"
+    },
+    {
+      "id": "irr-swim",
+      "q": "to swim (nager)\nPrétérit et participe passé ?",
+      "r": "swam, swum",
+      "mode": "saisie",
+      "attendu": "swam, swum"
+    },
+    {
+      "id": "irr-take",
+      "q": "to take (prendre)\nPrétérit et participe passé ?",
+      "r": "took, taken",
+      "mode": "saisie",
+      "attendu": "took, taken"
+    },
+    {
+      "id": "irr-teach",
+      "q": "to teach (enseigner)\nPrétérit et participe passé ?",
+      "r": "taught, taught",
+      "mode": "saisie",
+      "attendu": "taught, taught"
+    },
+    {
+      "id": "irr-tear",
+      "q": "to tear (déchirer)\nPrétérit et participe passé ?",
+      "r": "tore, torn",
+      "mode": "saisie",
+      "attendu": "tore, torn"
+    },
+    {
+      "id": "irr-tell",
+      "q": "to tell (dire, raconter)\nPrétérit et participe passé ?",
+      "r": "told, told",
+      "mode": "saisie",
+      "attendu": "told, told"
+    },
+    {
+      "id": "irr-think",
+      "q": "to think (penser)\nPrétérit et participe passé ?",
+      "r": "thought, thought",
+      "mode": "saisie",
+      "attendu": "thought, thought"
+    },
+    {
+      "id": "irr-throw",
+      "q": "to throw (lancer, jeter)\nPrétérit et participe passé ?",
+      "r": "threw, thrown",
+      "mode": "saisie",
+      "attendu": "threw, thrown"
+    },
+    {
+      "id": "irr-understand",
+      "q": "to understand (comprendre)\nPrétérit et participe passé ?",
+      "r": "understood, understood",
+      "mode": "saisie",
+      "attendu": "understood, understood"
+    },
+    {
+      "id": "irr-undertake",
+      "q": "to undertake (entreprendre)\nPrétérit et participe passé ?",
+      "r": "undertook, undertaken",
+      "mode": "saisie",
+      "attendu": "undertook, undertaken"
+    },
+    {
+      "id": "irr-wake",
+      "q": "to wake ((se) réveiller)\nPrétérit et participe passé ?",
+      "r": "woke, woken",
+      "mode": "saisie",
+      "attendu": "woke, woken"
+    },
+    {
+      "id": "irr-wear",
+      "q": "to wear (porter (vêtement))\nPrétérit et participe passé ?",
+      "r": "wore, worn",
+      "mode": "saisie",
+      "attendu": "wore, worn"
+    },
+    {
+      "id": "irr-win",
+      "q": "to win (gagner)\nPrétérit et participe passé ?",
+      "r": "won, won",
+      "mode": "saisie",
+      "attendu": "won, won"
+    },
+    {
+      "id": "irr-withdraw",
+      "q": "to withdraw (retirer)\nPrétérit et participe passé ?",
+      "r": "withdrew, withdrawn",
+      "mode": "saisie",
+      "attendu": "withdrew, withdrawn"
+    },
+    {
+      "id": "irr-write",
+      "q": "to write (écrire)\nPrétérit et participe passé ?",
+      "r": "wrote, written",
+      "mode": "saisie",
+      "attendu": "wrote, written"
+    }
+  ]
+}

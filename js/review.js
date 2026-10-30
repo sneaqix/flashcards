@@ -1,13 +1,14 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030225001';
+import * as S from './store.js?v=20261030230353';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030225001';
-import { scheduleSync } from './sync.js?v=20261030225001';
-import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030225001';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030225001';
-import { openEditor } from './editor.js?v=20261030225001';
+} from './ui.js?v=20261030230353';
+import { scheduleSync } from './sync.js?v=20261030230353';
+import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030230353';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030230353';
+import { openEditor } from './editor.js?v=20261030230353';
+import { startMixRound } from './practice.js?v=20261030230353';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -212,7 +213,9 @@ function diffHtml(typed, expected) {
 export function checkTyped(input, expected) {
   const alts = [expected, ...expected.split(/\s*[\/;]\s*/)].map((x) => x.trim()).filter(Boolean);
   if (!input.trim()) return { verdict: 'empty', best: alts[0] };
-  if (alts.some((x) => norm(x) === norm(input))) return { verdict: 'exact', best: alts.find((x) => norm(x) === norm(input)) };
+  // Virgules facultatives entre les formes (« began, begun » = « began begun »).
+  const nc = (x) => norm(x).replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+  if (alts.some((x) => nc(x) === nc(input))) return { verdict: 'exact', best: alts.find((x) => nc(x) === nc(input)) };
   if (alts.some((x) => loose(x) && loose(x) === loose(input))) return { verdict: 'close', best: alts.find((x) => loose(x) === loose(input)) };
   let best = alts[0], bestD = Infinity;
   alts.forEach((x) => {
@@ -229,7 +232,7 @@ export function checkTyped(input, expected) {
 // Choix multiples
 // =====================================================================
 export function qcmOptions(item, count = 4) {
-  const side = (card) => (item.rev ? firstLine(card.q) : expectedAnswer(card));
+  const side = (card) => (item.rev ? firstLine(card.q) : expectedAnswer(card).split(' / ')[0]);
   const correct = side(item.card);
   if (!correct) return null;
   let wrong = [];
@@ -267,7 +270,7 @@ export function startSession(items, mode, label) {
   };
   state.finished = null;
   state.lastMode = mode;
-  $('modeLabel').textContent = mode === 'srs' ? label : mode === 'qcm' ? 'QCM' : 'Bachotage';
+  $('modeLabel').textContent = mode === 'srs' ? label : mode === 'qcm' ? 'QCM' : mode === 'mix' ? 'Tout mélangé' : 'Bachotage';
   showView('session');
   nextCard();
 }
@@ -285,16 +288,58 @@ function remaining(s) {
   return s.main.length + s.learn.length + (s.cur ? 1 : 0);
 }
 
+// « Tout mélangé » : environ toutes les 8 cartes, une manche d'associations avec les cartes suivantes.
+const MIX_EVERY = 8;
+function takeAssocRound(s) {
+  const picked = [], answers = new Set();
+  for (const it of s.main) {
+    if (picked.length === 5) break;
+    if (it.rev || isCloze(it.card)) continue;
+    const a = expectedAnswer(it.card);
+    if (!a || answers.has(a)) continue;
+    answers.add(a);
+    picked.push(it);
+  }
+  if (picked.length < 3) return null;
+  s.main = s.main.filter((it) => !picked.includes(it));
+  return picked;
+}
+
 function nextCard() {
   const s = state.session;
+  if (s.mode === 'mix') {
+    s.sinceAssoc = (s.sinceAssoc || 0) + 1;
+    if (s.sinceAssoc > MIX_EVERY) {
+      const round = takeAssocRound(s);
+      if (round) {
+        s.sinceAssoc = 0;
+        s.cur = null;
+        startMixRound(round, (errors) => {
+          s.answered += round.length;
+          s.firstOk += Math.max(0, round.length - errors);
+          showView('session');
+          nextCard();
+        });
+        return;
+      }
+    }
+  }
   s.cur = pickNext(s);
   if (!s.cur) return finishSession();
   showCurrent(false);
 }
 
+// « Tout mélangé » : chaque carte reçoit au hasard un format (retourner, QCM ou réponse à taper).
+function pickMix(item) {
+  const formats = ['classic', 'qcm'];
+  const exp = expectedAnswer(item.card);
+  if (!item.rev && exp && exp.length <= 40 && !exp.includes('$$')) formats.push('saisie');
+  return formats[Math.floor(Math.random() * formats.length)];
+}
 function modeOf(s, item) {
   if (isCloze(item.card)) return 'trou';
   if (s.mode === 'qcm') return 'qcm';
+  if (s.mode === 'mix') return item._mix || (item._mix = pickMix(item));
   if (!item.rev && (item.card.mode === 'saisie' || item.card.mode === 'qcm')) return item.card.mode;
   return 'classic';
 }

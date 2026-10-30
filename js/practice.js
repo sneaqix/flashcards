@@ -1,9 +1,9 @@
 // Onglet Bachotage : révision libre (cartes ou QCM) et jeu d'associations, sans effet sur la progression.
-import * as S from './store.js?v=20261030225001';
+import * as S from './store.js?v=20261030230353';
 import {
   $, state, textHtml, typeset, toast, plural, showView, goTab, faceContent, expectedAnswer,
-} from './ui.js?v=20261030225001';
-import { startSession } from './review.js?v=20261030225001';
+} from './ui.js?v=20261030230353';
+import { startSession, leaveSession } from './review.js?v=20261030230353';
 
 // =====================================================================
 // Listes de chapitres à cocher (bachotage et réglages)
@@ -70,9 +70,23 @@ function cramPool() {
   });
   return pool;
 }
+// Nombre de cartes : raccourci choisi (0 = toutes) ou nombre tapé dans le champ.
+let cramPreset = 20;
+function cramMax() {
+  const typed = parseInt($('cramCountInput').value, 10);
+  return Number.isFinite(typed) && typed > 0 ? typed : cramPreset;
+}
+function paintCount() {
+  const typed = $('cramCountInput').value.trim() !== '';
+  $('cramCount').querySelectorAll('button').forEach((b) => {
+    const on = !typed && Number(b.dataset.n) === cramPreset;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
+}
 function updateCramInfo() {
   const n = cramPool().length;
-  const max = Number($('cramCount').value) || n;
+  const max = cramMax() || n;
   const assoc = $('cramMode').value === 'assoc';
   $('cramInfo').textContent = n
     ? plural(n, 'carte disponible', 'cartes disponibles') + ', ' + Math.min(n, max) + ' au programme' + (assoc ? ', par manches de 5 paires.' : '.')
@@ -93,6 +107,13 @@ export function startPractice(items, mode, max = 0) {
   if (max) pool = pool.slice(0, max);
   if (mode === 'assoc') return startAssoc(pool);
   startSession(pool, mode, 'Bachotage');
+}
+
+// Manche d'associations au milieu d'un bachotage « Tout mélangé » ; onDone(erreurs) reprend la session.
+export function startMixRound(items, onDone) {
+  state.assoc = { rounds: [items], round: 0, errors: 0, start: Date.now(), selected: null, found: 0, items, mix: onDone };
+  showView('assoc');
+  renderRound();
 }
 
 // =====================================================================
@@ -145,10 +166,11 @@ function renderRound() {
   left.innerHTML = '';
   right.innerHTML = '';
   S.shuffle(items.slice()).forEach((it) => left.appendChild(tile(faceContent(it).q, it.key, 'q')));
-  S.shuffle(items.slice()).forEach((it) => right.appendChild(tile(expectedAnswer(it.card), it.key, 'r')));
-  $('assocCounter').textContent = 'Manche ' + (a.round + 1) + ' / ' + a.rounds.length;
+  S.shuffle(items.slice()).forEach((it) => right.appendChild(tile(expectedAnswer(it.card).split(' / ')[0], it.key, 'r')));
+  $('assocCounter').textContent = a.mix ? 'Pause associations' : 'Manche ' + (a.round + 1) + ' / ' + a.rounds.length;
   $('assocStatus').textContent = 'Touche une question puis la réponse qui va avec.';
   $('assocNext').hidden = true;
+  $('assocNext').textContent = a.mix ? 'Continuer' : 'Manche suivante';
   $('assocDone').hidden = true;
   $('assocBoard').hidden = false;
   typeset(left, right);
@@ -181,7 +203,7 @@ function pick(btn) {
 
 function roundDone() {
   const a = state.assoc;
-  if (a.round < a.rounds.length - 1) {
+  if (a.mix || a.round < a.rounds.length - 1) {
     $('assocStatus').textContent = 'Manche réussie.';
     $('assocNext').hidden = false;
     $('assocNext').focus({ preventScroll: true });
@@ -197,18 +219,32 @@ function roundDone() {
 }
 
 function quitAssoc() {
+  const mix = state.assoc && state.assoc.mix;
   state.assoc = null;
-  goTab('bachotage');
+  if (mix) leaveSession();
+  else goTab('bachotage');
 }
 
 export function bindPractice() {
-  $('cramCount').addEventListener('change', updateCramInfo);
+  $('cramCount').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
+    cramPreset = Number(b.dataset.n);
+    $('cramCountInput').value = '';
+    paintCount();
+    updateCramInfo();
+  }));
+  $('cramCountInput').addEventListener('input', () => { paintCount(); updateCramInfo(); });
+  paintCount();
   $('cramHard').addEventListener('change', updateCramInfo);
   $('cramMode').addEventListener('change', updateCramInfo);
   $('startCram').addEventListener('click', () => {
-    startPractice(cramPool(), $('cramMode').value, Number($('cramCount').value) || 0);
+    startPractice(cramPool(), $('cramMode').value, cramMax());
   });
-  $('assocNext').addEventListener('click', () => { state.assoc.round++; renderRound(); });
+  $('assocNext').addEventListener('click', () => {
+    const a = state.assoc;
+    if (a && a.mix) { state.assoc = null; a.mix(a.errors); return; }
+    a.round++;
+    renderRound();
+  });
   $('assocQuit').addEventListener('click', quitAssoc);
   $('assocEnd').addEventListener('click', quitAssoc);
   $('assocAgain').addEventListener('click', () => startAssoc(S.shuffle(state.assoc.items.slice())));

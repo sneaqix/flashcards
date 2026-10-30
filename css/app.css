@@ -962,3 +962,8 @@ body { --side-off: 0px; --panel-off: 0px; }
 @keyframes ic-sparkle { 40% { transform: rotate(45deg) scale(1.25); } 100% { transform: rotate(90deg) scale(1); } }
 @keyframes ic-drop { 35% { transform: translateY(3px); } 65% { transform: translateY(-1px); } }
 @keyframes ic-undo { 40% { transform: rotate(-40deg); } 75% { transform: rotate(8deg); } }
+/* Bachotage : nombre de cartes */
+.form .label { font-weight: 600; font-size: 0.95rem; }
+.cram-count { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cram-count .seg button { min-width: 52px; min-height: 40px; }
+.cram-count input { width: 7rem; }

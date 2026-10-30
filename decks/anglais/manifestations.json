@@ -196,6 +196,90 @@
       "id": "traduction-2",
       "q": "Traduire : « Le droit de manifester est un pilier de la démocratie, mais il ne justifie pas la violence. »",
       "r": "The right to protest is a cornerstone of democracy, but it does not justify violence."
+    },
+    {
+      "id": "m1",
+      "q": "Thousands of people {{took to the streets::sont descendus dans la rue}} to protest against the {{pension reform::réforme des retraites}}.",
+      "mode": "trou",
+      "r": "Des milliers de personnes sont descendues dans la rue pour protester contre la réforme des retraites."
+    },
+    {
+      "id": "m2",
+      "q": "The unions called for a {{general strike::grève générale}} and set up {{picket lines::piquets de grève}} outside the factories.",
+      "mode": "trou",
+      "r": "Les syndicats ont appelé à la grève générale et installé des piquets de grève devant les usines."
+    },
+    {
+      "id": "m3",
+      "q": "Protesters {{chanted::scandaient}} slogans and waved {{placards/signs::pancartes}}.",
+      "mode": "trou",
+      "r": "Les manifestants scandaient des slogans et brandissaient des pancartes."
+    },
+    {
+      "id": "m4",
+      "q": "Police fired {{tear gas::gaz lacrymogène}} to {{disperse::disperser}} the crowd.",
+      "mode": "trou",
+      "r": "La police a tiré du gaz lacrymogène pour disperser la foule."
+    },
+    {
+      "id": "m5",
+      "q": "The government {{cracked down on::a réprimé}} dissent, and dozens of people were {{arrested::arrêtés}}.",
+      "mode": "trou",
+      "r": "Le gouvernement a réprimé la contestation, et des dizaines de personnes ont été arrêtées."
+    },
+    {
+      "id": "m6",
+      "q": "The march was {{peaceful::pacifique}} until a small group of {{rioters::émeutiers}} started breaking shop windows.",
+      "mode": "trou",
+      "r": "La marche était pacifique jusqu'à ce qu'un petit groupe d'émeutiers commence à casser des vitrines."
+    },
+    {
+      "id": "m7",
+      "q": "{{Grassroots::citoyens, de terrain}} movements often begin on {{social media::réseaux sociaux}}.",
+      "mode": "trou",
+      "r": "Les mouvements citoyens naissent souvent sur les réseaux sociaux."
+    },
+    {
+      "id": "m8",
+      "q": "Climate {{activists::militants}} use {{civil disobedience::désobéissance civile}} to draw attention to their cause.",
+      "mode": "trou",
+      "r": "Les militants pour le climat ont recours à la désobéissance civile pour attirer l'attention sur leur cause."
+    },
+    {
+      "id": "m9",
+      "q": "Despite the high {{turnout::participation}}, the government refused to {{back down::faire marche arrière}}.",
+      "mode": "trou",
+      "r": "Malgré la forte mobilisation, le gouvernement a refusé de reculer."
+    },
+    {
+      "id": "m10",
+      "q": "The protesters are {{demanding::exigent}} that the reform {{be withdrawn::soit retirée}}.",
+      "mode": "trou",
+      "r": "Les manifestants exigent le retrait de la réforme. Après demand that, on utilise le subjonctif : be + participe passé."
+    },
+    {
+      "id": "m11",
+      "q": "{{Freedom of assembly::liberté de réunion}} is a {{cornerstone::pilier}} of democracy.",
+      "mode": "trou",
+      "r": "La liberté de réunion est un pilier de la démocratie."
+    },
+    {
+      "id": "m12",
+      "q": "More than a million people {{signed::ont signé}} the {{petition::pétition}} in a week.",
+      "mode": "trou",
+      "r": "Plus d'un million de personnes ont signé la pétition en une semaine."
+    },
+    {
+      "id": "m13",
+      "q": "The cost-of-living {{crisis::crise}} has eroded workers' {{purchasing power::pouvoir d'achat}}.",
+      "mode": "trou",
+      "r": "La crise du coût de la vie a rogné le pouvoir d'achat des travailleurs."
+    },
+    {
+      "id": "m14",
+      "q": "Union leaders agreed to {{enter into talks/hold talks::entamer des négociations}} with the {{management::direction}}.",
+      "mode": "trou",
+      "r": "Les dirigeants syndicaux ont accepté d'entamer des négociations avec la direction."
     }
   ]
 }

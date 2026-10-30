@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030225001">
-<link rel="stylesheet" href="css/themes.css?v=20261030225001">
+<link rel="stylesheet" href="css/app.css?v=20261030230353">
+<link rel="stylesheet" href="css/themes.css?v=20261030230353">
 </head>
 <body>
 <div class="app">
@@ -103,14 +103,18 @@
         <option value="cram">Cartes : je retourne et je note</option>
         <option value="qcm">QCM : choisir parmi 4 réponses</option>
         <option value="assoc">Associations : relier questions et réponses</option>
+        <option value="mix">Tout mélangé : cartes, QCM, réponses à taper et associations</option>
       </select>
-      <label for="cramCount">Nombre de cartes</label>
-      <select id="cramCount">
-        <option value="10">10</option>
-        <option value="20" selected>20</option>
-        <option value="50">50</option>
-        <option value="0">Toutes</option>
-      </select>
+      <span class="label" id="cramCountLabel">Nombre de cartes</span>
+      <div class="cram-count">
+        <div id="cramCount" class="seg" role="group" aria-labelledby="cramCountLabel">
+          <button type="button" data-n="10">10</button>
+          <button type="button" data-n="20">20</button>
+          <button type="button" data-n="50">50</button>
+          <button type="button" data-n="0">Toutes</button>
+        </div>
+        <input id="cramCountInput" type="number" min="1" max="9999" inputmode="numeric" placeholder="Autre" aria-label="Autre nombre de cartes">
+      </div>
       <label class="check"><input type="checkbox" id="cramHard"> Seulement les cartes à consolider (jamais vues, en cours, j1 à j2 ou souvent oubliées)</label>
       <p class="sub" id="cramInfo"></p>
       <button id="startCram" class="primary" type="button">Lancer le bachotage</button>
@@ -879,6 +883,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030225001"></script>
+<script type="module" src="js/app.js?v=20261030230353"></script>
 </body>
 </html>
