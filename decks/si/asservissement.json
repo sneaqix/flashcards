@@ -44,11 +44,6 @@
       ]
     },
     {
-      "id": "valeur-initiale",
-      "q": "Théorème de la valeur initiale",
-      "r": "$$\\lim_{t \\to 0^+} f(t) = \\lim_{p \\to +\\infty} p\\,F(p)$$"
-    },
-    {
       "id": "derivation",
       "q": "Transformée de Laplace d'une dérivée",
       "r": "$$\\mathcal{L}\\big(f'(t)\\big) = p\\,F(p) - f(0^+)$$"
