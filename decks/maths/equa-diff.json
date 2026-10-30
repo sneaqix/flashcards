@@ -15,11 +15,6 @@
       ]
     },
     {
-      "id": "ordre1-var",
-      "q": "Solutions de $y' + a(x)\\,y = 0$ ($a$ continue)",
-      "r": "$$y(x) = \\lambda\\,e^{-A(x)}$$ où $A$ est une primitive de $a$."
-    },
-    {
       "id": "structure",
       "q": "Structure des solutions d'une équation linéaire avec second membre",
       "r": "Solution générale = solution générale de l'équation homogène + une solution particulière."
