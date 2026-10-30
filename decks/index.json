@@ -22,7 +22,8 @@
         "physique/thermodynamique.json",
         "physique/optique.json",
         "physique/induction.json",
-        "physique/unites.json"
+        "physique/unites.json",
+        "physique/introduction-a-l-interaction-electromagn.json"
       ]
     },
     {
