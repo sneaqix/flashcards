@@ -31,6 +31,7 @@ const state = readJson(statePath, {});
 state.sent = state.sent || {};
 state.confirmed = state.confirmed || {};
 state.gone = state.gone || {};
+state.log = Array.isArray(state.log) ? state.log : [];
 const before = JSON.stringify(state);
 
 // ---------- Cartes du jour ----------
@@ -73,9 +74,11 @@ async function send(list, payload) {
     try {
       const r = await sendPush(d.sub, payload, { jwk: vapid.jwk, subject: SUBJECT, topic: payload.tag });
       console.log(id, payload.tag, '→', r.status, r.text.slice(0, 200));
+      state.log = [...state.log, { at: new Date().toISOString(), id, tag: payload.tag, status: r.status, text: r.text.slice(0, 300) }].slice(-20);
       if (r.status === 404 || r.status === 410) state.gone[d.sub.endpoint] = day;
     } catch (e) {
       console.log(id, payload.tag, '→ erreur', e.message);
+      state.log = [...state.log, { at: new Date().toISOString(), id, tag: payload.tag, error: String(e.message).slice(0, 300) }].slice(-20);
     }
   }
 }
@@ -98,6 +101,11 @@ if (fresh_devices.length) {
     tag: 'bienvenue', url: './#parametres',
   });
   fresh_devices.forEach(([, d]) => { state.confirmed[epKey(d.sub.endpoint)] = day; });
+}
+
+if (cfg.test && cfg.test !== state.test) {
+  state.test = cfg.test;
+  await send(devices, { title: 'Notification de test', body: 'Les rappels arrivent bien sur cet appareil.', tag: 'test', url: './#parametres' });
 }
 
 if (due('revision')) {
