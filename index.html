@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030100814">
+<link rel="stylesheet" href="css/app.css?v=20261030102616">
 </head>
 <body>
 <div class="app">
@@ -27,6 +27,7 @@
       </div>
       <button id="startDaily" class="primary" type="button">Révision du jour</button>
     </div>
+    <div id="todoBox" class="panel todo" hidden></div>
     <div id="chapterList" class="matieres"></div>
     <p class="legend">Les barres montrent où en sont les cartes : N pour les cartes jamais vues, puis le temps avant leur prochain passage (j1 = 1 jour, j2 = 2 à 3 jours, j4 = 4 à 7 jours… j32+ = plus d'un mois). Les cartes en cours d'apprentissage reviennent dans la journée et comptent dans j1.</p>
   </section>
@@ -452,8 +453,97 @@
     <div id="lecSheet" class="lec-sheet panel" hidden></div>
   </section>
 
+  <!-- ============ Calendrier ============ -->
+  <section id="view-calendrier" class="view" hidden>
+    <div id="agLocked" class="panel" hidden>
+      <p>Le calendrier fonctionne sur cet appareil. Pour le retrouver aussi sur ton autre appareil, renseigne ton jeton GitHub et tes dépôts dans les réglages.</p>
+    </div>
+    <div class="ag-nav">
+      <button id="agPrev" class="ghost nav-btn" type="button" aria-label="Semaine précédente">‹</button>
+      <h2 id="agWeekTitle" class="ag-week-title"></h2>
+      <button id="agNext" class="ghost nav-btn" type="button" aria-label="Semaine suivante">›</button>
+    </div>
+    <div class="ag-actions">
+      <button id="agToday" class="ghost small" type="button">Cette semaine</button>
+      <button id="agHideDone" class="ghost small" type="button">Masquer les terminés</button>
+      <button id="agNew" class="primary small" type="button">+ Nouveau</button>
+    </div>
+    <div id="agWeek" class="ag-week"></div>
+  </section>
+
+  <section id="view-tache" class="view" hidden>
+    <div class="bar-top">
+      <button id="tkBack" class="ghost" type="button">Annuler</button>
+      <span class="mode-label">Détails</span>
+      <button id="tkSave" class="primary" type="button">OK</button>
+    </div>
+    <div class="panel form">
+      <label for="tkTitle" class="sr-only">Titre</label>
+      <input id="tkTitle" class="tk-title" type="text" autocomplete="off" placeholder="Titre (ex. DM de maths, DS de physique)">
+      <div id="tkTypes" class="seg seg-wide" role="group" aria-label="Type">
+        <button type="button" data-type="devoir">Devoir</button>
+        <button type="button" data-type="ds">DS</button>
+        <button type="button" data-type="colle">Colle</button>
+        <button type="button" data-type="tache">Tâche</button>
+      </div>
+    </div>
+    <div class="panel form tk-group">
+      <label class="tk-switch"><span>Date</span><input id="tkHasDate" type="checkbox" class="switch"></label>
+      <div id="tkDateBox"><label for="tkDate" class="sr-only">Date</label><input id="tkDate" type="date"></div>
+      <div id="tkTimeRow" class="tk-time-row">
+        <label class="tk-switch"><span>Heure</span><input id="tkHasTime" type="checkbox" class="switch"></label>
+        <label for="tkTime" class="sr-only">Heure</label><input id="tkTime" type="time">
+      </div>
+    </div>
+    <div class="panel form tk-group">
+      <label for="tkMat">Matière</label>
+      <select id="tkMat"></select>
+      <div id="tkChapsBox" class="field">
+        <span class="field-label">Chapitres</span>
+        <div id="tkChaps" class="tk-chaps"></div>
+      </div>
+      <div id="tkPrep" class="tk-prep" hidden>
+        <button id="tkPrepBtn" class="primary small" type="button">Réviser ces chapitres</button>
+        <p class="sub" id="tkPrepHint"></p>
+      </div>
+    </div>
+    <div class="panel form tk-group">
+      <span class="field-label">Priorité</span>
+      <div id="tkPrio" class="seg seg-wide" role="group" aria-label="Priorité">
+        <button type="button" data-p="0">Aucune</button>
+        <button type="button" data-p="1">!</button>
+        <button type="button" data-p="2">!!</button>
+        <button type="button" data-p="3">!!!</button>
+      </div>
+      <label class="tk-switch"><span>Drapeau ⚑</span><input id="tkFlag" type="checkbox" class="switch"></label>
+    </div>
+    <div class="panel form tk-group">
+      <span class="field-label">Étapes</span>
+      <ul id="tkSubs" class="tk-subs"></ul>
+      <div class="tk-sub-new">
+        <input id="tkSubNew" type="text" autocomplete="off" placeholder="Ajouter une étape (ex. exercices 1 à 5)" aria-label="Nouvelle étape">
+        <button id="tkSubAdd" class="ghost small" type="button">Ajouter</button>
+      </div>
+      <label for="tkNotes">Notes</label>
+      <textarea id="tkNotes" rows="3" placeholder="Consignes, pages, salle…"></textarea>
+    </div>
+    <button id="tkDelete" class="again" type="button">Supprimer</button>
+    <div id="tkDeleteConfirm" class="confirm-inline danger" hidden>
+      <p>Supprimer cet élément ?</p>
+      <div class="row">
+        <button id="tkDeleteYes" class="again small" type="button">Oui, supprimer</button>
+        <button id="tkDeleteNo" class="ghost small" type="button">Annuler</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ Statistiques ============ -->
   <section id="view-stats" class="view" hidden>
+    <div class="bar-top">
+      <a class="button ghost" href="#parametres">Retour</a>
+      <span class="mode-label">Statistiques</span>
+      <span></span>
+    </div>
     <div class="tiles" id="statTiles"></div>
     <div class="panel">
       <h2>Calendrier des révisions</h2>
@@ -496,6 +586,7 @@
 
   <!-- ============ Réglages ============ -->
   <section id="view-parametres" class="view" hidden>
+    <a class="panel stats-link" href="#stats"><span><b>Statistiques</b><span class="sub">Calendrier des révisions, rétention, temps, prévisions</span></span><span aria-hidden="true">›</span></a>
     <div class="panel form">
       <h2>Rythme quotidien par matière</h2>
       <p class="sub">Nouvelles cartes à découvrir et révisions maximum chaque jour. Une limite de révisions à 0 signifie sans limite.</p>
@@ -569,7 +660,7 @@
   <a href="#bachotage" data-tab="bachotage">Bachotage</a>
   <a href="#cartes" data-tab="cartes">Cartes</a>
   <a href="#classeur" data-tab="classeur">Classeur</a>
-  <a href="#stats" data-tab="stats">Stats</a>
+  <a href="#calendrier" data-tab="calendrier">Calendrier</a>
   <a href="#parametres" data-tab="parametres">Réglages</a>
 </nav>
 
@@ -589,6 +680,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030100814"></script>
+<script type="module" src="js/app.js?v=20261030102616"></script>
 </body>
 </html>

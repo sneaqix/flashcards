@@ -10,7 +10,9 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 - Import d'un cours en PDF : Gemini génère des cartes (classiques, QCM, textes à trous, à taper) à relire avant ajout.
 - Classeur : cours, TD et DS en PDF rangés par chapitre (dépôt privé), lecteur intégré avec surlignage,
   notes, dessin à main levée et création de cartes depuis un passage surligné.
-- Statistiques détaillées et réglages par matière.
+- Calendrier (vue Semaine, inspiré de Rappels) : devoirs, DS, colles et tâches avec matière, chapitres, heure,
+  priorité, drapeau, étapes et notes ; bachotage des chapitres d'un DS ou d'une colle.
+- Statistiques détaillées (depuis les Réglages) et réglages par matière.
 - Progression synchronisée dans un dépôt privé GitHub.
 
 ## Organisation
@@ -32,6 +34,7 @@ js/gemini.js          génération de cartes depuis un PDF (API Gemini)
 js/importer.js        écran d'import et de relecture
 js/classeur.js        onglet Classeur : liste, ajout, modification des documents
 js/viewer.js          lecteur PDF (PDF.js) et annotations
+js/agenda.js          onglet Calendrier (stocké dans agenda.json du dépôt privé)
 tools/bump_version.py numéro de version anti-cache, à lancer avant chaque publication
 decks/index.json      liste des matières et de leurs chapitres
 decks/<matière>/*.json  un fichier par chapitre

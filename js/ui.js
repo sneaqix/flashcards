@@ -1,8 +1,8 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261030100814';
+import * as S from './store.js?v=20261030102616';
 
 export const $ = (id) => document.getElementById(id);
-export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'stats', 'parametres'];
+export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'parametres'];
 
 export const state = {
   matieres: [],          // [{ id, nom, chapitres: [chapter] }]
@@ -123,7 +123,7 @@ export function showView(name) {
   document.querySelectorAll('.view').forEach((v) => { v.hidden = v.id !== 'view-' + name; });
   const fromViewer = state.editReturn === 'classeur';
   const tab = name === 'carte' ? (state.editReturn === 'session' ? null : fromViewer ? 'classeur' : 'cartes')
-    : name === 'assoc' ? 'bachotage' : name === 'import' ? 'cartes' : name === 'lecteur' || name === 'docform' ? 'classeur' : name;
+    : name === 'assoc' ? 'bachotage' : name === 'import' ? 'cartes' : name === 'lecteur' || name === 'docform' ? 'classeur' : name === 'tache' ? 'calendrier' : name === 'stats' ? 'parametres' : name;
   document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
   document.body.classList.toggle('in-session', ['session', 'done', 'assoc', 'lecteur'].includes(name) || (name === 'carte' && (state.editReturn === 'session' || fromViewer)));
   document.body.classList.toggle('reading', name === 'lecteur');
@@ -145,7 +145,7 @@ export function goTab(tab) {
 }
 // Rafraîchit la vue affichée après une synchronisation, sauf si l'utilisateur est en train de réviser ou d'écrire.
 export function refreshIfIdle() {
-  if (state.session || state.assoc || ['carte', 'done', 'import', 'lecteur', 'docform'].some((v) => !$('view-' + v).hidden)) return;
+  if (state.session || state.assoc || ['carte', 'done', 'import', 'lecteur', 'docform', 'tache'].some((v) => !$('view-' + v).hidden)) return;
   if (document.activeElement && document.activeElement.matches('input, textarea, select')) return;
   route();
 }

@@ -1,21 +1,23 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030100814';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030100814';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030100814';
-import { renderHome, bindReview } from './review.js?v=20261030100814';
-import { renderCartes, bindEditor } from './editor.js?v=20261030100814';
-import { renderCram, bindPractice } from './practice.js?v=20261030100814';
-import { bindImport, restoreImport } from './importer.js?v=20261030100814';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030100814';
-import { bindViewer } from './viewer.js?v=20261030100814';
-import { renderStats } from './stats.js?v=20261030100814';
-import { renderSettings, bindSettings } from './settings.js?v=20261030100814';
+import { GitHub } from './github.js?v=20261030102616';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030102616';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030102616';
+import { renderHome, bindReview } from './review.js?v=20261030102616';
+import { renderCartes, bindEditor } from './editor.js?v=20261030102616';
+import { renderCram, bindPractice } from './practice.js?v=20261030102616';
+import { bindImport, restoreImport } from './importer.js?v=20261030102616';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030102616';
+import { bindViewer } from './viewer.js?v=20261030102616';
+import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030102616';
+import { renderStats } from './stats.js?v=20261030102616';
+import { renderSettings, bindSettings } from './settings.js?v=20261030102616';
 
 state.views = {
   reviser: renderHome,
   bachotage: renderCram,
   cartes: renderCartes,
   classeur: renderClasseur,
+  calendrier: renderAgenda,
   stats: renderStats,
   parametres: renderSettings,
 };
@@ -36,6 +38,7 @@ function bindEvents() {
   bindImport();
   bindClasseur();
   bindViewer();
+  bindAgenda();
 
   // Sauvegarde quand on quitte l'appli, récupération des changements de l'autre appareil au retour.
   document.addEventListener('visibilitychange', () => {
@@ -54,9 +57,12 @@ async function init() {
   } catch (e) {
     $('chapterList').innerHTML = '<p class="status error">Impossible de charger les cartes. Vérifie le dossier « decks » et le fichier index.json.</p>';
   }
+  // Copie locale du calendrier lue tout de suite ; la version synchronisée arrive ensuite.
+  const agendaReady = loadAgenda();
   route();
   restoreImport(); // relecture ou génération laissée en plan
   if (canSync()) syncNow();
+  agendaReady.then(() => { if (!state.session && (!$('view-calendrier').hidden || currentTabIsHome())) route(); });
   // Le classeur est chargé en arrière-plan pour afficher les documents de chaque chapitre.
   if (canSync()) loadClasseur().then(() => { if (!state.session && currentTabIsHome()) route(); }).catch(() => {});
 }

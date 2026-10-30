@@ -1,10 +1,10 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030100814';
-import * as S from './store.js?v=20261030100814';
-import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261030100814';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030100814';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030100814';
-import { buildChecklist } from './practice.js?v=20261030100814';
+import { GitHub } from './github.js?v=20261030102616';
+import * as S from './store.js?v=20261030102616';
+import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261030102616';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030102616';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030102616';
+import { buildChecklist } from './practice.js?v=20261030102616';
 
 export function renderSettings() {
   const s = state.progress.settings;
