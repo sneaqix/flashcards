@@ -67,11 +67,6 @@
       "id": "carnot-frigo",
       "q": "Efficacité de Carnot d'une machine frigorifique",
       "r": "$$e_C = \\frac{T_f}{T_c - T_f}$$"
-    },
-    {
-      "id": "p1-ouvert",
-      "q": "Premier principe industriel (écoulement permanent, grandeurs massiques)",
-      "r": "$$\\Delta h + \\Delta e_c + \\Delta e_p = w_u + q$$"
     }
   ]
 }
