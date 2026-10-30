@@ -1,9 +1,9 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261030215123';
-import * as S from './store.js?v=20261030215123';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030215123';
-import { startPractice } from './practice.js?v=20261030215123';
+import { isConflict } from './github.js?v=20261030222259';
+import * as S from './store.js?v=20261030222259';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030222259';
+import { startPractice } from './practice.js?v=20261030222259';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
@@ -23,7 +23,10 @@ let sha = null;
 let dirty = false;
 let selDay = todayIso();          // jour sélectionné dans la grille
 let viewMonth = todayIso().slice(0, 7); // mois affiché (grille dépliée)
-let collapsed = readPref('fc.agCollapsed') === '1'; // grille repliée en une semaine
+let collapsed = readPref('fc.agCollapsed') === '1'; // grille repliée en une semaine (téléphone)
+// Sur ordinateur : toujours le grand mois, avec la liste du jour choisi à côté.
+const desk = matchMedia('(min-width: 900px)');
+const weekMode = () => collapsed && !desk.matches;
 let scrollToSel = false;
 function readPref(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function writePref(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* indisponible */ } }
@@ -194,11 +197,11 @@ function shiftMonth(ym, n) {
 export function renderAgenda() {
   const t = todayIso();
   $('agLocked').hidden = canSync();
-  $('agMonthTitle').textContent = monthTitle(collapsed ? selDay.slice(0, 7) : viewMonth);
-  document.querySelectorAll('#agMode button').forEach((b) => b.classList.toggle('on', (b.dataset.mode === 'semaine') === collapsed));
-  $('agToday').disabled = selDay === t && (collapsed || viewMonth === t.slice(0, 7));
+  $('agMonthTitle').textContent = monthTitle(weekMode() ? selDay.slice(0, 7) : viewMonth);
+  document.querySelectorAll('#agMode button').forEach((b) => b.classList.toggle('on', (b.dataset.mode === 'semaine') === weekMode()));
+  $('agToday').disabled = selDay === t && (weekMode() || viewMonth === t.slice(0, 7));
   $('agHideDone').textContent = hideDone ? 'Afficher les terminés' : 'Masquer les terminés';
-  $('agCal').classList.toggle('collapsed', collapsed);
+  $('agCal').classList.toggle('collapsed', weekMode());
   $('agQuickInput').placeholder = 'Ajouter ' + (selDay === t ? 'aujourd\'hui' : selDay === addDays(t, 1) ? 'demain' : 'le ' + fmtDay(selDay, { weekday: 'long', day: 'numeric', month: 'short' })) + '…';
   renderGrid();
   renderWeekList();
@@ -223,7 +226,7 @@ function renderGrid() {
   const grid = $('agGrid');
   const t = todayIso();
   let days;
-  if (collapsed) {
+  if (weekMode()) {
     const start = mondayOf(selDay);
     days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   } else {
@@ -234,7 +237,7 @@ function renderGrid() {
     days = [];
     for (let d = start; d <= end; d = addDays(d, 1)) days.push(d);
   }
-  const month = collapsed ? selDay.slice(0, 7) : viewMonth;
+  const month = weekMode() ? selDay.slice(0, 7) : viewMonth;
   grid.innerHTML = WD.map((w) => '<span class="wd" aria-hidden="true">' + w + '</span>').join('');
   days.forEach((day) => {
     const b = document.createElement('button');
@@ -243,15 +246,38 @@ function renderGrid() {
     const n = agenda.items.filter((it) => it.date === day && !it.done).length;
     b.setAttribute('aria-label', fmtDay(day, { weekday: 'long', day: 'numeric', month: 'long' }) + (n ? ', ' + plural(n, 'élément', 'éléments') : ''));
     if (day === selDay) b.setAttribute('aria-pressed', 'true');
-    b.innerHTML = '<span class="num">' + Number(day.slice(8)) + '</span><span class="dots">' + dotsFor(day) + '</span>';
+    b.innerHTML = '<span class="num">' + Number(day.slice(8)) + '</span>' + (desk.matches ? chipsFor(day) : '<span class="dots">' + dotsFor(day) + '</span>');
     b.addEventListener('click', () => selectDay(day));
     grid.appendChild(b);
   });
 }
 
+// Ordinateur : titres des éléments dans la case du jour (3 au plus).
+function chipsFor(day) {
+  const items = agenda.items.filter((it) => it.date === day && !(hideDone && it.done)).sort(compare);
+  const chips = items.slice(0, 3).map((it) => '<span class="cal-chip' + (it.done ? ' done' : '') + (it.type === 'ds' || it.type === 'colle' ? ' exam' : '') +
+    '" style="--c:' + matColor(it.mat) + '">' + (it.type === 'ds' || it.type === 'colle' ? TYPES[it.type] + ' · ' : '') + escapeHtml(it.title) + '</span>').join('');
+  return '<span class="cal-chips">' + chips + (items.length > 3 ? '<span class="cal-more">+' + (items.length - 3) + ' autres</span>' : '') + '</span>';
+}
+
+// Ordinateur : liste détaillée du jour choisi, à droite du mois.
+function renderDayPanel(box) {
+  const t = todayIso();
+  const visible = (it) => !(hideDone && it.done);
+  const title = fmtDay(selDay, { weekday: 'long', day: 'numeric', month: 'long' });
+  const items = agenda.items.filter((it) => it.date === selDay && visible(it)).sort(compare);
+  const sec = section(title.charAt(0).toUpperCase() + title.slice(1), [selDay === t ? 'today' : selDay < t ? 'past' : '', 'sel'].filter(Boolean).join(' '), items, selDay);
+  sec.dataset.day = selDay;
+  box.appendChild(sec);
+  const overdue = agenda.items.filter((it) => !it.done && it.date && it.date < t).sort(compare);
+  if (overdue.length) box.appendChild(section('En retard', 'late', overdue, null));
+  const undated = agenda.items.filter((it) => !it.date && visible(it)).sort(compare);
+  if (undated.length || quickDay === '') box.appendChild(section('Sans date', 'undated', undated, ''));
+}
+
 function selectDay(day) {
   selDay = day;
-  if (!collapsed) viewMonth = day.slice(0, 7);
+  if (!weekMode()) viewMonth = day.slice(0, 7);
   scrollToSel = true;
   renderAgenda();
 }
@@ -260,6 +286,7 @@ function selectDay(day) {
 function renderWeekList() {
   const box = $('agWeek');
   box.innerHTML = '';
+  if (desk.matches) { renderDayPanel(box); return; }
   const t = todayIso();
   const start = mondayOf(selDay);
   const visible = (it) => !(hideDone && it.done);
@@ -582,7 +609,7 @@ function setCollapsed(v) {
 }
 // Flèches et balayages : mois suivant (grille dépliée) ou semaine suivante (repliée).
 function step(dir) {
-  if (collapsed) {
+  if (weekMode()) {
     selDay = addDays(selDay, 7 * dir);
   } else {
     viewMonth = shiftMonth(viewMonth, dir);
@@ -596,6 +623,7 @@ export function bindAgenda() {
   $('agToday').addEventListener('click', () => { selDay = todayIso(); viewMonth = selDay.slice(0, 7); scrollToSel = true; renderAgenda(); });
   $('agHideDone').addEventListener('click', () => { hideDone = !hideDone; renderAgenda(); });
   $('agPrev').addEventListener('click', () => step(-1));
+  desk.addEventListener('change', () => { if (!$('view-calendrier').hidden) renderAgenda(); });
   $('agNext').addEventListener('click', () => step(1));
   document.querySelectorAll('#agMode button').forEach((b) => b.addEventListener('click', () => setCollapsed(b.dataset.mode === 'semaine')));
   // Barre d'ajout en bas : ajoute au jour sélectionné.

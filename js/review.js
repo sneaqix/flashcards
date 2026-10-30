@@ -1,13 +1,13 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030215123';
+import * as S from './store.js?v=20261030222259';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030215123';
-import { scheduleSync } from './sync.js?v=20261030215123';
-import { renderTodo, examsAhead, openAgendaItem, TYPES } from './agenda.js?v=20261030215123';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030215123';
-import { openEditor } from './editor.js?v=20261030215123';
+} from './ui.js?v=20261030222259';
+import { scheduleSync } from './sync.js?v=20261030222259';
+import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030222259';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030222259';
+import { openEditor } from './editor.js?v=20261030222259';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -82,6 +82,8 @@ function renderExamPlans(plans) {
   });
 }
 
+const phone = matchMedia('(max-width: 899px)');
+
 export function renderHome() {
   const p = state.progress;
   $('date').textContent = new Date(Date.now() - 4 * 3600000).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -108,10 +110,32 @@ export function renderHome() {
     const sub = S.dailyQueue(p, activeHere).bySubject[m.id] || { reviews: 0, fresh: 0, learn: 0, total: 0 };
     const sec = document.createElement('div');
     sec.className = 'matiere';
-    sec.innerHTML = '<div class="matiere-head"><div><h2></h2><span>' + plural(total, 'carte', 'cartes') + ' · ' + countsText(sub) + '</span></div>' +
+    // Sur téléphone, la matière se déplie au toucher ; le bouton Réviser reste toujours visible.
+    const allFaces = m.chapitres.flatMap((c) => S.faces(c));
+    const seen = allFaces.filter((f) => S.stateOf(p, f.key)).length;
+    sec.innerHTML = '<div class="matiere-head"><div class="mat-info"><span class="mat-dot" aria-hidden="true"></span><h2></h2><span class="mat-long">' + plural(total, 'carte', 'cartes') + ' · ' + countsText(sub) + '</span>' +
+      '<span class="mat-sum"></span><span class="mat-bar" aria-hidden="true"><i></i></span><span class="mat-chev" aria-hidden="true"></span></div>' +
       '<button class="primary small subject-start" type="button">Réviser · ' + sub.total + '</button></div><ul class="chapters"></ul>';
     sec.querySelector('h2').textContent = m.nom;
-    if (dailyOff().has(m.id)) sec.querySelector('.matiere-head span').insertAdjacentHTML('beforeend', '<em class="off-daily"> · hors révision du jour</em>');
+    sec.querySelector('.mat-dot').style.background = matColor(m.id);
+    sec.querySelector('.mat-sum').textContent = plural(m.chapitres.length, 'chapitre', 'chapitres') + ' · ' + sub.total + ' à faire' + (dailyOff().has(m.id) ? ' · à part' : '');
+    sec.querySelector('.mat-bar i').style.width = (allFaces.length ? Math.round(seen / allFaces.length * 100) : 0) + '%';
+    sec.querySelector('.mat-bar').title = seen + ' / ' + allFaces.length + ' cartes déjà vues';
+    const info = sec.querySelector('.mat-info');
+    info.tabIndex = 0;
+    info.setAttribute('role', 'button');
+    info.setAttribute('aria-expanded', 'false');
+    const toggle = () => {
+      if (!phone.matches) return;
+      const open = !sec.classList.contains('open');
+      list.querySelectorAll('.matiere.open').forEach((o) => { o.classList.remove('open'); o.querySelector('.mat-info').setAttribute('aria-expanded', 'false'); });
+      sec.classList.toggle('open', open);
+      info.setAttribute('aria-expanded', String(open));
+      if (open) requestAnimationFrame(() => { const top = sec.getBoundingClientRect().top; if (top < 0 || top > innerHeight * 0.5) sec.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); });
+    };
+    info.addEventListener('click', toggle);
+    info.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+    if (dailyOff().has(m.id)) sec.querySelector('.mat-long').insertAdjacentHTML('beforeend', '<em class="off-daily"> · hors révision du jour</em>');
     const subjectBtn = sec.querySelector('.subject-start');
     subjectBtn.disabled = sub.total === 0;
     subjectBtn.setAttribute('aria-label', 'Réviser ' + m.nom + ' : ' + plural(sub.total, 'carte', 'cartes'));

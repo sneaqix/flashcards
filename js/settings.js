@@ -1,14 +1,14 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030215123';
-import * as S from './store.js?v=20261030215123';
-import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030215123';
-import { renderAppearance, themeLabel } from './theme.js?v=20261030215123';
-import { renderAnki, bindAnki } from './anki.js?v=20261030215123';
-import { renderNotifs, notifSummary } from './notifs.js?v=20261030215123';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030215123';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030215123';
-import { PALETTE, matColorKey } from './agenda.js?v=20261030215123';
-import { buildChecklist } from './practice.js?v=20261030215123';
+import { GitHub } from './github.js?v=20261030222259';
+import * as S from './store.js?v=20261030222259';
+import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030222259';
+import { renderAppearance, themeLabel } from './theme.js?v=20261030222259';
+import { renderAnki, bindAnki } from './anki.js?v=20261030222259';
+import { renderNotifs, notifSummary } from './notifs.js?v=20261030222259';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030222259';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030222259';
+import { PALETTE, matColorKey } from './agenda.js?v=20261030222259';
+import { buildChecklist } from './practice.js?v=20261030222259';
 
 export function renderSettings() {
   const s = state.progress.settings;
