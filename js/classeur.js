@@ -1,18 +1,21 @@
 // Onglet Classeur : documents PDF (cours, TD, DS) rangés par matière et chapitre,
 // stockés dans le dépôt privé de sauvegarde.
-import { isConflict } from './github.js?v=20261030121503';
-import { fileToBase64 } from './gemini.js?v=20261030121503';
-import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261030121503';
-import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261030121503';
-import { openViewer } from './viewer.js?v=20261030121503';
-import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261030121503';
-import { openImportWithDoc } from './importer.js?v=20261030121503';
+import { isConflict } from './github.js?v=20261030122825';
+import { fileToBase64 } from './gemini.js?v=20261030122825';
+import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261030122825';
+import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261030122825';
+import { openViewer } from './viewer.js?v=20261030122825';
+import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261030122825';
+import { openImportWithDoc } from './importer.js?v=20261030122825';
 
 export const DOC_TYPES = { cours: 'Cours', td: 'TD / exercices', ds: 'DS / colles' };
 const INDEX = 'classeur/index.json';
 const MAX_MB = 25;
 
-const filters = { text: '', type: '', chap: '' };
+const filters = { text: '', type: '', chap: '', mat: readMat() };
+// Matière choisie dans les puces, gardée d'une visite à l'autre sur cet appareil.
+function readMat() { try { return localStorage.getItem('fc.clsMat') || ''; } catch (e) { return ''; } }
+function writeMat(v) { try { localStorage.setItem('fc.clsMat', v); } catch (e) { /* indisponible */ } }
 let editing = null; // document en cours de modification (null = ajout)
 let pickedFile = null;
 
@@ -97,6 +100,7 @@ export async function renderClasseur() {
   $('clsLocked').hidden = !locked;
   $('clsAdd').disabled = locked;
   document.querySelectorAll('#clsTypes button').forEach((b) => b.classList.toggle('on', b.dataset.type === filters.type));
+  renderMatChips();
   $('clsSearch').value = filters.text;
   $('clsChapFilter').hidden = !filters.chap;
   const ch = state.byId.get(filters.chap);
@@ -146,7 +150,7 @@ function renderList() {
     (!term || norm(d.nom).includes(term)));
   list.innerHTML = '';
   if (filtered && !docs.length) { list.innerHTML = '<p class="sub">Aucun document ne correspond.</p>'; return; }
-  if (!state.classeur.docs.length) {
+  if (!state.classeur.docs.length && !filters.mat) {
     list.insertAdjacentHTML('beforeend', '<div class="panel empty-state"><h2>Ton classeur est vide</h2><p class="sub">Ajoute tes cours, TD et DS en PDF avec « Ajouter un PDF ». Ils sont rangés par chapitre, à côté de tes cartes, et tu peux les surligner et les annoter.</p></div>');
   }
   const byChap = new Map();
@@ -156,10 +160,11 @@ function renderList() {
     if (!byChap.has(d.chapId)) byChap.set(d.chapId, []);
     byChap.get(d.chapId).push(d);
   });
-  if (!filtered) {
+  if (!filtered && !filters.mat) {
     list.insertAdjacentHTML('beforeend', '<p class="sub cls-help">Touche le nom d\'une matière ou d\'un chapitre pour le renommer. Appui long sur un chapitre (ou sur ⠿) pour le déplacer.</p>');
   }
   state.matieres.forEach((m) => {
+    if (filters.mat && m.id !== filters.mat) return;
     // Sans filtre, tous les chapitres sont affichés (même vides) pour pouvoir les gérer.
     const chs = filtered ? m.chapitres.filter((c) => byChap.has(c.id)) : m.chapitres;
     if (!chs.length) return;
@@ -179,7 +184,7 @@ function renderList() {
     chs.forEach((c) => box.appendChild(chapterBox(c, byChap.get(c.id) || [], !filtered)));
     list.appendChild(sec);
   });
-  if (orphans.length) {
+  if (orphans.length && !filters.mat) {
     const sec = document.createElement('section');
     sec.className = 'matiere';
     sec.innerHTML = '<div class="matiere-head"><div><h2>Sans chapitre</h2></div></div><div class="cls-chaps"><div class="cls-chap"><p class="sub">Documents dont le chapitre a été supprimé. « Modifier » permet de les ranger ailleurs.</p><ul class="cls-docs"></ul></div></div>';
@@ -379,6 +384,28 @@ document.addEventListener('pointercancel', onDragEnd);
 // Empêche la page de défiler pendant le déplacement d'un chapitre (iPhone).
 document.addEventListener('touchmove', (e) => { if (drag) e.preventDefault(); }, { passive: false });
 
+function renderMatChips() {
+  const box = $('clsMats');
+  if (filters.mat && !state.matieres.some((m) => m.id === filters.mat)) filters.mat = '';
+  box.innerHTML = '';
+  [['', 'Toutes'], ...state.matieres.map((m) => [m.id, m.nom])].forEach(([id, nom]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = nom;
+    b.className = id === filters.mat ? 'on' : '';
+    b.setAttribute('aria-pressed', String(id === filters.mat));
+    b.addEventListener('click', () => {
+      filters.mat = id;
+      writeMat(id);
+      if (filters.chap && id && (state.byId.get(filters.chap) || {}).matiere !== id) filters.chap = '';
+      renderMatChips();
+      renderList();
+      window.scrollTo(0, 0);
+    });
+    box.appendChild(b);
+  });
+}
+
 function docRow(d) {
   const li = document.createElement('li');
   li.className = 'cls-doc';
@@ -404,7 +431,8 @@ export async function openDoc(d) {
 
 // Ouvre le classeur filtré sur un chapitre (depuis l'accueil).
 export function showChapterDocs(chId) {
-  Object.assign(filters, { text: '', type: '', chap: chId });
+  const ch = state.byId.get(chId);
+  Object.assign(filters, { text: '', type: '', chap: chId, mat: ch ? ch.matiere : '' });
   if (location.hash.slice(1) !== 'classeur') location.hash = 'classeur';
   else route();
 }

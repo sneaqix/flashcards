@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261030121503';
+import * as S from './store.js?v=20261030122825';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'parametres'];
@@ -64,6 +64,16 @@ export function setStatus(id, msg, kind = '') {
 }
 export function plural(n, one, many) { return n + ' ' + (n > 1 ? many : one); }
 export function saveProgress() { S.saveProgress(state.progress); }
+// Matières exclues de la « Révision du jour » (toujours révisables avec leur propre bouton).
+// Par défaut, le français-philo n'est pas mélangé aux autres matières.
+export function dailyOff() {
+  const v = state.progress.settings.dailyOff;
+  return new Set(Array.isArray(v) ? v : ['francais']);
+}
+export function dailyChapters() {
+  const off = dailyOff();
+  return activeChapters().filter((c) => !off.has(c.matiere));
+}
 export function activeChapters() {
   const off = new Set(state.progress.settings.inactive || []);
   return state.chapters.filter((c) => !off.has(c.id));

@@ -1,11 +1,11 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030121503';
-import * as S from './store.js?v=20261030121503';
-import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261030121503';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030121503';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030121503';
-import { PALETTE, matColorKey } from './agenda.js?v=20261030121503';
-import { buildChecklist } from './practice.js?v=20261030121503';
+import { GitHub } from './github.js?v=20261030122825';
+import * as S from './store.js?v=20261030122825';
+import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030122825';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030122825';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030122825';
+import { PALETTE, matColorKey } from './agenda.js?v=20261030122825';
+import { buildChecklist } from './practice.js?v=20261030122825';
 
 export function renderSettings() {
   const s = state.progress.settings;
@@ -64,7 +64,7 @@ function renderMatColors() {
 // Tableau des limites quotidiennes : une ligne par matière, nouvelles cartes et révisions maximum.
 function renderSubjectLimits() {
   const box = $('subjectLimits');
-  box.innerHTML = '<span></span><span class="lh">Nouvelles</span><span class="lh">Révisions</span>';
+  box.innerHTML = '<span></span><span class="lh">Nouvelles</span><span class="lh">Révisions</span><span class="lh">Du jour</span>';
   state.matieres.forEach((m) => {
     const lim = S.subjectLimits(state.progress.settings, m.id);
     const name = document.createElement('span');
@@ -91,6 +91,22 @@ function renderSubjectLimits() {
       });
       box.appendChild(input);
     });
+    // Interrupteur : la matière est-elle mélangée aux autres dans la « Révision du jour » ?
+    const sw = document.createElement('input');
+    sw.type = 'checkbox';
+    sw.className = 'switch';
+    sw.id = 'daily-' + m.id;
+    sw.checked = !dailyOff().has(m.id);
+    sw.setAttribute('aria-label', m.nom + ' dans la révision du jour');
+    sw.addEventListener('change', () => {
+      const off = dailyOff();
+      if (sw.checked) off.delete(m.id); else off.add(m.id);
+      updateSettings({ dailyOff: [...off] });
+    });
+    const cell = document.createElement('span');
+    cell.className = 'lsw';
+    cell.appendChild(sw);
+    box.appendChild(cell);
   });
   updateLimitsTotal();
 }

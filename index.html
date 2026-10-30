@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030121503">
+<link rel="stylesheet" href="css/app.css?v=20261030122825">
 </head>
 <body>
 <div class="app">
@@ -362,6 +362,7 @@
         <input id="clsSearch" type="search" placeholder="Rechercher un document" aria-label="Rechercher un document" autocomplete="off">
         <button id="clsAdd" class="primary" type="button">Ajouter un PDF</button>
       </div>
+      <div id="clsMats" class="chips cls-mats" role="group" aria-label="Matière"></div>
       <div id="clsTypes" class="chips" role="group" aria-label="Type de document">
         <button type="button" data-type="" class="on">Tous</button>
         <button type="button" data-type="cours">Cours</button>
@@ -658,7 +659,7 @@
     <a class="panel stats-link" href="#stats"><span><b>Statistiques</b><span class="sub">Calendrier des révisions, rétention, temps, prévisions</span></span><span aria-hidden="true">›</span></a>
     <div class="panel form">
       <h2>Rythme quotidien par matière</h2>
-      <p class="sub">Nouvelles cartes à découvrir et révisions maximum chaque jour. Une limite de révisions à 0 signifie sans limite.</p>
+      <p class="sub">Nouvelles cartes à découvrir et révisions maximum chaque jour (0 révision = sans limite). « Du jour » : la matière est mélangée aux autres dans la Révision du jour ; sinon, elle se révise seulement avec son propre bouton.</p>
       <div class="limits" id="subjectLimits"></div>
       <p class="sub limits-total" id="limitsTotal"></p>
       <p class="status" id="sStatus" role="status"></p>
@@ -754,6 +755,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030121503"></script>
+<script type="module" src="js/app.js?v=20261030122825"></script>
 </body>
 </html>

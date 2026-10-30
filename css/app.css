@@ -103,7 +103,9 @@ textarea { font-family: var(--font-mono); font-size: 0.9rem; resize: vertical; l
 .check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; }
 .check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex: none; }
 
-.limits { display: grid; grid-template-columns: minmax(0, 1fr) 84px 84px; gap: 8px 10px; align-items: center; }
+.limits { display: grid; grid-template-columns: minmax(0, 1fr) 70px 70px 54px; gap: 8px 8px; align-items: center; }
+.limits .lsw { display: flex; justify-content: center; }
+.off-daily { font-style: normal; color: var(--hard); }
 .limits .lh { font: 500 0.72rem var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; text-align: center; }
 .limits .ln { font-weight: 600; font-family: var(--font-display); overflow-wrap: anywhere; }
 .limits input { text-align: center; padding: 8px 6px; font-variant-numeric: tabular-nums; }
@@ -638,3 +640,6 @@ body.carnet-open .toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 .en-pages { flex: 1; }
 #enTexte { font: italic 1.02rem/1.45 Georgia, "Times New Roman", serif; }
 body.entree-open .toast { bottom: auto; top: calc(14px + env(safe-area-inset-top, 0px)); }
+.cls-mats { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.cls-mats::-webkit-scrollbar { display: none; }
+.cls-mats button { flex: none; }

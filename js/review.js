@@ -1,13 +1,13 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030121503';
+import * as S from './store.js?v=20261030122825';
 import {
-  $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters,
+  $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030121503';
-import { scheduleSync } from './sync.js?v=20261030121503';
-import { renderTodo } from './agenda.js?v=20261030121503';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030121503';
-import { openEditor } from './editor.js?v=20261030121503';
+} from './ui.js?v=20261030122825';
+import { scheduleSync } from './sync.js?v=20261030122825';
+import { renderTodo } from './agenda.js?v=20261030122825';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030122825';
+import { openEditor } from './editor.js?v=20261030122825';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -32,7 +32,7 @@ export function renderHome() {
   const p = state.progress;
   $('date').textContent = new Date(Date.now() - 4 * 3600000).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   renderTodo($('todoBox'));
-  const daily = S.dailyQueue(p, activeChapters());
+  const daily = S.dailyQueue(p, dailyChapters());
   $('dueTotal').textContent = daily.items.length;
   $('dueDetail').textContent = countsText({ reviews: daily.reviewsDue, fresh: daily.newAvailable, learn: daily.learn });
   $('startDaily').disabled = daily.items.length === 0;
@@ -48,12 +48,14 @@ export function renderHome() {
     if (!m.chapitres.length) return;
     const total = m.chapitres.reduce((s, c) => s + c.cartes.length, 0);
     const activeHere = m.chapitres.filter((c) => !off.has(c.id));
-    const sub = daily.bySubject[m.id] || { reviews: 0, fresh: 0, learn: 0, total: 0 };
+    // Calculé à part : une matière exclue de la révision du jour garde ses propres cartes à faire.
+    const sub = S.dailyQueue(p, activeHere).bySubject[m.id] || { reviews: 0, fresh: 0, learn: 0, total: 0 };
     const sec = document.createElement('div');
     sec.className = 'matiere';
     sec.innerHTML = '<div class="matiere-head"><div><h2></h2><span>' + plural(total, 'carte', 'cartes') + ' · ' + countsText(sub) + '</span></div>' +
       '<button class="primary small subject-start" type="button">Réviser · ' + sub.total + '</button></div><ul class="chapters"></ul>';
     sec.querySelector('h2').textContent = m.nom;
+    if (dailyOff().has(m.id)) sec.querySelector('.matiere-head span').insertAdjacentHTML('beforeend', '<em class="off-daily"> · hors révision du jour</em>');
     const subjectBtn = sec.querySelector('.subject-start');
     subjectBtn.disabled = sub.total === 0;
     subjectBtn.setAttribute('aria-label', 'Réviser ' + m.nom + ' : ' + plural(sub.total, 'carte', 'cartes'));
@@ -510,7 +512,7 @@ export function resumeSession(card) {
 }
 
 export function bindReview() {
-  $('startDaily').addEventListener('click', () => startSession(S.dailyQueue(state.progress, activeChapters()).items, 'srs', 'Révision du jour'));
+  $('startDaily').addEventListener('click', () => startSession(S.dailyQueue(state.progress, dailyChapters()).items, 'srs', 'Révision du jour'));
   $('show').addEventListener('click', reveal);
   [1, 2, 3, 4].forEach((g) => $('g' + g).addEventListener('click', () => grade(g)));
   $('quit').addEventListener('click', leaveSession);
