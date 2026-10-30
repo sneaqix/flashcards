@@ -51,7 +51,7 @@ body.in-session .tabs { display: none; }
 
 header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 h1 { font: 800 1.75rem/1.1 var(--font-display); margin: 0; letter-spacing: -0.01em; }
-h1 span { background: linear-gradient(transparent 55%, var(--mark) 55%); padding: 0 2px; }
+h1 .hl { background: linear-gradient(transparent 55%, var(--mark) 55%); padding: 0 2px; }
 h2 { font: 600 1.2rem/1.25 var(--font-display); margin: 0; text-wrap: balance; }
 h3 { font: 600 1rem/1.3 var(--font-display); margin: 0; }
 
@@ -839,3 +839,76 @@ body { --side-off: 0px; --panel-off: 0px; }
   body.cal { --panel-off: 0px; }
   body.cal .today-panel { display: none; }
 }
+
+/* ---------- Téléphone : onglets à icônes, en-tête compact, révision plein écran ---------- */
+.h-tab, .tab-more, .more-sheet, .ptr { display: none; }
+@media (max-width: 899px) {
+  /* Onglets : 5 entrées avec icône ; Cartes et Réglages passent dans « Plus » */
+  .tabs { grid-template-columns: repeat(5, 1fr); }
+  .tabs a[data-tab="cartes"], .tabs a[data-tab="parametres"] { display: none; }
+  .tabs a, .tab-more { flex-direction: column; gap: 3px; font: 600 0.7rem var(--font-body); }
+  .tabs .tab-ic { display: block; width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tab-more { display: flex; align-items: center; justify-content: center; height: var(--tabs-h); background: none; border: 0; border-radius: 0; color: var(--muted); min-height: 0; padding: 0; position: relative; }
+  .tab-more .tab-ic circle { fill: currentColor; stroke: none; }
+  .tab-more.active { color: var(--accent); }
+  .tab-more.active::before { content: ""; position: absolute; top: 0; left: 22%; right: 22%; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
+  .tabs a.active .tab-ic, .tab-more.active .tab-ic { stroke-width: 2.3; }
+
+  /* Feuille « Plus » */
+  .more-sheet { display: block; position: fixed; inset: 0; z-index: 40; }
+  .more-sheet[hidden] { display: none; }
+  .more-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.35); opacity: 0; transition: opacity 0.2s; }
+  .more-panel { position: absolute; left: 0; right: 0; bottom: 0; background: var(--card); border-radius: 18px 18px 0 0; padding: 8px 12px calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 4px; transform: translateY(100%); transition: transform 0.22s ease-out; box-shadow: 0 -8px 30px var(--shadow); }
+  .more-sheet.open .more-backdrop { opacity: 1; }
+  .more-sheet.open .more-panel { transform: none; }
+  .more-grip { width: 38px; height: 5px; border-radius: 3px; background: var(--line); margin: 2px auto 8px; }
+  .more-panel a { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: var(--r2, 10px); color: var(--ink); text-decoration: none; min-height: 56px; }
+  .more-panel a:active { background: var(--accent-soft); }
+  .more-panel a svg { flex: none; width: 24px; height: 24px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .more-panel a span { display: flex; flex-direction: column; }
+  .more-panel a small { color: var(--muted); font-size: 0.82rem; }
+
+  /* En-tête compact : nom de l'onglet, synchronisation en simple point */
+  .app { gap: 14px; padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
+  header.top h1 { font-size: 1.5rem; }
+  header.top .h-app { display: none; }
+  header.top .h-tab { display: inline; }
+  #syncChip { font-size: 0; width: 44px; height: 36px; min-height: 0; padding: 0; border: 0; background: none; display: grid; place-items: center; }
+  #syncChip::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: var(--muted); box-shadow: 0 0 0 3px color-mix(in srgb, var(--muted) 18%, transparent); }
+  #syncChip.ok::before { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 20%, transparent); }
+  #syncChip.busy::before { background: var(--accent); animation: syncpulse 1s ease-in-out infinite; }
+  #syncChip.error::before { background: var(--again); box-shadow: 0 0 0 3px color-mix(in srgb, var(--again) 22%, transparent); }
+
+  /* Préparation des DS : bandeaux qui défilent sur une ligne */
+  .exam-plans { flex-direction: row; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 0 16px 2px; scrollbar-width: none; }
+  .exam-plans::-webkit-scrollbar { display: none; }
+  .exam-plan { flex: 0 0 86%; scroll-snap-align: center; align-items: flex-start; }
+  .exam-plan:only-child { flex-basis: 100%; }
+
+  /* Révision plein écran : carte au centre, boutons en bas à portée de pouce */
+  body.reviewing header.top { display: none; }
+  body.reviewing .app { min-height: 100dvh; padding-bottom: 0; }
+  #view-session { flex: 1; min-height: calc(100dvh - 26px - env(safe-area-inset-top, 0px)); gap: 10px; }
+  #view-session .bar-top .ghost { min-height: 38px; padding: 6px 12px; }
+  #view-session .session-counts { margin: -4px 0 0; text-align: center; }
+  #view-session .card { flex: 1; justify-content: center; min-height: 0; cursor: pointer; }
+  #view-session .actions { position: sticky; bottom: 0; background: var(--paper); padding: 8px 0 calc(10px + env(safe-area-inset-bottom, 0px)); margin-top: auto; }
+  #view-session #show { min-height: 56px; font-size: 1.05rem; border-radius: var(--r3, 12px); }
+  #view-session .grade .g { min-height: 64px; border-radius: var(--r3, 12px); border-width: 0; }
+  #view-session .g1 { background: color-mix(in srgb, var(--again) 16%, var(--card)); }
+  #view-session .g2 { background: color-mix(in srgb, var(--hard) 18%, var(--card)); color: var(--hard); }
+  #view-session .g3 { background: color-mix(in srgb, var(--good) 18%, var(--card)); color: var(--good); }
+  #view-session .g4 { background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); }
+  #view-session .keys { display: none; }
+
+  /* Tirer pour synchroniser */
+  .ptr { display: grid; place-items: center; position: fixed; top: calc(env(safe-area-inset-top, 0px) - 40px); left: 50%; z-index: 30; width: 36px; height: 36px; margin-left: -18px; border-radius: 50%; background: var(--card); box-shadow: 0 2px 10px var(--shadow); transform: translateY(var(--d, 0px)); opacity: 0; transition: opacity 0.15s; pointer-events: none; }
+  .ptr.show { opacity: 1; }
+  .ptr span { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid var(--line); border-top-color: var(--accent); transform: rotate(calc(var(--d, 0px) * 3.2)); }
+  .ptr.ready span { border-color: var(--accent); }
+  .ptr.busy { transform: translateY(70px); }
+  .ptr.busy span { animation: spin 0.8s linear infinite; }
+}
+@keyframes syncpulse { 50% { opacity: 0.35; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .more-panel, .more-backdrop { transition: none; } #syncChip.busy::before, .ptr.busy span { animation: none; } }

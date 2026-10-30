@@ -398,13 +398,13 @@ html[data-theme="brutal"] .ag-day, html[data-theme="brutal"] .cn-card, html[data
 html[data-theme="brutal"] button.primary, html[data-theme="brutal"] .button.primary { border: 2px solid var(--line); box-shadow: 3px 3px 0 var(--line); }
 html[data-theme="brutal"] button.primary:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
 html[data-theme="brutal"] .ghost, html[data-theme="brutal"] input, html[data-theme="brutal"] select, html[data-theme="brutal"] textarea { border-width: 2px; }
-html[data-theme="brutal"] h1 span { background: var(--accent); color: var(--accent-ink); padding: 0 6px; }
+html[data-theme="brutal"] h1 .hl { background: var(--accent); color: var(--accent-ink); padding: 0 6px; }
 html[data-theme="pastel"] .panel, html[data-theme="pastel"] .card { border-color: transparent; box-shadow: 0 6px 22px var(--shadow); }
 html[data-theme="epure"] .panel, html[data-theme="epure"] .card, html[data-theme="epure"] .tile { border-color: transparent; }
 html[data-theme="epure"][data-mode="dark"] .panel, html[data-theme="epure"][data-mode="dark"] .card { border-color: var(--line); }
 html[data-theme="tableau"] h1, html[data-theme="tableau"] h2 { letter-spacing: 0; }
-html[data-theme="tableau"] h1 span { background: none; border-bottom: 3px solid var(--accent); }
+html[data-theme="tableau"] h1 .hl { background: none; border-bottom: 3px solid var(--accent); }
 html[data-theme="terminal"] body { font-size: 15px; }
 html[data-theme="terminal"] h1::before { content: "> "; color: var(--accent); }
-html[data-theme="terminal"] h1 span { background: none; color: var(--accent); }
+html[data-theme="terminal"] h1 .hl { background: none; color: var(--accent); }
 html[data-theme="biblio"] h1 { font-weight: 600; }

@@ -1,13 +1,13 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030222259';
+import * as S from './store.js?v=20261030224031';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030222259';
-import { scheduleSync } from './sync.js?v=20261030222259';
-import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030222259';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030222259';
-import { openEditor } from './editor.js?v=20261030222259';
+} from './ui.js?v=20261030224031';
+import { scheduleSync } from './sync.js?v=20261030224031';
+import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261030224031';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030224031';
+import { openEditor } from './editor.js?v=20261030224031';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -594,6 +594,13 @@ export function resumeSession(card) {
 export function bindReview() {
   $('startDaily').addEventListener('click', startDailyReview);
   $('show').addEventListener('click', reveal);
+  // Toucher la carte la retourne (comme « Voir la réponse »).
+  $('card').addEventListener('click', (e) => {
+    if ($('show').hidden || $('show').textContent !== 'Voir la réponse') return;
+    if (e.target.closest('button, a, input, textarea, select, label')) return;
+    if (window.getSelection && String(window.getSelection())) return;
+    reveal();
+  });
   [1, 2, 3, 4].forEach((g) => $('g' + g).addEventListener('click', () => grade(g)));
   $('quit').addEventListener('click', leaveSession);
   $('back').addEventListener('click', leaveSession);

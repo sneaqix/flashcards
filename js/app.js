@@ -1,20 +1,20 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import * as S from './store.js?v=20261030222259';
-import { GitHub } from './github.js?v=20261030222259';
-import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030222259';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030222259';
-import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261030222259';
-import { renderCartes, bindEditor } from './editor.js?v=20261030222259';
-import { renderCram, bindPractice } from './practice.js?v=20261030222259';
-import { bindImport, restoreImport } from './importer.js?v=20261030222259';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030222259';
-import { bindViewer } from './viewer.js?v=20261030222259';
-import { bindCarnets } from './carnets.js?v=20261030222259';
-import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030222259';
-import { renderStats } from './stats.js?v=20261030222259';
-import { renderSettings, bindSettings } from './settings.js?v=20261030222259';
-import { bindTheme } from './theme.js?v=20261030222259';
-import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030222259';
+import * as S from './store.js?v=20261030224031';
+import { GitHub } from './github.js?v=20261030224031';
+import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030224031';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030224031';
+import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261030224031';
+import { renderCartes, bindEditor } from './editor.js?v=20261030224031';
+import { renderCram, bindPractice } from './practice.js?v=20261030224031';
+import { bindImport, restoreImport } from './importer.js?v=20261030224031';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030224031';
+import { bindViewer } from './viewer.js?v=20261030224031';
+import { bindCarnets } from './carnets.js?v=20261030224031';
+import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030224031';
+import { renderStats } from './stats.js?v=20261030224031';
+import { renderSettings, bindSettings } from './settings.js?v=20261030224031';
+import { bindTheme } from './theme.js?v=20261030224031';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030224031';
 
 state.views = {
   reviser: renderHome,
@@ -56,8 +56,51 @@ function bindSidebar() {
   wider.addEventListener('change', refreshNav);
 }
 
+// ---------- Téléphone : menu « Plus » et « tirer pour synchroniser » ----------
+function bindPhone() {
+  const sheet = $('moreSheet');
+  const close = () => { sheet.classList.remove('open'); setTimeout(() => { if (!sheet.classList.contains('open')) sheet.hidden = true; }, 220); };
+  $('tabMore').addEventListener('click', () => {
+    sheet.hidden = false;
+    requestAnimationFrame(() => sheet.classList.add('open'));
+    const first = sheet.querySelector('a');
+    if (first) first.focus({ preventScroll: true });
+  });
+  sheet.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', close));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) close(); });
+
+  // Tirer l'accueil vers le bas lance la synchronisation.
+  const ptr = $('ptr');
+  let y0 = null, dy = 0;
+  const phone = matchMedia('(max-width: 899px)');
+  const active = () => phone.matches && canSync() && !state.session && !$('view-reviser').hidden && window.scrollY <= 0;
+  window.addEventListener('touchstart', (e) => { y0 = active() && e.touches.length === 1 ? e.touches[0].clientY : null; dy = 0; }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (y0 === null) return;
+    dy = Math.max(0, e.touches[0].clientY - y0);
+    const d = Math.min(dy, 110);
+    ptr.style.setProperty('--d', d + 'px');
+    ptr.classList.toggle('show', d > 8);
+    ptr.classList.toggle('ready', dy > 75);
+  }, { passive: true });
+  window.addEventListener('touchend', () => {
+    if (y0 === null) return;
+    const go = dy > 75;
+    y0 = null;
+    ptr.classList.remove('ready');
+    if (go) {
+      ptr.classList.add('busy');
+      syncNow().finally(() => { ptr.classList.remove('busy', 'show'); ptr.style.removeProperty('--d'); });
+    } else {
+      ptr.classList.remove('show');
+      ptr.style.removeProperty('--d');
+    }
+  });
+}
+
 function bindEvents() {
   bindSidebar();
+  bindPhone();
   window.addEventListener('hashchange', route);
   document.addEventListener('mathjax-ready', () => {
     document.querySelectorAll('.view:not([hidden])').forEach((v) => typeset(v));
