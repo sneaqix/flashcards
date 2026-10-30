@@ -1,14 +1,15 @@
 // Lecteur PDF du classeur (PDF.js) avec surlignage, notes et dessin à main levée.
 // Les annotations sont enregistrées dans le dépôt privé : classeur/notes/<id>.json.
-import { isConflict } from './github.js?v=20261030232723';
-import { $, state, escapeHtml, toast, newId, showView, route, canEdit, canSync } from './ui.js?v=20261030232723';
-import { openEditor } from './editor.js?v=20261030232723';
-import { generateFromDoc } from './classeur.js?v=20261030232723';
+import { isConflict } from './github.js?v=20261030233452';
+import { $, state, escapeHtml, toast, newId, showView, route, canEdit, canSync } from './ui.js?v=20261030233452';
+import { openEditor } from './editor.js?v=20261030233452';
+import { generateFromDoc } from './classeur.js?v=20261030233452';
 
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
 export const COLORS = { jaune: '#ffd60a', vert: '#34c759', bleu: '#3fa7ff', rose: '#ff6fb1' };
 const COLOR_NAMES = { jaune: 'jaune', vert: 'vert', bleu: 'bleu', rose: 'rose' };
-const ZOOMS = [1, 1.25, 1.5, 2, 3];
+const ZOOMS = [0.6, 0.75, 1, 1.25, 1.5, 2, 3, 4]; // paliers des boutons + et −
+const ZMIN = 0.6, ZMAX = 4;
 const W = 1000; // largeur d'une page en unités d'annotation (la hauteur suit les proportions de la page)
 const HINTS = {
   lire: 'Sélectionne du texte (appui long) pour le surligner. Touche un surlignage pour le modifier.',
@@ -102,7 +103,7 @@ function closeViewer(navigate = true) {
 // =====================================================================
 // Mise en page et rendu des pages
 // =====================================================================
-function layout() {
+function layout(keepScroll = false) {
   const box = $('lecPages');
   const keep = currentPage();
   box.innerHTML = '';
@@ -132,7 +133,7 @@ function layout() {
     observer.observe(el);
   });
   $('lecZoom').textContent = Math.round(cur.zoom * 100) + ' %';
-  if (keep > 1) scrollToPage(keep);
+  if (keep > 1 && !keepScroll) scrollToPage(keep);
   updatePageIndicator();
 }
 
@@ -213,11 +214,106 @@ function readLastPage(id) {
 
 function setZoom(dir) {
   if (!cur || !cur.pages.length) return;
-  const i = ZOOMS.indexOf(cur.zoom);
-  const next = ZOOMS[Math.max(0, Math.min(ZOOMS.length - 1, i + dir))];
-  if (next === cur.zoom) return;
-  cur.zoom = next;
-  layout();
+  const next = dir > 0 ? ZOOMS.find((z) => z > cur.zoom * 1.01) : [...ZOOMS].reverse().find((z) => z < cur.zoom * 0.99);
+  if (!next) return;
+  const r = $('lecScroll').getBoundingClientRect();
+  zoomAt(next, r.left + r.width / 2, window.innerHeight / 2);
+}
+
+// Zoom centré sur un point de l'écran (doigts, molette, double-toucher) : seules les pages changent de taille.
+function zoomAt(z, cx, cy) {
+  if (!cur || !cur.pages.length) return;
+  z = Math.min(ZMAX, Math.max(ZMIN, z));
+  if (Math.abs(z - cur.zoom) < 0.005) { clearPreview(); return; }
+  const sc = $('lecScroll'), box = $('lecPages');
+  clearPreview();
+  const b = box.getBoundingClientRect(), r = sc.getBoundingClientRect();
+  const ratio = z / cur.zoom;
+  const x = cx - b.left, y = cy - b.top;   // point visé, dans les pages
+  const topDoc = b.top + window.scrollY;
+  cur.zoom = z;
+  layout(true);
+  sc.scrollLeft = Math.max(0, x * ratio - (cx - r.left));
+  window.scrollTo(window.scrollX, Math.max(0, topDoc + y * ratio - cy));
+  updatePageIndicator();
+}
+// Aperçu immédiat pendant le geste (simple agrandissement), le vrai rendu se fait à la fin.
+function preview(scale, cx, cy) {
+  const box = $('lecPages');
+  if (!box.style.transformOrigin) {
+    const b = box.getBoundingClientRect();
+    box.style.transformOrigin = (cx - b.left) + 'px ' + (cy - b.top) + 'px';
+  }
+  box.style.transform = 'scale(' + scale + ')';
+  $('lecZoom').textContent = Math.round(Math.min(ZMAX, Math.max(ZMIN, cur.zoom * scale)) * 100) + ' %';
+}
+function clearPreview() {
+  const box = $('lecPages');
+  box.style.transform = '';
+  box.style.transformOrigin = '';
+}
+
+function bindZoomGestures() {
+  const sc = $('lecScroll');
+  const open = () => cur && !$('view-lecteur').hidden;
+  // Pincement à deux doigts (téléphone, tablette).
+  let pinch = null;
+  const dist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  const mid = (t) => [(t[0].clientX + t[1].clientX) / 2, (t[0].clientY + t[1].clientY) / 2];
+  sc.addEventListener('touchstart', (e) => {
+    if (!open() || e.touches.length !== 2) return;
+    const [cx, cy] = mid(e.touches);
+    pinch = { d0: dist(e.touches), cx, cy, scale: 1 };
+  }, { passive: true });
+  sc.addEventListener('touchmove', (e) => {
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault(); // la page elle-même ne doit pas zoomer
+    const lim = (s) => Math.min(ZMAX / cur.zoom, Math.max(ZMIN / cur.zoom, s));
+    pinch.scale = lim(dist(e.touches) / pinch.d0);
+    preview(pinch.scale, pinch.cx, pinch.cy);
+  }, { passive: false });
+  const endPinch = () => {
+    if (!pinch) return;
+    const p = pinch;
+    pinch = null;
+    zoomAt(cur.zoom * p.scale, p.cx, p.cy);
+  };
+  sc.addEventListener('touchend', (e) => { if (pinch && e.touches.length < 2) endPinch(); });
+  sc.addEventListener('touchcancel', endPinch);
+  // Safari : empêche le zoom de toute la page pendant la lecture.
+  ['gesturestart', 'gesturechange'].forEach((t) => document.addEventListener(t, (e) => { if (open()) e.preventDefault(); }));
+
+  // Pavé tactile (pincement) ou Ctrl + molette sur ordinateur.
+  let wheel = null, wheelTimer = null;
+  window.addEventListener('wheel', (e) => {
+    if (!open() || !e.ctrlKey) return;
+    e.preventDefault();
+    if (!wheel) wheel = { scale: 1, cx: e.clientX, cy: e.clientY };
+    const step = Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.01));
+    wheel.scale = Math.min(ZMAX / cur.zoom, Math.max(ZMIN / cur.zoom, wheel.scale * step));
+    preview(wheel.scale, wheel.cx, wheel.cy);
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => { const w = wheel; wheel = null; zoomAt(cur.zoom * w.scale, w.cx, w.cy); }, 180);
+  }, { passive: false });
+
+  // Double-toucher / double-clic : zoom sur l'endroit, puis retour à la largeur de l'écran.
+  const toggleAt = (cx, cy) => zoomAt(cur.zoom > 1.05 ? 1 : 2, cx, cy);
+  let lastTap = null;
+  sc.addEventListener('touchend', (e) => {
+    if (!open() || mode !== 'lire' || e.touches.length || e.changedTouches.length !== 1) return;
+    const t = e.changedTouches[0], now = Date.now();
+    if (lastTap && now - lastTap.t < 300 && Math.hypot(t.clientX - lastTap.x, t.clientY - lastTap.y) < 30) {
+      lastTap = null;
+      e.preventDefault();
+      toggleAt(t.clientX, t.clientY);
+    } else lastTap = { t: now, x: t.clientX, y: t.clientY };
+  });
+  sc.addEventListener('touchmove', () => { lastTap = null; }, { passive: true });
+  sc.addEventListener('dblclick', (e) => {
+    // Un double-clic sur le texte sert à sélectionner un mot (surlignage) : on ne zoome qu'ailleurs.
+    if (!open() || mode !== 'lire' || (e.target.closest && e.target.closest('.textLayer span'))) return;
+    toggleAt(e.clientX, e.clientY);
+  });
 }
 
 // =====================================================================
@@ -612,6 +708,8 @@ export function bindViewer() {
   $('lecBack').addEventListener('click', () => closeViewer(true));
   $('lecZoomIn').addEventListener('click', () => setZoom(1));
   $('lecZoomOut').addEventListener('click', () => setZoom(-1));
+  $('lecFit').addEventListener('click', () => { const r = $('lecScroll').getBoundingClientRect(); zoomAt(1, r.left + r.width / 2, window.innerHeight / 2); });
+  bindZoomGestures();
   $('lecCards').addEventListener('click', () => { const d = cur && cur.doc; if (d) { closeViewer(false); generateFromDoc(d); } });
   $('lecPages').addEventListener('click', onPagesClick);
   $('lecPages').addEventListener('pointerdown', onInkDown);

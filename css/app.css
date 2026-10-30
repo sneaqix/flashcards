@@ -967,3 +967,4 @@ body { --side-off: 0px; --panel-off: 0px; }
 .cram-count { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .cram-count .seg button { min-width: 52px; min-height: 40px; }
 .cram-count input { width: 7rem; }
+.lec-scroll { touch-action: pan-x pan-y; }
