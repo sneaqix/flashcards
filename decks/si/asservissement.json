@@ -32,11 +32,6 @@
       ]
     },
     {
-      "id": "t5-optimal",
-      "q": "Valeur de $\\xi$ qui minimise le temps de réponse à 5 % d'un 2nd ordre",
-      "r": "$\\xi \\approx 0{,}69$, avec alors $\\omega_0\\, t_{5\\%} \\approx 3$."
-    },
-    {
       "id": "ftbf",
       "q": "Fonction de transfert en boucle fermée (chaîne directe $A$, retour $B$)",
       "r": "$$H_{BF}(p) = \\frac{A(p)}{1 + A(p)\\,B(p)}$$",
