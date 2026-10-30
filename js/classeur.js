@@ -1,11 +1,11 @@
 // Onglet Classeur : documents PDF (cours, TD, DS) rangés par matière et chapitre,
 // stockés dans le dépôt privé de sauvegarde.
-import { isConflict } from './github.js?v=20261030092917';
-import { fileToBase64 } from './gemini.js?v=20261030092917';
-import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261030092917';
-import { createChapterFile } from './sync.js?v=20261030092917';
-import { openViewer } from './viewer.js?v=20261030092917';
-import { openImportWithDoc } from './importer.js?v=20261030092917';
+import { isConflict } from './github.js?v=20261030100814';
+import { fileToBase64 } from './gemini.js?v=20261030100814';
+import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261030100814';
+import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261030100814';
+import { openViewer } from './viewer.js?v=20261030100814';
+import { openImportWithDoc } from './importer.js?v=20261030100814';
 
 export const DOC_TYPES = { cours: 'Cours', td: 'TD / exercices', ds: 'DS / colles' };
 const INDEX = 'classeur/index.json';
@@ -114,49 +114,233 @@ export async function renderClasseur() {
 function renderList() {
   const list = $('clsList');
   const term = norm(filters.text.trim());
+  const filtered = !!(term || filters.type || filters.chap);
   const docs = state.classeur.docs.filter((d) =>
     (!filters.type || d.type === filters.type) &&
     (!filters.chap || d.chapId === filters.chap) &&
     (!term || norm(d.nom).includes(term)));
   list.innerHTML = '';
+  if (filtered && !docs.length) { list.innerHTML = '<p class="sub">Aucun document ne correspond.</p>'; return; }
   if (!state.classeur.docs.length) {
-    list.innerHTML = '<div class="panel empty-state"><h2>Ton classeur est vide</h2><p class="sub">Ajoute tes cours, TD et DS en PDF. Ils sont rangés par chapitre, à côté de tes cartes, et tu peux les surligner et les annoter.</p></div>';
-    return;
+    list.insertAdjacentHTML('beforeend', '<div class="panel empty-state"><h2>Ton classeur est vide</h2><p class="sub">Ajoute tes cours, TD et DS en PDF avec « Ajouter un PDF ». Ils sont rangés par chapitre, à côté de tes cartes, et tu peux les surligner et les annoter.</p></div>');
   }
-  if (!docs.length) { list.innerHTML = '<p class="sub">Aucun document ne correspond.</p>'; return; }
-  // Regroupement matière → chapitre, dans l'ordre des matières et chapitres de l'appli.
-  const orphans = [];
   const byChap = new Map();
+  const orphans = [];
   docs.forEach((d) => {
     if (!state.byId.has(d.chapId)) { orphans.push(d); return; }
     if (!byChap.has(d.chapId)) byChap.set(d.chapId, []);
     byChap.get(d.chapId).push(d);
   });
-  const groups = [];
+  if (!filtered) {
+    list.insertAdjacentHTML('beforeend', '<p class="sub cls-help">Touche le nom d\'une matière ou d\'un chapitre pour le renommer. Appui long sur un chapitre (ou sur ⠿) pour le déplacer.</p>');
+  }
   state.matieres.forEach((m) => {
-    const chs = m.chapitres.filter((c) => byChap.has(c.id));
-    if (chs.length) groups.push({ nom: m.nom, chs: chs.map((c) => ({ nom: c.nom, docs: byChap.get(c.id) })) });
-  });
-  if (orphans.length) groups.push({ nom: 'Sans chapitre', chs: [{ nom: 'Chapitre supprimé ou introuvable', docs: orphans }] });
-  const typeOrder = { cours: 0, td: 1, ds: 2 };
-  groups.forEach((g) => {
+    // Sans filtre, tous les chapitres sont affichés (même vides) pour pouvoir les gérer.
+    const chs = filtered ? m.chapitres.filter((c) => byChap.has(c.id)) : m.chapitres;
+    if (!chs.length) return;
     const sec = document.createElement('section');
     sec.className = 'matiere';
-    sec.innerHTML = '<div class="matiere-head"><div><h2></h2></div></div>';
-    sec.querySelector('h2').textContent = g.nom;
-    g.chs.forEach((c) => {
-      const box = document.createElement('div');
-      box.className = 'cls-chap';
-      box.innerHTML = '<h3></h3><ul class="cls-docs"></ul>';
-      box.querySelector('h3').textContent = c.nom;
-      const ul = box.querySelector('ul');
-      c.docs.sort((a, b) => (typeOrder[a.type] - typeOrder[b.type]) || a.nom.localeCompare(b.nom, 'fr'))
-        .forEach((d) => ul.appendChild(docRow(d)));
-      sec.appendChild(box);
-    });
+    sec.dataset.mat = m.id;
+    sec.innerHTML = '<div class="matiere-head"><div class="name-slot"></div></div><div class="cls-chaps"></div>';
+    sec.querySelector('.name-slot').appendChild(nameButton('h2', m.nom, () => editMatiereName(sec, m)));
+    const box = sec.querySelector('.cls-chaps');
+    chs.forEach((c) => box.appendChild(chapterBox(c, byChap.get(c.id) || [], !filtered)));
     list.appendChild(sec);
   });
+  if (orphans.length) {
+    const sec = document.createElement('section');
+    sec.className = 'matiere';
+    sec.innerHTML = '<div class="matiere-head"><div><h2>Sans chapitre</h2></div></div><div class="cls-chaps"><div class="cls-chap"><p class="sub">Documents dont le chapitre a été supprimé. « Modifier » permet de les ranger ailleurs.</p><ul class="cls-docs"></ul></div></div>';
+    const ul = sec.querySelector('ul');
+    sortDocs(orphans).forEach((d) => ul.appendChild(docRow(d)));
+    list.appendChild(sec);
+  }
 }
+
+const typeOrder = { cours: 0, td: 1, ds: 2 };
+function sortDocs(docs) {
+  return docs.slice().sort((a, b) => (typeOrder[a.type] - typeOrder[b.type]) || a.nom.localeCompare(b.nom, 'fr'));
+}
+
+// Titre qui se transforme en champ modifiable quand on le touche.
+function nameButton(tag, text, onEdit) {
+  const el = document.createElement(tag);
+  el.className = 'editable-name';
+  el.tabIndex = 0;
+  el.setAttribute('role', 'button');
+  el.title = 'Toucher pour renommer';
+  el.textContent = text;
+  el.addEventListener('click', (e) => {
+    if (dragJustEnded) return;
+    e.stopPropagation();
+    if (!canEdit()) { toast('Renseigne ton jeton GitHub dans les réglages pour renommer.'); return; }
+    onEdit();
+  });
+  el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } });
+  return el;
+}
+
+function chapterBox(c, docs, manageable) {
+  const box = document.createElement('div');
+  box.className = 'cls-chap';
+  box.dataset.ch = c.id;
+  box.innerHTML = '<div class="cls-chap-head">' + (manageable ? '<span class="drag-handle" aria-hidden="true">⠿</span>' : '') +
+    '<div class="name-slot"></div><span class="cls-count"></span></div><div class="cls-edit-slot"></div><ul class="cls-docs"></ul>';
+  box.querySelector('.name-slot').appendChild(nameButton('h3', c.nom, () => editChapterName(box, c, docs)));
+  box.querySelector('.cls-count').textContent = plural(c.cartes.length, 'carte', 'cartes');
+  const ul = box.querySelector('ul');
+  if (docs.length) sortDocs(docs).forEach((d) => ul.appendChild(docRow(d)));
+  else ul.innerHTML = '<li class="sub cls-empty">Aucun document</li>';
+  if (manageable) enableDrag(box);
+  return box;
+}
+
+// ---------- Renommer ----------
+function inlineEditor(slot, value, { onSave, onDelete, label }) {
+  slot.innerHTML = '';
+  const form = document.createElement('form');
+  form.className = 'inline-edit';
+  form.innerHTML = '<input type="text" autocomplete="off" aria-label="' + escapeHtml(label) + '">' +
+    '<div class="row"><button class="primary small" type="submit">Enregistrer</button><button class="ghost small" type="button" data-act="cancel">Annuler</button>' +
+    (onDelete ? '<button class="again small" type="button" data-act="delete">Supprimer le chapitre</button>' : '') + '</div>' +
+    '<p class="status" role="status"></p>';
+  const input = form.querySelector('input');
+  input.value = value;
+  const status = form.querySelector('.status');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nom = input.value.trim();
+    if (!nom) { status.textContent = 'Le nom ne peut pas être vide.'; status.className = 'status error'; return; }
+    if (nom === value) { renderList(); return; }
+    form.querySelectorAll('button, input').forEach((x) => { x.disabled = true; });
+    status.textContent = 'Enregistrement…';
+    status.className = 'status';
+    try {
+      await onSave(nom);
+      toast('Nom modifié.');
+      renderList();
+    } catch (err) {
+      form.querySelectorAll('button, input').forEach((x) => { x.disabled = false; });
+      status.textContent = 'Échec : ' + err.message;
+      status.className = 'status error';
+    }
+  });
+  form.querySelector('[data-act="cancel"]').addEventListener('click', () => renderList());
+  if (onDelete) form.querySelector('[data-act="delete"]').addEventListener('click', onDelete);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') renderList(); });
+  slot.appendChild(form);
+  input.focus();
+  input.select();
+}
+
+function editMatiereName(sec, m) {
+  inlineEditor(sec.querySelector('.name-slot'), m.nom, { label: 'Nom de la matière', onSave: (nom) => renameMatiere(m.id, nom) });
+}
+
+function editChapterName(box, c, docs) {
+  box.querySelector('.cls-chap-head').hidden = true;
+  inlineEditor(box.querySelector('.cls-edit-slot'), c.nom, {
+    label: 'Nom du chapitre',
+    onSave: (nom) => renameChapter(c, nom),
+    onDelete: () => confirmDeleteChapter(box, c, docs),
+  });
+}
+
+// ---------- Supprimer un chapitre ----------
+function confirmDeleteChapter(box, c, docs) {
+  const slot = box.querySelector('.cls-edit-slot');
+  const allDocs = state.classeur.docs.filter((d) => d.chapId === c.id);
+  slot.innerHTML = '<div class="confirm-inline danger"><p></p><div class="row">' +
+    '<button class="again small" type="button" data-act="yes">Oui, supprimer</button>' +
+    '<button class="ghost small" type="button" data-act="no">Annuler</button></div><p class="status" role="status"></p></div>';
+  slot.querySelector('p').textContent = 'Supprimer le chapitre « ' + c.nom + ' »' +
+    (c.cartes.length ? ' et ses ' + plural(c.cartes.length, 'carte', 'cartes') : '') + ' ? ' +
+    (allDocs.length ? (allDocs.length > 1 ? 'Ses ' + allDocs.length + ' documents seront gardés' : 'Son document sera gardé') + ' dans « Sans chapitre ».' : 'Ce chapitre ne contient aucun document.') +
+    ' Cette action est définitive.';
+  const status = slot.querySelector('.status');
+  slot.querySelector('[data-act="no"]').addEventListener('click', () => renderList());
+  slot.querySelector('[data-act="yes"]').addEventListener('click', async (e) => {
+    slot.querySelectorAll('button').forEach((x) => { x.disabled = true; });
+    status.textContent = 'Suppression…';
+    try {
+      if (allDocs.length) {
+        await updateIndex((list) => list.map((d) => (d.chapId === c.id ? { ...d, chapId: null } : d)), 'Classeur : documents de « ' + c.nom + ' » sans chapitre');
+      }
+      await deleteChapter(c);
+      toast('Chapitre supprimé.');
+      if (filters.chap === c.id) filters.chap = '';
+      renderClasseur();
+    } catch (err) {
+      slot.querySelectorAll('button').forEach((x) => { x.disabled = false; });
+      status.textContent = 'Échec : ' + err.message;
+      status.className = 'status error';
+    }
+  });
+}
+
+// ---------- Glisser-déposer pour réordonner ----------
+let drag = null;
+let dragJustEnded = false;
+function enableDrag(box) {
+  const head = box.querySelector('.cls-chap-head');
+  const handle = box.querySelector('.drag-handle');
+  let timer = null, start = null;
+  const cancel = () => { clearTimeout(timer); timer = null; start = null; };
+  head.addEventListener('pointerdown', (e) => {
+    if (!canEdit() || e.button > 0) return;
+    const onHandle = e.target === handle;
+    start = { x: e.clientX, y: e.clientY, id: e.pointerId };
+    if (onHandle) { e.preventDefault(); beginDrag(box, e); return; }
+    timer = setTimeout(() => { timer = null; beginDrag(box, e); }, 450); // appui long
+  });
+  head.addEventListener('pointermove', (e) => {
+    if (timer && start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 8) cancel(); // c'est un défilement
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => head.addEventListener(t, () => { if (timer) cancel(); }));
+  head.addEventListener('contextmenu', (e) => e.preventDefault());
+}
+
+function beginDrag(box, e) {
+  const sec = box.closest('.matiere');
+  drag = { box, sec, id: e.pointerId, before: [...sec.querySelectorAll('.cls-chap')].map((b) => b.dataset.ch) };
+  box.classList.add('dragging');
+  sec.classList.add('sorting');
+  if (navigator.vibrate) { try { navigator.vibrate(15); } catch (err) { /* non disponible */ } }
+}
+function onDragMove(e) {
+  if (!drag) return;
+  e.preventDefault();
+  const y = e.clientY;
+  if (y < 90) window.scrollBy(0, -12); else if (y > window.innerHeight - 90) window.scrollBy(0, 12);
+  const siblings = [...drag.sec.querySelectorAll('.cls-chap')].filter((b) => b !== drag.box);
+  const after = siblings.find((b) => { const r = b.getBoundingClientRect(); return y < r.top + r.height / 2; });
+  const parent = drag.box.parentNode;
+  if (after) { if (after !== drag.box.nextSibling) parent.insertBefore(drag.box, after); }
+  else if (parent.lastChild !== drag.box) parent.appendChild(drag.box);
+}
+async function onDragEnd() {
+  if (!drag) return;
+  const { box, sec, before } = drag;
+  drag = null;
+  dragJustEnded = true;
+  setTimeout(() => { dragJustEnded = false; }, 300);
+  box.classList.remove('dragging');
+  sec.classList.remove('sorting');
+  const after = [...sec.querySelectorAll('.cls-chap')].map((b) => b.dataset.ch);
+  if (after.join() === before.join()) return;
+  try {
+    await reorderChapters(sec.dataset.mat, after);
+    toast('Ordre enregistré.');
+  } catch (err) {
+    toast('Échec du déplacement : ' + err.message);
+    renderList();
+  }
+}
+document.addEventListener('pointermove', onDragMove, { passive: false });
+document.addEventListener('pointerup', onDragEnd);
+document.addEventListener('pointercancel', onDragEnd);
+// Empêche la page de défiler pendant le déplacement d'un chapitre (iPhone).
+document.addEventListener('touchmove', (e) => { if (drag) e.preventDefault(); }, { passive: false });
 
 function docRow(d) {
   const li = document.createElement('li');

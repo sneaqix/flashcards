@@ -1,7 +1,7 @@
 // Synchronisation de la progression avec le dépôt privé, et chargement des cartes.
-import { isConflict } from './github.js?v=20261030092917';
-import * as S from './store.js?v=20261030092917';
-import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261030092917';
+import { isConflict } from './github.js?v=20261030100814';
+import * as S from './store.js?v=20261030100814';
+import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261030100814';
 
 export function setChip(kind, detail) {
   const chip = $('syncChip');
@@ -122,10 +122,14 @@ function slugify(s) {
 }
 // Crée un chapitre vide dans le dépôt et l'ajoute à index.json. Renvoie le chapitre.
 export async function createChapterFile(mat, nom) {
-  const slug = slugify(nom);
-  if (!slug) throw new Error('Donne un nom au chapitre.');
+  const base = slugify(nom);
+  if (!base) throw new Error('Donne un nom au chapitre.');
+  const sameName = state.chapters.find((c) => c.matiere === mat && c.nom.trim().toLowerCase() === nom.trim().toLowerCase());
+  if (sameName) throw new Error('Ce chapitre existe déjà.');
+  // Un chapitre renommé garde son identifiant d'origine : on évite qu'un nouveau chapitre le réutilise.
+  let slug = base, k = 2;
+  while (state.byId.has(mat + '-' + slug)) slug = base + '-' + k++;
   const id = mat + '-' + slug;
-  if (state.byId.has(id)) throw new Error('Ce chapitre existe déjà.');
   const file = mat + '/' + slug + '.json';
   const { gh, config } = state;
   const sha = await gh.putFile(config.contentRepo, 'decks/' + file,
@@ -146,4 +150,75 @@ export async function createChapterFile(mat, nom) {
   state.chapters = state.matieres.flatMap((x) => x.chapitres);
   state.byId.set(id, ch);
   return ch;
+}
+
+// ---------- Gestion des chapitres et matières ----------
+// Modifie decks/index.json (relecture et nouvel essai en cas de conflit).
+async function updateDeckIndex(mutate, message) {
+  const { gh, config } = state;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const f = await gh.getFile(config.contentRepo, 'decks/index.json');
+    const index = JSON.parse(f.text);
+    mutate(index);
+    try {
+      await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f.sha, message);
+      return index;
+    } catch (e) {
+      if (!isConflict(e) || attempt === 2) throw e;
+    }
+  }
+}
+function refreshChapters() {
+  state.chapters = state.matieres.flatMap((m) => m.chapitres);
+  state.byId = new Map(state.chapters.map((c) => [c.id, c]));
+}
+
+// Le nouveau nom s'applique partout ; l'identifiant (et donc la progression) ne change pas.
+export async function renameChapter(ch, nom) {
+  const old = ch.nom;
+  ch.nom = nom;
+  try {
+    await updateChapterFile(ch, (list) => list, 'Renomme le chapitre « ' + old + ' » en « ' + nom + ' »');
+  } catch (e) {
+    ch.nom = old;
+    throw e;
+  }
+}
+
+export async function renameMatiere(matId, nom) {
+  await updateDeckIndex((index) => {
+    const m = index.matieres.find((x) => x.id === matId);
+    if (m) m.nom = nom;
+  }, 'Renomme la matière en « ' + nom + ' »');
+  const m = state.matieres.find((x) => x.id === matId);
+  m.nom = nom;
+  m.chapitres.forEach((c) => { c.matiereNom = nom; });
+}
+
+// ids : identifiants des chapitres de la matière, dans le nouvel ordre.
+export async function reorderChapters(matId, ids) {
+  const m = state.matieres.find((x) => x.id === matId);
+  const files = ids.map((id) => m.chapitres.find((c) => c.id === id).file);
+  await updateDeckIndex((index) => {
+    const im = index.matieres.find((x) => x.id === matId);
+    const rest = im.chapitres.filter((f) => !files.includes(f)); // chapitres ajoutés ailleurs entre-temps
+    im.chapitres = [...files, ...rest];
+  }, 'Réordonne les chapitres de ' + m.nom);
+  m.chapitres = ids.map((id) => m.chapitres.find((c) => c.id === id)).concat(m.chapitres.filter((c) => !ids.includes(c.id)));
+  refreshChapters();
+}
+
+// Supprime un chapitre et ses cartes (les documents du classeur sont gérés à part).
+export async function deleteChapter(ch) {
+  await updateDeckIndex((index) => {
+    const im = index.matieres.find((x) => x.id === ch.matiere);
+    if (im) im.chapitres = im.chapitres.filter((f) => f !== ch.file);
+  }, 'Retire le chapitre « ' + ch.nom + ' » de l\'index');
+  try {
+    const f = await state.gh.getFile(state.config.contentRepo, 'decks/' + ch.file);
+    if (f) await state.gh.deleteFile(state.config.contentRepo, 'decks/' + ch.file, f.sha, 'Supprime le chapitre « ' + ch.nom + ' »');
+  } catch (e) { console.warn('Fichier du chapitre non supprimé', e); }
+  const m = state.matieres.find((x) => x.id === ch.matiere);
+  m.chapitres = m.chapitres.filter((c) => c.id !== ch.id);
+  refreshChapters();
 }

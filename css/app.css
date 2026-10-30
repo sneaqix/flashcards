@@ -463,3 +463,22 @@ body.reading header.top { display: none; }
 .sheet-quote { margin: 0; font-style: italic; color: var(--muted); max-height: 7.5em; overflow: auto; }
 .sheet-label { font-weight: 600; }
 body.reading .toast { bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
+
+/* ---------- Classeur : gestion des chapitres ---------- */
+.cls-help { font-size: 0.85rem; margin: 0; }
+.cls-chaps { display: flex; flex-direction: column; gap: 12px; }
+.cls-chap-head { display: flex; align-items: center; gap: 8px; min-height: 36px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.cls-chap-head .name-slot { flex: 1; min-width: 0; }
+.cls-count { font: 500 0.72rem var(--font-mono); color: var(--muted); white-space: nowrap; }
+.drag-handle { touch-action: none; cursor: grab; color: var(--muted); font-size: 1.2rem; line-height: 1; padding: 6px 4px; border-radius: 6px; }
+.drag-handle:hover { background: var(--accent-soft); color: var(--accent); }
+.editable-name { cursor: pointer; border-radius: 4px; text-decoration: underline dotted var(--line); text-underline-offset: 4px; overflow-wrap: anywhere; }
+.editable-name:hover, .editable-name:focus-visible { color: var(--accent); text-decoration-color: var(--accent); }
+.cls-chap h3.editable-name { font-size: 0.98rem; color: var(--ink); }
+.cls-empty { list-style: none; font-size: 0.85rem; padding: 2px 2px 0; }
+.cls-chap.dragging { opacity: 0.92; background: var(--card); border: 2px solid var(--accent); border-radius: 10px; padding: 6px 8px; box-shadow: 0 10px 24px var(--shadow); position: relative; z-index: 5; }
+.matiere.sorting .cls-chap:not(.dragging) { opacity: 0.7; }
+.matiere.sorting { cursor: grabbing; }
+.inline-edit { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; background: var(--card); border: 1px solid var(--accent); border-radius: 10px; }
+.confirm-inline.danger { background: var(--card); border: 1px solid var(--again); border-radius: 10px; padding: 10px 12px; }
+.inline-edit .status:empty, .confirm-inline .status:empty { display: none; }
