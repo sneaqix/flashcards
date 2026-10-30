@@ -3,11 +3,6 @@
   "nom": "Systèmes asservis",
   "cartes": [
     {
-      "id": "second-ordre",
-      "q": "Fonction de transfert canonique d'un système du 2nd ordre",
-      "r": "$$H(p) = \\frac{K}{1 + \\frac{2\\xi}{\\omega_0}p + \\frac{p^2}{\\omega_0^2}}$$"
-    },
-    {
       "id": "depassement",
       "q": "Condition d'absence de dépassement pour un 2nd ordre",
       "r": "$\\xi \\geq 1$ (régime critique ou apériodique).",
