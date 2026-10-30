@@ -20,11 +20,6 @@
       "r": "$$y(x) = \\lambda\\,e^{-A(x)}$$ où $A$ est une primitive de $a$."
     },
     {
-      "id": "variation-cste",
-      "q": "Principe de la variation de la constante (ordre 1)",
-      "r": "On cherche une solution particulière de $y' + a(x)y = b(x)$ sous la forme $y_p(x) = \\lambda(x)\\,e^{-A(x)}$, ce qui donne $\\lambda'(x) = b(x)\\,e^{A(x)}$."
-    },
-    {
       "id": "structure",
       "q": "Structure des solutions d'une équation linéaire avec second membre",
       "r": "Solution générale = solution générale de l'équation homogène + une solution particulière."
