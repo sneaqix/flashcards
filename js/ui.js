@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261030102616';
+import * as S from './store.js?v=20261030105406';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'parametres'];
@@ -127,6 +127,7 @@ export function showView(name) {
   document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
   document.body.classList.toggle('in-session', ['session', 'done', 'assoc', 'lecteur'].includes(name) || (name === 'carte' && (state.editReturn === 'session' || fromViewer)));
   document.body.classList.toggle('reading', name === 'lecteur');
+  document.body.classList.toggle('cal', name === 'calendrier');
   window.scrollTo(0, 0);
 }
 export function currentTab() {

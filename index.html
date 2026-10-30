@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030102616">
+<link rel="stylesheet" href="css/app.css?v=20261030105406">
 </head>
 <body>
 <div class="app">
@@ -458,17 +458,31 @@
     <div id="agLocked" class="panel" hidden>
       <p>Le calendrier fonctionne sur cet appareil. Pour le retrouver aussi sur ton autre appareil, renseigne ton jeton GitHub et tes dépôts dans les réglages.</p>
     </div>
-    <div class="ag-nav">
-      <button id="agPrev" class="ghost nav-btn" type="button" aria-label="Semaine précédente">‹</button>
-      <h2 id="agWeekTitle" class="ag-week-title"></h2>
-      <button id="agNext" class="ghost nav-btn" type="button" aria-label="Semaine suivante">›</button>
+    <div id="agCal" class="ag-cal">
+      <div class="ag-cal-head">
+        <button id="agPrev" class="ghost nav-btn" type="button" aria-label="Précédent">‹</button>
+        <h2 id="agMonthTitle" class="ag-month"></h2>
+        <button id="agNext" class="ghost nav-btn" type="button" aria-label="Suivant">›</button>
+      </div>
+      <div class="ag-cal-tools">
+        <div id="agMode" class="seg" role="group" aria-label="Affichage">
+          <button type="button" data-mode="mois">Mois</button>
+          <button type="button" data-mode="semaine">Semaine</button>
+        </div>
+        <button id="agToday" class="ghost small" type="button">Aujourd'hui</button>
+      </div>
+      <div id="agGrid" class="cal-grid"></div>
+      <div class="ag-grip" aria-hidden="true"></div>
     </div>
-    <div class="ag-actions">
-      <button id="agToday" class="ghost small" type="button">Cette semaine</button>
+    <div class="ag-list-tools">
       <button id="agHideDone" class="ghost small" type="button">Masquer les terminés</button>
-      <button id="agNew" class="primary small" type="button">+ Nouveau</button>
     </div>
     <div id="agWeek" class="ag-week"></div>
+    <div class="ag-quickbar">
+      <label for="agQuickInput" class="sr-only">Nouvel élément</label>
+      <input id="agQuickInput" type="text" autocomplete="off" enterkeyhint="done" placeholder="Ajouter aujourd'hui…">
+      <button id="agQuickInfo" class="ghost small" type="button" aria-label="Ajouter avec tous les détails">i</button>
+    </div>
   </section>
 
   <section id="view-tache" class="view" hidden>
@@ -613,6 +627,11 @@
       <input id="sRelearn" type="text" inputmode="numeric" autocomplete="off" placeholder="10">
       <p class="status" id="algoStatus" role="status"></p>
     </div>
+    <div class="panel form">
+      <h2>Couleurs des matières</h2>
+      <p class="sub">Utilisées pour les points du calendrier et les cases à cocher.</p>
+      <div id="matColors" class="mat-colors"></div>
+    </div>
     <div class="panel">
       <h2>Programme TSI</h2>
       <p class="sub">Coche les chapitres à inclure dans la révision du jour. Les chapitres décochés restent disponibles en bachotage et dans l'éditeur.</p>
@@ -680,6 +699,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030102616"></script>
+<script type="module" src="js/app.js?v=20261030105406"></script>
 </body>
 </html>

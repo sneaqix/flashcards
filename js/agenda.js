@@ -1,22 +1,32 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261030102616';
-import * as S from './store.js?v=20261030102616';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030102616';
-import { startPractice } from './practice.js?v=20261030102616';
+import { isConflict } from './github.js?v=20261030105406';
+import * as S from './store.js?v=20261030105406';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030105406';
+import { startPractice } from './practice.js?v=20261030105406';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
 const PATH = 'agenda.json';
 const LS = 'fc.agenda';
 const DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-const MAT_COLORS = { maths: '#2f6fe4', physique: '#e8730c', chimie: '#1f9d55', si: '#8a4fd8', anglais: '#d6336c' };
-const EXTRA_COLORS = ['#0f9fb5', '#b7791f', '#6b7280', '#c2410c', '#4338ca'];
+// Palette de 12 couleurs lisibles en thème clair comme en sombre.
+export const PALETTE = {
+  bleu: '#2f6fe4', ciel: '#0ea5e9', turquoise: '#0f9fb5', vert: '#1f9d55', olive: '#65a30d', jaune: '#ca8a04',
+  orange: '#e8730c', rouge: '#dc2626', rose: '#d6336c', violet: '#8a4fd8', indigo: '#4f46e5', gris: '#6b7280',
+};
+const DEFAULT_COLORS = { maths: 'bleu', physique: 'orange', chimie: 'vert', si: 'violet', anglais: 'rose' };
+const SPARE = ['turquoise', 'jaune', 'rouge', 'indigo', 'olive', 'ciel'];
 
 let agenda = { items: [], deleted: [] };
 let sha = null;
 let dirty = false;
-let weekStart = mondayOf(todayIso());
+let selDay = todayIso();          // jour sélectionné dans la grille
+let viewMonth = todayIso().slice(0, 7); // mois affiché (grille dépliée)
+let collapsed = readPref('fc.agCollapsed') === '1'; // grille repliée en une semaine
+let scrollToSel = false;
+function readPref(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function writePref(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* indisponible */ } }
 let hideDone = false;
 let editing = null; // copie de l'élément ouvert dans la fiche
 let quickDay = null; // jour où la ligne d'ajout rapide est ouverte
@@ -40,10 +50,15 @@ function relDay(day) {
   return fmtDay(day, { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-export function matColor(matId) {
-  if (MAT_COLORS[matId]) return MAT_COLORS[matId];
+export function matColorKey(matId) {
+  const chosen = ((state.progress.settings || {}).matColors || {})[matId];
+  if (chosen && PALETTE[chosen]) return chosen;
+  if (DEFAULT_COLORS[matId]) return DEFAULT_COLORS[matId];
   const i = state.matieres.findIndex((m) => m.id === matId);
-  return i >= 0 ? EXTRA_COLORS[i % EXTRA_COLORS.length] : 'var(--muted)';
+  return i >= 0 ? SPARE[i % SPARE.length] : 'gris';
+}
+export function matColor(matId) {
+  return matId ? PALETTE[matColorKey(matId)] : 'var(--muted)';
 }
 
 // =====================================================================
@@ -157,51 +172,135 @@ function guessMatiere(title) {
 // =====================================================================
 // Vue Semaine
 // =====================================================================
+const WD = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+function monthTitle(ym) {
+  const t = parse(ym + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+function shiftMonth(ym, n) {
+  const d = parse(ym + '-01');
+  d.setMonth(d.getMonth() + n);
+  return iso(d).slice(0, 7);
+}
+
 export function renderAgenda() {
-  const end = addDays(weekStart, 6);
-  const sameMonth = weekStart.slice(0, 7) === end.slice(0, 7);
-  $('agWeekTitle').textContent = 'Du ' + fmtDay(weekStart, sameMonth ? { day: 'numeric' } : { day: 'numeric', month: 'short' }) +
-    ' au ' + fmtDay(end, { day: 'numeric', month: 'long', year: 'numeric' });
-  $('agToday').disabled = weekStart === mondayOf(todayIso());
-  $('agHideDone').textContent = hideDone ? 'Afficher les terminés' : 'Masquer les terminés';
+  const t = todayIso();
   $('agLocked').hidden = canSync();
+  $('agMonthTitle').textContent = monthTitle(collapsed ? selDay.slice(0, 7) : viewMonth);
+  document.querySelectorAll('#agMode button').forEach((b) => b.classList.toggle('on', (b.dataset.mode === 'semaine') === collapsed));
+  $('agToday').disabled = selDay === t && (collapsed || viewMonth === t.slice(0, 7));
+  $('agHideDone').textContent = hideDone ? 'Afficher les terminés' : 'Masquer les terminés';
+  $('agCal').classList.toggle('collapsed', collapsed);
+  $('agQuickInput').placeholder = 'Ajouter ' + (selDay === t ? 'aujourd\'hui' : selDay === addDays(t, 1) ? 'demain' : 'le ' + fmtDay(selDay, { weekday: 'long', day: 'numeric', month: 'short' })) + '…';
+  renderGrid();
+  renderWeekList();
+}
+
+// Points d'un jour : une couleur par matière (au plus 3), en anneau s'il y a un DS ou une colle.
+function dotsFor(day) {
+  const items = agenda.items.filter((it) => it.date === day && !it.done);
+  const byMat = new Map();
+  items.forEach((it) => {
+    const k = it.mat || '';
+    const exam = it.type === 'ds' || it.type === 'colle';
+    byMat.set(k, (byMat.get(k) || false) || exam);
+  });
+  const order = state.matieres.map((m) => m.id);
+  const keys = [...byMat.keys()].sort((a, b) => (a === '' ? 99 : order.indexOf(a)) - (b === '' ? 99 : order.indexOf(b)));
+  const shown = keys.slice(0, 3).map((k) => '<i class="dot' + (byMat.get(k) ? ' ring' : '') + '" style="--c:' + matColor(k) + '"></i>').join('');
+  return shown + (keys.length > 3 ? '<i class="dot-more">+</i>' : '');
+}
+
+function renderGrid() {
+  const grid = $('agGrid');
+  const t = todayIso();
+  let days;
+  if (collapsed) {
+    const start = mondayOf(selDay);
+    days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
+  } else {
+    const first = viewMonth + '-01';
+    const start = mondayOf(first);
+    const last = addDays(shiftMonth(viewMonth, 1) + '-01', -1);
+    const end = addDays(mondayOf(last), 6);
+    days = [];
+    for (let d = start; d <= end; d = addDays(d, 1)) days.push(d);
+  }
+  const month = collapsed ? selDay.slice(0, 7) : viewMonth;
+  grid.innerHTML = WD.map((w) => '<span class="wd" aria-hidden="true">' + w + '</span>').join('');
+  days.forEach((day) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'cal-day' + (day === t ? ' today' : '') + (day === selDay ? ' sel' : '') + (day.slice(0, 7) !== month ? ' other' : '') + (day < t ? ' past' : '');
+    const n = agenda.items.filter((it) => it.date === day && !it.done).length;
+    b.setAttribute('aria-label', fmtDay(day, { weekday: 'long', day: 'numeric', month: 'long' }) + (n ? ', ' + plural(n, 'élément', 'éléments') : ''));
+    if (day === selDay) b.setAttribute('aria-pressed', 'true');
+    b.innerHTML = '<span class="num">' + Number(day.slice(8)) + '</span><span class="dots">' + dotsFor(day) + '</span>';
+    b.addEventListener('click', () => selectDay(day));
+    grid.appendChild(b);
+  });
+}
+
+function selectDay(day) {
+  selDay = day;
+  if (!collapsed) viewMonth = day.slice(0, 7);
+  scrollToSel = true;
+  renderAgenda();
+}
+
+// Liste détaillée : retards, sans date, puis les 7 jours de la semaine du jour choisi.
+function renderWeekList() {
   const box = $('agWeek');
   box.innerHTML = '';
   const t = todayIso();
+  const start = mondayOf(selDay);
   const visible = (it) => !(hideDone && it.done);
   const overdue = agenda.items.filter((it) => !it.done && it.date && it.date < t).sort(compare);
   const undated = agenda.items.filter((it) => !it.date && visible(it)).sort(compare);
   if (overdue.length) box.appendChild(section('En retard', 'late', overdue, null));
-  box.appendChild(section('Sans date', 'undated', undated, ''));
+  if (undated.length || quickDay === '') box.appendChild(section('Sans date', 'undated', undated, ''));
   for (let i = 0; i < 7; i++) {
-    const day = addDays(weekStart, i);
+    const day = addDays(start, i);
     const items = agenda.items.filter((it) => it.date === day && visible(it) && !(it.date < t && !it.done)).sort(compare);
     const title = DAYS[i].charAt(0).toUpperCase() + DAYS[i].slice(1) + ' ' + fmtDay(day, { day: 'numeric', month: 'short' });
-    box.appendChild(section(title, day === t ? 'today' : day < t ? 'past' : '', items, day));
+    const sec = section(title, [day === t ? 'today' : day < t ? 'past' : '', day === selDay ? 'sel' : ''].filter(Boolean).join(' '), items, day);
+    sec.dataset.day = day;
+    box.appendChild(sec);
   }
   if (quickDay !== null) {
     const input = box.querySelector('.quick-input');
     if (input) input.focus({ preventScroll: true });
   }
+  if (scrollToSel) {
+    scrollToSel = false;
+    const sec = box.querySelector('[data-day="' + selDay + '"]');
+    if (sec) {
+      const top = sec.getBoundingClientRect().top + window.scrollY - ($('agCal').classList.contains('collapsed') ? $('agCal').offsetHeight + 12 : 12);
+      if (Math.abs(top - window.scrollY) > 40) window.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
+  }
 }
 
 function section(title, cls, items, day) {
   const sec = document.createElement('section');
-  sec.className = 'ag-day' + (cls ? ' ' + cls : '');
+  sec.className = 'ag-day' + (cls ? ' ' + cls : '') + (!items.length && day ? ' empty' : '');
   const count = items.filter((it) => !it.done).length;
   sec.innerHTML = '<div class="ag-day-head"><h2></h2><span class="ag-count">' + (count || '') + '</span></div><ul class="ag-list"></ul>';
-  sec.querySelector('h2').textContent = title + (cls === 'today' ? ' · aujourd\'hui' : '');
+  sec.querySelector('h2').textContent = title + (/\btoday\b/.test(cls) ? ' · aujourd\'hui' : '');
+  if (day !== null) {
+    // Le « + » est dans l'en-tête : un jour vide ne prend qu'une ligne.
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'ag-add-head';
+    add.textContent = '+';
+    add.setAttribute('aria-label', 'Ajouter ' + (day ? 'le ' + fmtDay(day, { weekday: 'long', day: 'numeric', month: 'long' }) : 'sans date'));
+    add.addEventListener('click', () => { quickDay = day; renderAgenda(); });
+    sec.querySelector('.ag-day-head').appendChild(add);
+  }
   const ul = sec.querySelector('ul');
   items.forEach((it) => ul.appendChild(row(it, cls === 'late')));
-  if (day !== null) {
-    if (quickDay === day) ul.appendChild(quickRow(day));
-    else {
-      const li = document.createElement('li');
-      li.innerHTML = '<button type="button" class="ag-add">+ Ajouter</button>';
-      li.querySelector('button').addEventListener('click', () => { quickDay = day; renderAgenda(); });
-      ul.appendChild(li);
-    }
-  }
+  if (day !== null && quickDay === day) ul.appendChild(quickRow(day));
+  else if (day && !items.length) ul.insertAdjacentHTML('beforeend', '<li class="ag-none">Rien de prévu</li>');
   return sec;
 }
 
@@ -390,7 +489,7 @@ function saveItem() {
   if (!editing.title) { $('tkTitle').focus(); toast('Donne un titre.'); return; }
   const { _new, ...item } = editing;
   upsert(item);
-  if (item.date) weekStart = mondayOf(item.date);
+  if (item.date) { selDay = item.date; viewMonth = item.date.slice(0, 7); }
   editing = null;
   closeItem();
 }
@@ -445,13 +544,64 @@ export function renderTodo(container) {
 // =====================================================================
 // Événements
 // =====================================================================
+function newItem(fields) {
+  return { id: newId(), title: '', type: 'devoir', mat: '', chaps: [], date: null, time: null, prio: 0, flag: false, notes: '', subs: [], done: false, created: Date.now(), ...fields };
+}
+function setCollapsed(v) {
+  collapsed = v;
+  writePref('fc.agCollapsed', v ? '1' : '0');
+  if (!v) viewMonth = selDay.slice(0, 7);
+  renderAgenda();
+}
+// Flèches et balayages : mois suivant (grille dépliée) ou semaine suivante (repliée).
+function step(dir) {
+  if (collapsed) {
+    selDay = addDays(selDay, 7 * dir);
+  } else {
+    viewMonth = shiftMonth(viewMonth, dir);
+    const t = todayIso();
+    selDay = viewMonth === t.slice(0, 7) ? t : viewMonth + '-01';
+  }
+  renderAgenda();
+}
+
 export function bindAgenda() {
-  $('agPrev').addEventListener('click', () => { weekStart = addDays(weekStart, -7); renderAgenda(); });
-  $('agNext').addEventListener('click', () => { weekStart = addDays(weekStart, 7); renderAgenda(); });
-  $('agToday').addEventListener('click', () => { weekStart = mondayOf(todayIso()); renderAgenda(); });
+  $('agToday').addEventListener('click', () => { selDay = todayIso(); viewMonth = selDay.slice(0, 7); scrollToSel = true; renderAgenda(); });
   $('agHideDone').addEventListener('click', () => { hideDone = !hideDone; renderAgenda(); });
-  $('agNew').addEventListener('click', () => openItem({ id: newId(), title: '', type: 'devoir', mat: '', chaps: [], date: todayIso(), time: null, prio: 0, flag: false, notes: '', subs: [], done: false, created: Date.now() }, true));
-  // Glisser à gauche / à droite pour changer de semaine.
+  $('agPrev').addEventListener('click', () => step(-1));
+  $('agNext').addEventListener('click', () => step(1));
+  document.querySelectorAll('#agMode button').forEach((b) => b.addEventListener('click', () => setCollapsed(b.dataset.mode === 'semaine')));
+  // Barre d'ajout en bas : ajoute au jour sélectionné.
+  const addQuick = () => {
+    const title = $('agQuickInput').value.trim();
+    if (!title) return null;
+    const item = newItem({ title, type: guessType(title), mat: guessMatiere(title), date: selDay });
+    upsert(item);
+    $('agQuickInput').value = '';
+    renderAgenda();
+    return item;
+  };
+  $('agQuickInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); if (addQuick()) toast('Ajouté.'); } });
+  $('agQuickInfo').addEventListener('click', () => {
+    const made = addQuick();
+    openItem(made || newItem({ date: selDay }), !made);
+  });
+  // Gestes sur la grille : vertical = replier / déplier, horizontal = mois ou semaine suivante.
+  let g = null;
+  $('agCal').addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) { g = null; return; }
+    g = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+  }, { passive: true });
+  $('agCal').addEventListener('touchend', (e) => {
+    if (!g) return;
+    const dx = e.changedTouches[0].clientX - g.x, dy = e.changedTouches[0].clientY - g.y;
+    const fast = Date.now() - g.t < 700;
+    g = null;
+    if (!fast) return;
+    if (Math.abs(dy) > 40 && Math.abs(dy) > 1.5 * Math.abs(dx)) setCollapsed(dy < 0);
+    else if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  // Balayage horizontal sur la liste : semaine précédente / suivante.
   let start = null;
   $('agWeek').addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1 || e.target.closest('input, textarea')) { start = null; return; }
@@ -462,7 +612,7 @@ export function bindAgenda() {
     const dx = e.changedTouches[0].clientX - start.x, dy = e.changedTouches[0].clientY - start.y;
     const ok = Date.now() - start.t < 600 && Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy);
     start = null;
-    if (ok) { weekStart = addDays(weekStart, dx < 0 ? 7 : -7); renderAgenda(); }
+    if (ok) { selDay = addDays(selDay, dx < 0 ? 7 : -7); viewMonth = selDay.slice(0, 7); renderAgenda(); }
   }, { passive: true });
 
   // Fiche

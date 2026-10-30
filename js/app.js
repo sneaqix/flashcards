@@ -1,16 +1,16 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030102616';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030102616';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030102616';
-import { renderHome, bindReview } from './review.js?v=20261030102616';
-import { renderCartes, bindEditor } from './editor.js?v=20261030102616';
-import { renderCram, bindPractice } from './practice.js?v=20261030102616';
-import { bindImport, restoreImport } from './importer.js?v=20261030102616';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030102616';
-import { bindViewer } from './viewer.js?v=20261030102616';
-import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030102616';
-import { renderStats } from './stats.js?v=20261030102616';
-import { renderSettings, bindSettings } from './settings.js?v=20261030102616';
+import { GitHub } from './github.js?v=20261030105406';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030105406';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030105406';
+import { renderHome, bindReview } from './review.js?v=20261030105406';
+import { renderCartes, bindEditor } from './editor.js?v=20261030105406';
+import { renderCram, bindPractice } from './practice.js?v=20261030105406';
+import { bindImport, restoreImport } from './importer.js?v=20261030105406';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030105406';
+import { bindViewer } from './viewer.js?v=20261030105406';
+import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030105406';
+import { renderStats } from './stats.js?v=20261030105406';
+import { renderSettings, bindSettings } from './settings.js?v=20261030105406';
 
 state.views = {
   reviser: renderHome,

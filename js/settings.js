@@ -1,14 +1,16 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030102616';
-import * as S from './store.js?v=20261030102616';
-import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261030102616';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030102616';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030102616';
-import { buildChecklist } from './practice.js?v=20261030102616';
+import { GitHub } from './github.js?v=20261030105406';
+import * as S from './store.js?v=20261030105406';
+import { $, state, setStatus, plural, saveProgress, canSync } from './ui.js?v=20261030105406';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030105406';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030105406';
+import { PALETTE, matColorKey } from './agenda.js?v=20261030105406';
+import { buildChecklist } from './practice.js?v=20261030105406';
 
 export function renderSettings() {
   const s = state.progress.settings;
   renderSubjectLimits();
+  renderMatColors();
   $('sRetention').value = String(Math.round(s.retention * 100));
   $('sMaxIvl').value = s.maxIvl;
   $('sLearn').value = (s.learnSteps || []).join(' ');
@@ -27,6 +29,36 @@ export function renderSettings() {
   $('gData').value = state.config.dataRepo || ($('gContent').value ? $('gContent').value + '-data' : '');
   const last = state.config.lastSync ? new Date(state.config.lastSync).toLocaleString('fr-FR') : null;
   if (!$('gStatus').textContent) setStatus('gStatus', canSync() ? 'Dernière synchronisation : ' + (last || 'jamais') : 'Synchronisation non configurée.');
+}
+
+// Choix de la couleur de chaque matière dans la palette.
+function renderMatColors() {
+  const box = $('matColors');
+  box.innerHTML = '';
+  state.matieres.forEach((m) => {
+    const row = document.createElement('div');
+    row.className = 'mat-color-row';
+    row.innerHTML = '<span class="ln"></span><div class="swatches wrap" role="radiogroup"></div>';
+    row.querySelector('.ln').textContent = m.nom;
+    row.querySelector('[role="radiogroup"]').setAttribute('aria-label', 'Couleur de ' + m.nom);
+    const cur = matColorKey(m.id);
+    Object.entries(PALETTE).forEach(([k, hex]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'swatch' + (k === cur ? ' on' : '');
+      b.style.setProperty('--sw', hex);
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(k === cur));
+      b.setAttribute('aria-label', k);
+      b.title = k;
+      b.addEventListener('click', () => {
+        updateSettings({ matColors: { ...(state.progress.settings.matColors || {}), [m.id]: k } });
+        renderMatColors();
+      });
+      row.querySelector('[role="radiogroup"]').appendChild(b);
+    });
+    box.appendChild(row);
+  });
 }
 
 // Tableau des limites quotidiennes : une ligne par matière, nouvelles cartes et révisions maximum.
