@@ -673,3 +673,28 @@ input.switch:disabled { opacity: 0.45; cursor: default; }
 .th-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.3; }
 .th-mode-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .th-mode-row > span { font-weight: 600; }
+
+/* Réglages en sections dépliables */
+.acc-group { font: 600 0.74rem var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 6px 4px -6px; }
+.acc-list { background: var(--card); border: 1px solid var(--line); border-radius: var(--r2, 10px); overflow: hidden; }
+.acc + .acc { border-top: 1px solid var(--line); }
+.acc > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; min-height: 56px; -webkit-tap-highlight-color: transparent; }
+.acc > summary::-webkit-details-marker { display: none; }
+.acc > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.acc-ic { flex: none; width: 34px; height: 34px; border-radius: var(--r1, 8px); background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.acc-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.acc-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.acc-t b { font: 600 1rem var(--font-display); }
+.acc-sum { font-size: 0.85rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acc-chev { flex: none; width: 9px; height: 9px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translate(-2px, -2px); transition: transform 0.2s; }
+.acc[open] > summary .acc-chev { transform: rotate(-135deg) translate(-2px, -2px); }
+.acc[open] > summary { border-bottom: 1px dashed var(--line); }
+.acc-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.acc-body > .checklist { margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .acc-chev { transition: none; } }
+html[data-theme="brutal"] .acc-list { border-width: 2px; box-shadow: 4px 4px 0 var(--line); }
+html[data-theme="pastel"] .acc-list { border-color: transparent; box-shadow: 0 6px 22px var(--shadow); }
+html[data-theme="epure"] .acc-list { border-color: transparent; }
+.acc-body .checkgroup { background: var(--paper); }
+.acc-sum .sum-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 3px 4px 0 0; }
+.acc .acc-body .panel { padding: 0; border: 0; }

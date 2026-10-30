@@ -15,8 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030161828">
-<link rel="stylesheet" href="css/themes.css?v=20261030161828">
+<link rel="stylesheet" href="css/app.css?v=20261030163147">
+<link rel="stylesheet" href="css/themes.css?v=20261030163147">
 </head>
 <body>
 <div class="app">
@@ -665,107 +665,142 @@
   <!-- ============ Réglages ============ -->
   <section id="view-parametres" class="view" hidden>
     <a class="panel stats-link" href="#stats"><span><b>Statistiques</b><span class="sub">Calendrier des révisions, rétention, temps, prévisions</span></span><span aria-hidden="true">›</span></a>
-    <div class="panel form">
-      <h2>Apparence</h2>
-      <p class="sub">Charte graphique et mode d'affichage de cet appareil.</p>
-      <div class="th-list" id="themeList" role="group" aria-label="Charte graphique"></div>
-      <div class="th-mode-row"><span>Mode</span><div id="themeMode" class="seg" role="group" aria-label="Mode clair ou sombre"></div></div>
-    </div>
-    <div class="panel form">
-      <h2>Rythme quotidien par matière</h2>
-      <p class="sub">Nouvelles cartes à découvrir et révisions maximum chaque jour (0 révision = sans limite). « Du jour » : la matière est mélangée aux autres dans la Révision du jour ; sinon, elle se révise seulement avec son propre bouton.</p>
-      <div class="limits" id="subjectLimits"></div>
-      <p class="sub limits-total" id="limitsTotal"></p>
-      <p class="status" id="sStatus" role="status"></p>
-    </div>
-    <div class="panel form" id="notifPanel">
-      <h2>Notifications</h2>
-      <p class="sub" id="nfIntro">Rappels envoyés environ une fois par heure par GitHub, avec 15 à 40 minutes de décalage après l'heure choisie. Les réglages valent pour tous tes appareils.</p>
-      <div class="nf-device">
-        <div><b id="nfDeviceTitle">Cet appareil</b><p class="sub" id="nfDeviceState"></p></div>
-        <button id="nfToggle" class="primary small" type="button" hidden>Activer</button>
-      </div>
-      <ol class="nf-howto" id="nfHowto" hidden>
-        <li>Ouvre ce site dans <b>Safari</b>.</li>
-        <li>Touche <b>Partager</b>, puis <b>Sur l'écran d'accueil</b>.</li>
-        <li>Ouvre l'appli <b>Flashcards</b> depuis l'écran d'accueil, puis reviens ici. Il faudra y recoller ton jeton GitHub une fois : l'appli de l'écran d'accueil ne partage pas les réglages de Safari.</li>
-      </ol>
-      <div class="nf-rows" id="nfRows">
-        <div class="nf-row">
-          <input type="checkbox" class="switch" id="nfRevOn" aria-describedby="nfRevSub">
-          <label for="nfRevOn"><b>Rappel de révision</b><span class="sub" id="nfRevSub">Nombre de cartes du jour, s'il en reste</span></label>
-          <select id="nfRevHour" aria-label="Heure du rappel de révision"></select>
+    <h2 class="acc-group">Révision</h2>
+    <div class="acc-list">
+      <details class="acc" data-acc="rythme">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><span class="acc-t"><b>Rythme quotidien</b><span class="acc-sum" id="sum-rythme"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub">Nouvelles cartes à découvrir et révisions maximum chaque jour (0 révision = sans limite). « Du jour » : la matière est mélangée aux autres dans la Révision du jour ; sinon, elle se révise seulement avec son propre bouton.</p>
+        <div class="limits" id="subjectLimits"></div>
+        <p class="sub limits-total" id="limitsTotal"></p>
+        <p class="status" id="sStatus" role="status"></p>
+    
         </div>
-        <div class="nf-row">
-          <input type="checkbox" class="switch" id="nfSerOn" aria-describedby="nfSerSub">
-          <label for="nfSerOn"><b>Rappel de série</b><span class="sub" id="nfSerSub">Seulement si tu n'as pas encore révisé de la journée</span></label>
-          <select id="nfSerHour" aria-label="Heure du rappel de série"></select>
+      </details>
+      <details class="acc" data-acc="planif">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18c3-8 5-11 8-11s5 3 8 11"/><path d="M4 21h16"/></svg></span><span class="acc-t"><b>Planification</b><span class="acc-sum" id="sum-planif"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <label for="sRetention">Rétention visée</label>
+        <select id="sRetention">
+          <option value="80">80 % : moins de révisions, plus d'oublis</option>
+          <option value="85">85 %</option>
+          <option value="90">90 % : recommandé</option>
+          <option value="95">95 % : beaucoup plus de révisions</option>
+        </select>
+        <p class="sub">Probabilité de te souvenir d'une carte au moment où elle revient. Plus elle est haute, plus les intervalles sont courts.</p>
+        <label for="sMaxIvl">Intervalle maximum (jours)</label>
+        <input id="sMaxIvl" type="number" min="7" max="3650" inputmode="numeric">
+        <label for="sLearn">Étapes d'apprentissage (minutes)</label>
+        <input id="sLearn" type="text" inputmode="numeric" autocomplete="off" placeholder="1 10">
+        <p class="sub">Une nouvelle carte revient après chacune de ces étapes avant de passer à plusieurs jours.</p>
+        <label for="sRelearn">Étapes après un oubli (minutes)</label>
+        <input id="sRelearn" type="text" inputmode="numeric" autocomplete="off" placeholder="10">
+        <p class="status" id="algoStatus" role="status"></p>
+    
         </div>
-      </div>
-      <p class="status" id="nfStatus" role="status"></p>
+      </details>
+      <details class="acc" data-acc="programme">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="acc-t"><b>Programme TSI</b><span class="acc-sum" id="sum-programme"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub">Coche les chapitres à inclure dans la révision du jour. Les chapitres décochés restent disponibles en bachotage et dans l'éditeur.</p>
+        <div id="activeChapters" class="checklist"></div>
+        </div>
+      </details>
     </div>
-    <div class="panel form">
-      <h2>Planification</h2>
-      <label for="sRetention">Rétention visée</label>
-      <select id="sRetention">
-        <option value="80">80 % : moins de révisions, plus d'oublis</option>
-        <option value="85">85 %</option>
-        <option value="90">90 % : recommandé</option>
-        <option value="95">95 % : beaucoup plus de révisions</option>
-      </select>
-      <p class="sub">Probabilité de te souvenir d'une carte au moment où elle revient. Plus elle est haute, plus les intervalles sont courts.</p>
-      <label for="sMaxIvl">Intervalle maximum (jours)</label>
-      <input id="sMaxIvl" type="number" min="7" max="3650" inputmode="numeric">
-      <label for="sLearn">Étapes d'apprentissage (minutes)</label>
-      <input id="sLearn" type="text" inputmode="numeric" autocomplete="off" placeholder="1 10">
-      <p class="sub">Une nouvelle carte revient après chacune de ces étapes avant de passer à plusieurs jours.</p>
-      <label for="sRelearn">Étapes après un oubli (minutes)</label>
-      <input id="sRelearn" type="text" inputmode="numeric" autocomplete="off" placeholder="10">
-      <p class="status" id="algoStatus" role="status"></p>
+    <h2 class="acc-group">Appli</h2>
+    <div class="acc-list">
+      <details class="acc" data-acc="apparence">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.6-9-7.6Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="8" r="1"/></svg></span><span class="acc-t"><b>Apparence</b><span class="acc-sum" id="sum-apparence"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub">Charte graphique et mode d'affichage de cet appareil.</p>
+        <div class="th-list" id="themeList" role="group" aria-label="Charte graphique"></div>
+        <div class="th-mode-row"><span>Mode</span><div id="themeMode" class="seg" role="group" aria-label="Mode clair ou sombre"></div></div>
+    
+        </div>
+      </details>
+      <details class="acc" data-acc="couleurs">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg></span><span class="acc-t"><b>Couleurs des matières</b><span class="acc-sum" id="sum-couleurs"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub">Utilisées pour les points du calendrier et les cases à cocher.</p>
+        <div id="matColors" class="mat-colors"></div>
+    
+        </div>
+      </details>
+      <details class="acc" data-acc="notifs" id="notifPanel">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><span class="acc-t"><b>Notifications</b><span class="acc-sum" id="sum-notifs"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub" id="nfIntro">Rappels envoyés environ une fois par heure par GitHub, avec 15 à 40 minutes de décalage après l'heure choisie. Les réglages valent pour tous tes appareils.</p>
+        <div class="nf-device">
+          <div><b id="nfDeviceTitle">Cet appareil</b><p class="sub" id="nfDeviceState"></p></div>
+          <button id="nfToggle" class="primary small" type="button" hidden>Activer</button>
+        </div>
+        <ol class="nf-howto" id="nfHowto" hidden>
+          <li>Ouvre ce site dans <b>Safari</b>.</li>
+          <li>Touche <b>Partager</b>, puis <b>Sur l'écran d'accueil</b>.</li>
+          <li>Ouvre l'appli <b>Flashcards</b> depuis l'écran d'accueil, puis reviens ici. Il faudra y recoller ton jeton GitHub une fois : l'appli de l'écran d'accueil ne partage pas les réglages de Safari.</li>
+        </ol>
+        <div class="nf-rows" id="nfRows">
+          <div class="nf-row">
+            <input type="checkbox" class="switch" id="nfRevOn" aria-describedby="nfRevSub">
+            <label for="nfRevOn"><b>Rappel de révision</b><span class="sub" id="nfRevSub">Nombre de cartes du jour, s'il en reste</span></label>
+            <select id="nfRevHour" aria-label="Heure du rappel de révision"></select>
+          </div>
+          <div class="nf-row">
+            <input type="checkbox" class="switch" id="nfSerOn" aria-describedby="nfSerSub">
+            <label for="nfSerOn"><b>Rappel de série</b><span class="sub" id="nfSerSub">Seulement si tu n'as pas encore révisé de la journée</span></label>
+            <select id="nfSerHour" aria-label="Heure du rappel de série"></select>
+          </div>
+        </div>
+        <p class="status" id="nfStatus" role="status"></p>
+    
+        </div>
+      </details>
     </div>
-    <div class="panel form">
-      <h2>Couleurs des matières</h2>
-      <p class="sub">Utilisées pour les points du calendrier et les cases à cocher.</p>
-      <div id="matColors" class="mat-colors"></div>
-    </div>
-    <div class="panel">
-      <h2>Programme TSI</h2>
-      <p class="sub">Coche les chapitres à inclure dans la révision du jour. Les chapitres décochés restent disponibles en bachotage et dans l'éditeur.</p>
-    </div>
-    <div id="activeChapters" class="checklist"></div>
-    <div class="panel form">
-      <h2>Synchronisation GitHub</h2>
-      <p class="sub">La progression est enregistrée dans un dépôt privé, et les cartes que tu modifies dans le dépôt du site. Le jeton reste sur cet appareil.</p>
-      <label for="gToken">Jeton d'accès (fine-grained token)</label>
-      <input id="gToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
-      <label for="gContent">Dépôt du site (cartes et images)</label>
-      <input id="gContent" type="text" autocomplete="off" spellcheck="false" placeholder="pseudo/flashcards">
-      <label for="gData">Dépôt privé de sauvegarde</label>
-      <input id="gData" type="text" autocomplete="off" spellcheck="false" placeholder="pseudo/flashcards-data">
-      <div class="row">
-        <button id="gSave" class="primary" type="button">Enregistrer et synchroniser</button>
-        <button id="gForget" class="ghost" type="button">Oublier le jeton</button>
-      </div>
-      <p class="status" id="gStatus" role="status"></p>
-    </div>
-    <div class="panel form">
-      <h2>Import de cours (Gemini)</h2>
-      <p class="sub">Pour générer des cartes à partir d'un PDF, crée une clé API gratuite sur Google AI Studio (connexion avec un compte Google, puis « Create API key »).</p>
-      <a class="button ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Ouvrir Google AI Studio</a>
-      <label for="gemKey">Clé API Gemini</label>
-      <input id="gemKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…">
-      <label for="gemModel">Modèle</label>
-      <select id="gemModel"></select>
-      <p class="sub">La clé reste sur cet appareil. Avec l'offre gratuite, Google peut utiliser les documents envoyés pour améliorer ses modèles : n'envoie que des cours, rien de personnel.</p>
-      <p class="status" id="gemStatus" role="status"></p>
-    </div>
-    <div class="panel form">
-      <h2>Sauvegarde manuelle</h2>
-      <div class="row">
-        <button id="exportBtn" class="ghost" type="button">Exporter la progression</button>
-        <label class="button ghost file">Importer<input id="importFile" type="file" accept="application/json,.json"></label>
-      </div>
-      <p class="status" id="xStatus" role="status"></p>
+    <h2 class="acc-group">Compte et données</h2>
+    <div class="acc-list">
+      <details class="acc" data-acc="github">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 14-6l2 2M20 10a8 8 0 0 1-14 6l-2-2"/><path d="M20 4v6h-6M4 20v-6h6"/></svg></span><span class="acc-t"><b>Synchronisation GitHub</b><span class="acc-sum" id="sum-github"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub">La progression est enregistrée dans un dépôt privé, et les cartes que tu modifies dans le dépôt du site. Le jeton reste sur cet appareil.</p>
+        <label for="gToken">Jeton d'accès (fine-grained token)</label>
+        <input id="gToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+        <label for="gContent">Dépôt du site (cartes et images)</label>
+        <input id="gContent" type="text" autocomplete="off" spellcheck="false" placeholder="pseudo/flashcards">
+        <label for="gData">Dépôt privé de sauvegarde</label>
+        <input id="gData" type="text" autocomplete="off" spellcheck="false" placeholder="pseudo/flashcards-data">
+        <div class="row">
+          <button id="gSave" class="primary" type="button">Enregistrer et synchroniser</button>
+          <button id="gForget" class="ghost" type="button">Oublier le jeton</button>
+        </div>
+        <p class="status" id="gStatus" role="status"></p>
+    
+        </div>
+      </details>
+      <details class="acc" data-acc="gemini">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.6 4.5 3.5 7.4 8 8-4.5.6-7.4 3.5-8 8-.6-4.5-3.5-7.4-8-8 4.5-.6 7.4-3.5 8-8Z"/></svg></span><span class="acc-t"><b>Import de cours (Gemini)</b><span class="acc-sum" id="sum-gemini"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <p class="sub">Pour générer des cartes à partir d'un PDF, crée une clé API gratuite sur Google AI Studio (connexion avec un compte Google, puis « Create API key »).</p>
+        <a class="button ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Ouvrir Google AI Studio</a>
+        <label for="gemKey">Clé API Gemini</label>
+        <input id="gemKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…">
+        <label for="gemModel">Modèle</label>
+        <select id="gemModel"></select>
+        <p class="sub">La clé reste sur cet appareil. Avec l'offre gratuite, Google peut utiliser les documents envoyés pour améliorer ses modèles : n'envoie que des cours, rien de personnel.</p>
+        <p class="status" id="gemStatus" role="status"></p>
+    
+        </div>
+      </details>
+      <details class="acc" data-acc="sauvegarde">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/></svg></span><span class="acc-t"><b>Sauvegarde manuelle</b><span class="acc-sum" id="sum-sauvegarde"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+        <div class="row">
+          <button id="exportBtn" class="ghost" type="button">Exporter la progression</button>
+          <label class="button ghost file">Importer<input id="importFile" type="file" accept="application/json,.json"></label>
+        </div>
+        <p class="status" id="xStatus" role="status"></p>
+    
+        </div>
+      </details>
     </div>
   </section>
 </div>
@@ -795,6 +830,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030161828"></script>
+<script type="module" src="js/app.js?v=20261030163147"></script>
 </body>
 </html>

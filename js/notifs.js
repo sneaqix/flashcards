@@ -1,9 +1,9 @@
 // Notifications de rappel (Web Push). L'appli enregistre l'abonnement de chaque appareil et les
 // réglages dans notifications/config.json du dépôt privé ; un workflow GitHub Actions de ce dépôt
 // envoie les rappels (tools/notify.mjs). Sur iPhone, il faut ouvrir l'appli depuis l'écran d'accueil.
-import { isConflict } from './github.js?v=20261030161828';
-import { deviceId } from './store.js?v=20261030161828';
-import { $, state, canSync } from './ui.js?v=20261030161828';
+import { isConflict } from './github.js?v=20261030163147';
+import { deviceId } from './store.js?v=20261030163147';
+import { $, state, canSync } from './ui.js?v=20261030163147';
 
 const CONFIG = 'notifications/config.json';
 const VAPID = 'notifications/vapid.json';
@@ -140,6 +140,7 @@ export async function renderNotifs() {
     await load(true);
     paintRows(settingsOf(cfg));
     await paintDevice();
+    changed();
   } catch (e) {
     setStatus('Lecture des réglages impossible : ' + e.message, 'error');
   }
@@ -162,6 +163,18 @@ function paintRows(s) {
   $('nfRevOn').disabled = $('nfSerOn').disabled = !ok;
   $('nfRevHour').disabled = !ok || !s.revision.on;
   $('nfSerHour').disabled = !ok || !s.serie.on;
+}
+
+const changed = () => document.dispatchEvent(new Event('settings-summary'));
+
+// Résumé pour la section repliée des Réglages.
+export function notifSummary() {
+  const parts = [];
+  if ($('nfRevOn').checked) parts.push('révision ' + $('nfRevHour').value + ' h');
+  if ($('nfSerOn').checked) parts.push('série ' + $('nfSerHour').value + ' h');
+  const on = $('nfToggle').dataset.on === '1';
+  const head = !canSync() ? 'GitHub non configuré' : on ? 'Activées' : 'Désactivées sur cet appareil';
+  return head + (parts.length ? ' · ' + parts.join(', ') : '');
 }
 
 async function paintDevice() {
@@ -191,6 +204,7 @@ async function paintDevice() {
   btn.className = on ? 'ghost small' : 'primary small';
   btn.dataset.on = on ? '1' : '';
   btn.hidden = false;
+  changed();
 }
 
 async function enable() {
@@ -226,6 +240,7 @@ function changeSettings() {
     updated: Date.now(),
   };
   paintRows(s);
+  changed();
   queue({ settings: s });
 }
 

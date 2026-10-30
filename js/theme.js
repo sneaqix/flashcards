@@ -1,6 +1,6 @@
 // Chartes graphiques (css/themes.css) et mode clair / sombre, choisis sur chaque appareil.
 // Le choix est appliqué avant l'affichage par un petit script dans <head> (index.html).
-import { $ } from './ui.js?v=20261030161828';
+import { $ } from './ui.js?v=20261030163147';
 
 const LS = 'fc.theme';
 export const THEMES = [
@@ -51,6 +51,13 @@ function syncThemeColor() {
   });
 }
 
+// Libellé court du choix actuel, pour le résumé dans les Réglages.
+export function themeLabel() {
+  const t = read();
+  const th = THEMES.find(([id]) => id === t.theme);
+  return (th ? th[1] : 'Cahier') + ' · ' + MODES.find(([m]) => m === t.mode)[1];
+}
+
 export function applyTheme(t = read()) {
   const html = document.documentElement;
   html.dataset.theme = t.theme;
@@ -63,6 +70,7 @@ function save(t) {
   try { localStorage.setItem(LS, JSON.stringify(t)); } catch (e) { /* indisponible */ }
   applyTheme(t);
   renderAppearance();
+  document.dispatchEvent(new Event('settings-summary'));
 }
 
 export function renderAppearance() {

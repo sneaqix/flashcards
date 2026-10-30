@@ -1,13 +1,13 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030161828';
-import * as S from './store.js?v=20261030161828';
-import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030161828';
-import { renderAppearance } from './theme.js?v=20261030161828';
-import { renderNotifs } from './notifs.js?v=20261030161828';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030161828';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030161828';
-import { PALETTE, matColorKey } from './agenda.js?v=20261030161828';
-import { buildChecklist } from './practice.js?v=20261030161828';
+import { GitHub } from './github.js?v=20261030163147';
+import * as S from './store.js?v=20261030163147';
+import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030163147';
+import { renderAppearance, themeLabel } from './theme.js?v=20261030163147';
+import { renderNotifs, notifSummary } from './notifs.js?v=20261030163147';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030163147';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030163147';
+import { PALETTE, matColorKey } from './agenda.js?v=20261030163147';
+import { buildChecklist } from './practice.js?v=20261030163147';
 
 export function renderSettings() {
   const s = state.progress.settings;
@@ -33,6 +33,60 @@ export function renderSettings() {
   $('gData').value = state.config.dataRepo || ($('gContent').value ? $('gContent').value + '-data' : '');
   const last = state.config.lastSync ? new Date(state.config.lastSync).toLocaleString('fr-FR') : null;
   if (!$('gStatus').textContent) setStatus('gStatus', canSync() ? 'Dernière synchronisation : ' + (last || 'jamais') : 'Synchronisation non configurée.');
+  renderSummaries();
+}
+
+// ---------- Sections dépliables ----------
+// Une seule section ouverte à la fois ; chaque titre affiche un résumé de l'état actuel.
+function renderSummaries() {
+  const s = state.progress.settings;
+  const set = (key, text) => { const el = $('sum-' + key); if (el) el.textContent = text; };
+  const nouvelles = state.matieres.reduce((n, m) => n + S.subjectLimits(s, m.id).newPerDay, 0);
+  const off = state.matieres.filter((m) => dailyOff().has(m.id)).map((m) => m.nom);
+  set('rythme', nouvelles + ' nouvelles/jour' + (off.length ? ' · ' + off.join(', ') + ' à part' : ''));
+  set('planif', 'Rétention ' + Math.round(s.retention * 100) + ' % · intervalle max ' + s.maxIvl + ' j');
+  const inactive = new Set(s.inactive || []);
+  const actifs = state.chapters.filter((c) => !inactive.has(c.id)).length;
+  set('programme', actifs + ' chapitres actifs sur ' + state.chapters.length);
+  set('apparence', themeLabel());
+  const dots = $('sum-couleurs');
+  if (dots) {
+    dots.innerHTML = '';
+    state.matieres.forEach((m) => {
+      const d = document.createElement('i');
+      d.className = 'sum-dot';
+      d.style.background = PALETTE[matColorKey(m.id)];
+      d.title = m.nom;
+      dots.appendChild(d);
+    });
+  }
+  set('notifs', notifSummary());
+  const last = state.config.lastSync ? new Date(state.config.lastSync) : null;
+  set('github', canSync() ? 'Synchronisé' + (last ? ' · ' + last.toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '') : 'Non configuré');
+  const model = (MODELS.find(([v]) => v === (state.config.geminiModel || DEFAULT_MODEL)) || [, ''])[1].replace(/ \(.*\)$/, '');
+  set('gemini', state.config.geminiKey ? 'Clé enregistrée · ' + model : 'Aucune clé sur cet appareil');
+  set('sauvegarde', 'Exporter ou importer un fichier');
+}
+
+function bindAccordion() {
+  const view = $('view-parametres');
+  view.querySelectorAll('details.acc').forEach((d) => {
+    d.addEventListener('toggle', () => {
+      if (!d.open) return;
+      view.querySelectorAll('details.acc[open]').forEach((o) => { if (o !== d) o.open = false; });
+      const top = d.getBoundingClientRect().top;
+      if (top < 0 || top > innerHeight * 0.6) d.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+  });
+  let pendingSum = false;
+  const refresh = () => {
+    if (pendingSum) return;
+    pendingSum = true;
+    requestAnimationFrame(() => { pendingSum = false; renderSummaries(); });
+  };
+  view.addEventListener('change', refresh);
+  view.addEventListener('click', refresh);
+  document.addEventListener('settings-summary', refresh);
 }
 
 // Choix de la couleur de chaque matière dans la palette.
@@ -218,6 +272,7 @@ async function importProgress(input) {
 }
 
 export function bindSettings() {
+  bindAccordion();
   $('sRetention').addEventListener('change', () => updateSettings({ retention: Number($('sRetention').value) / 100 }, 'algoStatus'));
   $('sMaxIvl').addEventListener('change', () => {
     const v = readNumber('sMaxIvl', 7, 3650, state.progress.settings.maxIvl);
