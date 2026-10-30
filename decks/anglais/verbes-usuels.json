@@ -3,24 +3,31 @@
   "nom": "Verbes usuels",
   "cartes": [
     {
-      "id": "v-accept",
-      "q": "accepter",
-      "r": "to accept\nEx. : She accepted the offer without hesitation.",
-      "attendu": "to accept",
+      "id": "v-need",
+      "q": "avoir besoin de",
+      "r": "to need\nEx. : We need stronger regulations.",
+      "attendu": "to need",
       "inverse": true
     },
     {
-      "id": "v-achieve",
-      "q": "atteindre (un but)",
-      "r": "to achieve\nEx. : The country achieved its climate targets.",
-      "attendu": "to achieve",
+      "id": "v-help",
+      "q": "aider",
+      "r": "to help\nEx. : Volunteers helped the victims.",
+      "attendu": "to help",
       "inverse": true
     },
     {
-      "id": "v-admit",
-      "q": "admettre, reconnaître",
-      "r": "to admit\nEx. : He admitted that the plan had failed.",
-      "attendu": "to admit",
+      "id": "v-try",
+      "q": "essayer",
+      "r": "to try\nEx. : The government tried to calm the protesters.",
+      "attendu": "to try",
+      "inverse": true
+    },
+    {
+      "id": "v-ask",
+      "q": "demander",
+      "r": "to ask\nEx. : Journalists asked the minister about the strike.",
+      "attendu": "to ask",
       "inverse": true
     },
     {
@@ -31,10 +38,185 @@
       "inverse": true
     },
     {
-      "id": "v-announce",
-      "q": "annoncer",
-      "r": "to announce\nEx. : The government announced new measures.",
-      "attendu": "to announce",
+      "id": "v-change",
+      "q": "changer",
+      "r": "to change\nEx. : Attitudes have changed over the last decade.",
+      "attendu": "to change",
+      "inverse": true
+    },
+    {
+      "id": "v-believe",
+      "q": "croire",
+      "r": "to believe\nEx. : Most experts believe the trend will continue.",
+      "attendu": "to believe",
+      "inverse": true
+    },
+    {
+      "id": "v-create",
+      "q": "créer",
+      "r": "to create\nEx. : The project will create new jobs.",
+      "attendu": "to create",
+      "inverse": true
+    },
+    {
+      "id": "v-decide",
+      "q": "décider",
+      "r": "to decide\nEx. : The council decided to ban cruise ships.",
+      "attendu": "to decide",
+      "inverse": true
+    },
+    {
+      "id": "v-expect",
+      "q": "s'attendre à",
+      "r": "to expect\nEx. : Experts expect a record number of visitors.",
+      "attendu": "to expect",
+      "inverse": true
+    },
+    {
+      "id": "v-explain",
+      "q": "expliquer",
+      "r": "to explain\nEx. : Can you explain why the protest started?",
+      "attendu": "to explain",
+      "inverse": true
+    },
+    {
+      "id": "v-happen",
+      "q": "arriver, se produire",
+      "r": "to happen\nEx. : What happened during the demonstration?",
+      "attendu": "to happen",
+      "inverse": true
+    },
+    {
+      "id": "v-hope",
+      "q": "espérer",
+      "r": "to hope\nEx. : We hope the situation will improve.",
+      "attendu": "to hope",
+      "inverse": true
+    },
+    {
+      "id": "v-increase",
+      "q": "augmenter",
+      "r": "to increase\nEx. : Tourism has increased sharply.",
+      "attendu": "to increase",
+      "inverse": true
+    },
+    {
+      "id": "v-provide",
+      "q": "fournir",
+      "r": "to provide\nEx. : The hotel provides free Wi-Fi.",
+      "attendu": "to provide",
+      "inverse": true
+    },
+    {
+      "id": "v-reduce",
+      "q": "réduire",
+      "r": "to reduce\nEx. : Cities try to reduce car traffic.",
+      "attendu": "to reduce",
+      "inverse": true
+    },
+    {
+      "id": "v-remain",
+      "q": "rester",
+      "r": "to remain\nEx. : The situation remains tense.",
+      "attendu": "to remain",
+      "inverse": true
+    },
+    {
+      "id": "v-support",
+      "q": "soutenir",
+      "r": "to support\nEx. : Most citizens support the strike.",
+      "attendu": "to support",
+      "inverse": true
+    },
+    {
+      "id": "v-protect",
+      "q": "protéger",
+      "r": "to protect\nEx. : We must protect natural sites.",
+      "attendu": "to protect",
+      "inverse": true
+    },
+    {
+      "id": "v-prevent",
+      "q": "empêcher",
+      "r": "to prevent\nEx. : Barriers were set up to prevent access.",
+      "attendu": "to prevent",
+      "inverse": true
+    },
+    {
+      "id": "v-improve",
+      "q": "améliorer",
+      "r": "to improve\nEx. : Public transport must be improved.",
+      "attendu": "to improve",
+      "inverse": true
+    },
+    {
+      "id": "v-include",
+      "q": "inclure",
+      "r": "to include\nEx. : The price includes breakfast.",
+      "attendu": "to include",
+      "inverse": true
+    },
+    {
+      "id": "v-reach",
+      "q": "atteindre, joindre",
+      "r": "to reach\nEx. : The crowd reached 100,000 people.",
+      "attendu": "to reach",
+      "inverse": true
+    },
+    {
+      "id": "v-depend-on",
+      "q": "dépendre de",
+      "r": "to depend on\nEx. : The local economy depends on tourism.",
+      "attendu": "to depend on",
+      "inverse": true
+    },
+    {
+      "id": "v-cause",
+      "q": "causer, provoquer",
+      "r": "to cause\nEx. : Mass tourism causes serious damage.",
+      "attendu": "to cause",
+      "inverse": true
+    },
+    {
+      "id": "v-continue",
+      "q": "continuer",
+      "r": "to continue\nEx. : Prices continue to rise.",
+      "attendu": "to continue",
+      "inverse": true
+    },
+    {
+      "id": "v-follow",
+      "q": "suivre",
+      "r": "to follow\nEx. : Other cities may follow suit.",
+      "attendu": "to follow",
+      "inverse": true
+    },
+    {
+      "id": "v-travel",
+      "q": "voyager",
+      "r": "to travel\nEx. : More people travel abroad every year.",
+      "attendu": "to travel",
+      "inverse": true
+    },
+    {
+      "id": "v-accept",
+      "q": "accepter",
+      "r": "to accept\nEx. : She accepted the offer without hesitation.",
+      "attendu": "to accept",
+      "inverse": true
+    },
+    {
+      "id": "v-consider",
+      "q": "considérer, envisager",
+      "r": "to consider\nEx. : The city is considering a tourist tax.",
+      "attendu": "to consider",
+      "inverse": true
+    },
+    {
+      "id": "v-achieve",
+      "q": "atteindre (un but)",
+      "r": "to achieve\nEx. : The country achieved its climate targets.",
+      "attendu": "to achieve",
       "inverse": true
     },
     {
@@ -42,6 +224,230 @@
       "q": "apparaître, sembler",
       "r": "to appear\nEx. : The problem appears to be getting worse.",
       "attendu": "to appear",
+      "inverse": true
+    },
+    {
+      "id": "v-argue",
+      "q": "se disputer ; soutenir que",
+      "r": "to argue\nEx. : Critics argue that the reform is unfair.",
+      "attendu": "to argue",
+      "inverse": true
+    },
+    {
+      "id": "v-avoid",
+      "q": "éviter",
+      "r": "to avoid\nEx. : Many travellers avoid flying to reduce their footprint.",
+      "attendu": "to avoid",
+      "inverse": true
+    },
+    {
+      "id": "v-claim",
+      "q": "réclamer, affirmer",
+      "r": "to claim\nEx. : The protesters claim that wages are too low.",
+      "attendu": "to claim",
+      "inverse": true
+    },
+    {
+      "id": "v-complain",
+      "q": "se plaindre",
+      "r": "to complain\nEx. : Residents complain about the noise.",
+      "attendu": "to complain",
+      "inverse": true
+    },
+    {
+      "id": "v-concern",
+      "q": "concerner, inquiéter",
+      "r": "to concern\nEx. : The issue concerns millions of people.",
+      "attendu": "to concern",
+      "inverse": true
+    },
+    {
+      "id": "v-contribute",
+      "q": "contribuer",
+      "r": "to contribute\nEx. : Tourism contributes 10% of the GDP.",
+      "attendu": "to contribute",
+      "inverse": true
+    },
+    {
+      "id": "v-deny",
+      "q": "refuser, nier",
+      "r": "to deny\nEx. : The company denies any wrongdoing.",
+      "attendu": "to deny",
+      "inverse": true
+    },
+    {
+      "id": "v-describe",
+      "q": "décrire",
+      "r": "to describe\nEx. : The article describes the situation in Venice.",
+      "attendu": "to describe",
+      "inverse": true
+    },
+    {
+      "id": "v-develop",
+      "q": "développer",
+      "r": "to develop\nEx. : The region has developed rapidly.",
+      "attendu": "to develop",
+      "inverse": true
+    },
+    {
+      "id": "v-discuss",
+      "q": "discuter de, débattre de",
+      "r": "to discuss\nEx. : MPs discussed the bill for hours.",
+      "attendu": "to discuss",
+      "inverse": true
+    },
+    {
+      "id": "v-encourage",
+      "q": "encourager",
+      "r": "to encourage\nEx. : The policy encourages people to travel by train.",
+      "attendu": "to encourage",
+      "inverse": true
+    },
+    {
+      "id": "v-ensure",
+      "q": "garantir, assurer",
+      "r": "to ensure\nEx. : The law ensures equal treatment.",
+      "attendu": "to ensure",
+      "inverse": true
+    },
+    {
+      "id": "v-fail",
+      "q": "échouer",
+      "r": "to fail\nEx. : The negotiations failed.",
+      "attendu": "to fail",
+      "inverse": true
+    },
+    {
+      "id": "v-fear",
+      "q": "craindre",
+      "r": "to fear\nEx. : Residents fear being priced out of their homes.",
+      "attendu": "to fear",
+      "inverse": true
+    },
+    {
+      "id": "v-identify",
+      "q": "identifier",
+      "r": "to identify\nEx. : The study identifies three main causes.",
+      "attendu": "to identify",
+      "inverse": true
+    },
+    {
+      "id": "v-influence",
+      "q": "influencer",
+      "r": "to influence\nEx. : Social media influences our choices.",
+      "attendu": "to influence",
+      "inverse": true
+    },
+    {
+      "id": "v-involve",
+      "q": "impliquer, faire participer",
+      "r": "to involve\nEx. : The project involves local residents.",
+      "attendu": "to involve",
+      "inverse": true
+    },
+    {
+      "id": "v-join",
+      "q": "rejoindre, adhérer",
+      "r": "to join\nEx. : Thousands joined the march.",
+      "attendu": "to join",
+      "inverse": true
+    },
+    {
+      "id": "v-limit",
+      "q": "limiter",
+      "r": "to limit\nEx. : Authorities limit the number of visitors.",
+      "attendu": "to limit",
+      "inverse": true
+    },
+    {
+      "id": "v-manage",
+      "q": "gérer ; réussir à",
+      "r": "to manage\nEx. : She managed to finish on time.",
+      "attendu": "to manage",
+      "inverse": true
+    },
+    {
+      "id": "v-oppose",
+      "q": "s'opposer à",
+      "r": "to oppose\nEx. : Many residents oppose the new airport.",
+      "attendu": "to oppose",
+      "inverse": true
+    },
+    {
+      "id": "v-protest",
+      "q": "protester",
+      "r": "to protest\nEx. : Farmers protested against the new rules.",
+      "attendu": "to protest",
+      "inverse": true
+    },
+    {
+      "id": "v-realise",
+      "q": "se rendre compte de",
+      "r": "to realise\nEx. : People realise that change is necessary.",
+      "attendu": "to realise",
+      "inverse": true
+    },
+    {
+      "id": "v-refuse",
+      "q": "refuser",
+      "r": "to refuse\nEx. : The union refused to negotiate.",
+      "attendu": "to refuse",
+      "inverse": true
+    },
+    {
+      "id": "v-replace",
+      "q": "remplacer",
+      "r": "to replace\nEx. : Short-term rentals replace local shops.",
+      "attendu": "to replace",
+      "inverse": true
+    },
+    {
+      "id": "v-require",
+      "q": "exiger, nécessiter",
+      "r": "to require\nEx. : The job requires good English.",
+      "attendu": "to require",
+      "inverse": true
+    },
+    {
+      "id": "v-solve",
+      "q": "résoudre",
+      "r": "to solve\nEx. : There is no easy way to solve the problem.",
+      "attendu": "to solve",
+      "inverse": true
+    },
+    {
+      "id": "v-threaten",
+      "q": "menacer",
+      "r": "to threaten\nEx. : Rising sea levels threaten the city.",
+      "attendu": "to threaten",
+      "inverse": true
+    },
+    {
+      "id": "v-worry",
+      "q": "s'inquiéter",
+      "r": "to worry\nEx. : Parents worry about their children's future.",
+      "attendu": "to worry",
+      "inverse": true
+    },
+    {
+      "id": "v-wonder",
+      "q": "se demander",
+      "r": "to wonder\nEx. : Many wonder whether the reform will work.",
+      "attendu": "to wonder",
+      "inverse": true
+    },
+    {
+      "id": "v-admit",
+      "q": "admettre, reconnaître",
+      "r": "to admit\nEx. : He admitted that the plan had failed.",
+      "attendu": "to admit",
+      "inverse": true
+    },
+    {
+      "id": "v-announce",
+      "q": "annoncer",
+      "r": "to announce\nEx. : The government announced new measures.",
+      "attendu": "to announce",
       "inverse": true
     },
     {
@@ -59,38 +465,10 @@
       "inverse": true
     },
     {
-      "id": "v-argue",
-      "q": "se disputer ; soutenir que",
-      "r": "to argue\nEx. : Critics argue that the reform is unfair.",
-      "attendu": "to argue",
-      "inverse": true
-    },
-    {
       "id": "v-arrive",
       "q": "arriver",
       "r": "to arrive\nEx. : Thousands of tourists arrive every summer.",
       "attendu": "to arrive",
-      "inverse": true
-    },
-    {
-      "id": "v-ask",
-      "q": "demander",
-      "r": "to ask\nEx. : Journalists asked the minister about the strike.",
-      "attendu": "to ask",
-      "inverse": true
-    },
-    {
-      "id": "v-avoid",
-      "q": "éviter",
-      "r": "to avoid\nEx. : Many travellers avoid flying to reduce their footprint.",
-      "attendu": "to avoid",
-      "inverse": true
-    },
-    {
-      "id": "v-believe",
-      "q": "croire",
-      "r": "to believe\nEx. : Most experts believe the trend will continue.",
-      "attendu": "to believe",
       "inverse": true
     },
     {
@@ -129,20 +507,6 @@
       "inverse": true
     },
     {
-      "id": "v-cause",
-      "q": "causer, provoquer",
-      "r": "to cause\nEx. : Mass tourism causes serious damage.",
-      "attendu": "to cause",
-      "inverse": true
-    },
-    {
-      "id": "v-change",
-      "q": "changer",
-      "r": "to change\nEx. : Attitudes have changed over the last decade.",
-      "attendu": "to change",
-      "inverse": true
-    },
-    {
       "id": "v-check",
       "q": "vérifier",
       "r": "to check\nEx. : Always check the source of the information.",
@@ -150,52 +514,10 @@
       "inverse": true
     },
     {
-      "id": "v-claim",
-      "q": "réclamer, affirmer",
-      "r": "to claim\nEx. : The protesters claim that wages are too low.",
-      "attendu": "to claim",
-      "inverse": true
-    },
-    {
-      "id": "v-complain",
-      "q": "se plaindre",
-      "r": "to complain\nEx. : Residents complain about the noise.",
-      "attendu": "to complain",
-      "inverse": true
-    },
-    {
-      "id": "v-concern",
-      "q": "concerner, inquiéter",
-      "r": "to concern\nEx. : The issue concerns millions of people.",
-      "attendu": "to concern",
-      "inverse": true
-    },
-    {
-      "id": "v-consider",
-      "q": "considérer, envisager",
-      "r": "to consider\nEx. : The city is considering a tourist tax.",
-      "attendu": "to consider",
-      "inverse": true
-    },
-    {
       "id": "v-contain",
       "q": "contenir",
       "r": "to contain\nEx. : The report contains alarming figures.",
       "attendu": "to contain",
-      "inverse": true
-    },
-    {
-      "id": "v-continue",
-      "q": "continuer",
-      "r": "to continue\nEx. : Prices continue to rise.",
-      "attendu": "to continue",
-      "inverse": true
-    },
-    {
-      "id": "v-contribute",
-      "q": "contribuer",
-      "r": "to contribute\nEx. : Tourism contributes 10% of the GDP.",
-      "attendu": "to contribute",
       "inverse": true
     },
     {
@@ -213,41 +535,6 @@
       "inverse": true
     },
     {
-      "id": "v-create",
-      "q": "créer",
-      "r": "to create\nEx. : The project will create new jobs.",
-      "attendu": "to create",
-      "inverse": true
-    },
-    {
-      "id": "v-decide",
-      "q": "décider",
-      "r": "to decide\nEx. : The council decided to ban cruise ships.",
-      "attendu": "to decide",
-      "inverse": true
-    },
-    {
-      "id": "v-deny",
-      "q": "refuser, nier",
-      "r": "to deny\nEx. : The company denies any wrongdoing.",
-      "attendu": "to deny",
-      "inverse": true
-    },
-    {
-      "id": "v-depend-on",
-      "q": "dépendre de",
-      "r": "to depend on\nEx. : The local economy depends on tourism.",
-      "attendu": "to depend on",
-      "inverse": true
-    },
-    {
-      "id": "v-describe",
-      "q": "décrire",
-      "r": "to describe\nEx. : The article describes the situation in Venice.",
-      "attendu": "to describe",
-      "inverse": true
-    },
-    {
       "id": "v-deserve",
       "q": "mériter",
       "r": "to deserve\nEx. : Nurses deserve better pay.",
@@ -262,80 +549,10 @@
       "inverse": true
     },
     {
-      "id": "v-develop",
-      "q": "développer",
-      "r": "to develop\nEx. : The region has developed rapidly.",
-      "attendu": "to develop",
-      "inverse": true
-    },
-    {
-      "id": "v-discuss",
-      "q": "discuter de, débattre de",
-      "r": "to discuss\nEx. : MPs discussed the bill for hours.",
-      "attendu": "to discuss",
-      "inverse": true
-    },
-    {
-      "id": "v-encourage",
-      "q": "encourager",
-      "r": "to encourage\nEx. : The policy encourages people to travel by train.",
-      "attendu": "to encourage",
-      "inverse": true
-    },
-    {
-      "id": "v-ensure",
-      "q": "garantir, assurer",
-      "r": "to ensure\nEx. : The law ensures equal treatment.",
-      "attendu": "to ensure",
-      "inverse": true
-    },
-    {
       "id": "v-establish",
       "q": "établir, fonder",
       "r": "to establish\nEx. : The movement was established in 2018.",
       "attendu": "to establish",
-      "inverse": true
-    },
-    {
-      "id": "v-expect",
-      "q": "s'attendre à",
-      "r": "to expect\nEx. : Experts expect a record number of visitors.",
-      "attendu": "to expect",
-      "inverse": true
-    },
-    {
-      "id": "v-explain",
-      "q": "expliquer",
-      "r": "to explain\nEx. : Can you explain why the protest started?",
-      "attendu": "to explain",
-      "inverse": true
-    },
-    {
-      "id": "v-fail",
-      "q": "échouer",
-      "r": "to fail\nEx. : The negotiations failed.",
-      "attendu": "to fail",
-      "inverse": true
-    },
-    {
-      "id": "v-fear",
-      "q": "craindre",
-      "r": "to fear\nEx. : Residents fear being priced out of their homes.",
-      "attendu": "to fear",
-      "inverse": true
-    },
-    {
-      "id": "v-follow",
-      "q": "suivre",
-      "r": "to follow\nEx. : Other cities may follow suit.",
-      "attendu": "to follow",
-      "inverse": true
-    },
-    {
-      "id": "v-happen",
-      "q": "arriver, se produire",
-      "r": "to happen\nEx. : What happened during the demonstration?",
-      "attendu": "to happen",
       "inverse": true
     },
     {
@@ -346,59 +563,10 @@
       "inverse": true
     },
     {
-      "id": "v-help",
-      "q": "aider",
-      "r": "to help\nEx. : Volunteers helped the victims.",
-      "attendu": "to help",
-      "inverse": true
-    },
-    {
-      "id": "v-hope",
-      "q": "espérer",
-      "r": "to hope\nEx. : We hope the situation will improve.",
-      "attendu": "to hope",
-      "inverse": true
-    },
-    {
-      "id": "v-identify",
-      "q": "identifier",
-      "r": "to identify\nEx. : The study identifies three main causes.",
-      "attendu": "to identify",
-      "inverse": true
-    },
-    {
       "id": "v-ignore",
       "q": "ignorer (volontairement)",
       "r": "to ignore\nEx. : The government ignored the warnings.",
       "attendu": "to ignore",
-      "inverse": true
-    },
-    {
-      "id": "v-improve",
-      "q": "améliorer",
-      "r": "to improve\nEx. : Public transport must be improved.",
-      "attendu": "to improve",
-      "inverse": true
-    },
-    {
-      "id": "v-include",
-      "q": "inclure",
-      "r": "to include\nEx. : The price includes breakfast.",
-      "attendu": "to include",
-      "inverse": true
-    },
-    {
-      "id": "v-increase",
-      "q": "augmenter",
-      "r": "to increase\nEx. : Tourism has increased sharply.",
-      "attendu": "to increase",
-      "inverse": true
-    },
-    {
-      "id": "v-influence",
-      "q": "influencer",
-      "r": "to influence\nEx. : Social media influences our choices.",
-      "attendu": "to influence",
       "inverse": true
     },
     {
@@ -409,20 +577,6 @@
       "inverse": true
     },
     {
-      "id": "v-involve",
-      "q": "impliquer, faire participer",
-      "r": "to involve\nEx. : The project involves local residents.",
-      "attendu": "to involve",
-      "inverse": true
-    },
-    {
-      "id": "v-join",
-      "q": "rejoindre, adhérer",
-      "r": "to join\nEx. : Thousands joined the march.",
-      "attendu": "to join",
-      "inverse": true
-    },
-    {
       "id": "v-launch",
       "q": "lancer (un projet)",
       "r": "to launch\nEx. : The city launched a campaign against overtourism.",
@@ -430,38 +584,10 @@
       "inverse": true
     },
     {
-      "id": "v-limit",
-      "q": "limiter",
-      "r": "to limit\nEx. : Authorities limit the number of visitors.",
-      "attendu": "to limit",
-      "inverse": true
-    },
-    {
-      "id": "v-manage",
-      "q": "gérer ; réussir à",
-      "r": "to manage\nEx. : She managed to finish on time.",
-      "attendu": "to manage",
-      "inverse": true
-    },
-    {
       "id": "v-miss",
       "q": "manquer (rater) ; regretter l'absence de",
       "r": "to miss\nEx. : I missed the train. I miss my family.",
       "attendu": "to miss",
-      "inverse": true
-    },
-    {
-      "id": "v-need",
-      "q": "avoir besoin de",
-      "r": "to need\nEx. : We need stronger regulations.",
-      "attendu": "to need",
-      "inverse": true
-    },
-    {
-      "id": "v-oppose",
-      "q": "s'opposer à",
-      "r": "to oppose\nEx. : Many residents oppose the new airport.",
-      "attendu": "to oppose",
       "inverse": true
     },
     {
@@ -479,136 +605,10 @@
       "inverse": true
     },
     {
-      "id": "v-prevent",
-      "q": "empêcher",
-      "r": "to prevent\nEx. : Barriers were set up to prevent access.",
-      "attendu": "to prevent",
-      "inverse": true
-    },
-    {
-      "id": "v-protect",
-      "q": "protéger",
-      "r": "to protect\nEx. : We must protect natural sites.",
-      "attendu": "to protect",
-      "inverse": true
-    },
-    {
-      "id": "v-protest",
-      "q": "protester",
-      "r": "to protest\nEx. : Farmers protested against the new rules.",
-      "attendu": "to protest",
-      "inverse": true
-    },
-    {
-      "id": "v-provide",
-      "q": "fournir",
-      "r": "to provide\nEx. : The hotel provides free Wi-Fi.",
-      "attendu": "to provide",
-      "inverse": true
-    },
-    {
-      "id": "v-reach",
-      "q": "atteindre, joindre",
-      "r": "to reach\nEx. : The crowd reached 100,000 people.",
-      "attendu": "to reach",
-      "inverse": true
-    },
-    {
-      "id": "v-realise",
-      "q": "se rendre compte de",
-      "r": "to realise\nEx. : People realise that change is necessary.",
-      "attendu": "to realise",
-      "inverse": true
-    },
-    {
-      "id": "v-reduce",
-      "q": "réduire",
-      "r": "to reduce\nEx. : Cities try to reduce car traffic.",
-      "attendu": "to reduce",
-      "inverse": true
-    },
-    {
-      "id": "v-refuse",
-      "q": "refuser",
-      "r": "to refuse\nEx. : The union refused to negotiate.",
-      "attendu": "to refuse",
-      "inverse": true
-    },
-    {
-      "id": "v-remain",
-      "q": "rester",
-      "r": "to remain\nEx. : The situation remains tense.",
-      "attendu": "to remain",
-      "inverse": true
-    },
-    {
-      "id": "v-replace",
-      "q": "remplacer",
-      "r": "to replace\nEx. : Short-term rentals replace local shops.",
-      "attendu": "to replace",
-      "inverse": true
-    },
-    {
-      "id": "v-require",
-      "q": "exiger, nécessiter",
-      "r": "to require\nEx. : The job requires good English.",
-      "attendu": "to require",
-      "inverse": true
-    },
-    {
-      "id": "v-solve",
-      "q": "résoudre",
-      "r": "to solve\nEx. : There is no easy way to solve the problem.",
-      "attendu": "to solve",
-      "inverse": true
-    },
-    {
-      "id": "v-support",
-      "q": "soutenir",
-      "r": "to support\nEx. : Most citizens support the strike.",
-      "attendu": "to support",
-      "inverse": true
-    },
-    {
       "id": "v-suppose",
       "q": "supposer",
       "r": "to suppose\nEx. : I suppose they will reach an agreement.",
       "attendu": "to suppose",
-      "inverse": true
-    },
-    {
-      "id": "v-threaten",
-      "q": "menacer",
-      "r": "to threaten\nEx. : Rising sea levels threaten the city.",
-      "attendu": "to threaten",
-      "inverse": true
-    },
-    {
-      "id": "v-try",
-      "q": "essayer",
-      "r": "to try\nEx. : The government tried to calm the protesters.",
-      "attendu": "to try",
-      "inverse": true
-    },
-    {
-      "id": "v-travel",
-      "q": "voyager",
-      "r": "to travel\nEx. : More people travel abroad every year.",
-      "attendu": "to travel",
-      "inverse": true
-    },
-    {
-      "id": "v-wonder",
-      "q": "se demander",
-      "r": "to wonder\nEx. : Many wonder whether the reform will work.",
-      "attendu": "to wonder",
-      "inverse": true
-    },
-    {
-      "id": "v-worry",
-      "q": "s'inquiéter",
-      "r": "to worry\nEx. : Parents worry about their children's future.",
-      "attendu": "to worry",
       "inverse": true
     }
   ]

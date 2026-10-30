@@ -1,7 +1,7 @@
 // Progression, paramètres, journal quotidien et file de révision.
-import * as F from './scheduler.js?v=20261030230353';
+import * as F from './scheduler.js?v=20261030232723';
 
-export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261030230353';
+export { today, addDays, daysBetween, BUCKETS, bucketOf, formatDays } from './scheduler.js?v=20261030232723';
 
 const LS_PROGRESS = 'fc.progress.v2';
 const LS_CONFIG = 'fc.config.v1';
@@ -182,9 +182,9 @@ export function dailyQueue(p, chapters) {
   chapters.forEach((ch) => {
     if (!groups.has(ch.matiere)) groups.set(ch.matiere, { learn: [], reviews: [], fresh: [] });
     const g = groups.get(ch.matiere);
-    faces(ch).forEach((f) => {
+    faces(ch).forEach((f, pos) => {
       const st = stateOf(p, f.key);
-      if (!st) g.fresh.push({ ...f, kind: 'new' });
+      if (!st) g.fresh.push({ ...f, kind: 'new', pos });
       else if (st.state !== 'review') g.learn.push({ ...f, kind: 'learn' });
       else if (st.due <= day) g.reviews.push({ ...f, kind: 'review' });
     });
@@ -198,7 +198,8 @@ export function dailyQueue(p, chapters) {
     const reviewLimit = lim.maxReviews > 0 ? Math.max(0, lim.maxReviews - doneRev) : Infinity;
     const newLimit = Math.max(0, lim.newPerDay - doneNew);
     const rev = shuffle(g.reviews).slice(0, reviewLimit);
-    const fresh = shuffle(g.fresh).slice(0, newLimit);
+    // Nouvelles cartes dans l'ordre des chapitres (les plus utiles d'abord), en alternant entre chapitres.
+    const fresh = g.fresh.slice().sort((a, b) => a.pos - b.pos).slice(0, newLimit);
     items.push(...g.learn, ...rev, ...fresh);
     bySubject[mat] = { reviews: rev.length, fresh: fresh.length, learn: g.learn.length, total: rev.length + fresh.length + g.learn.length };
     reviewsDue += rev.length;

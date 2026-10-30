@@ -1,8 +1,8 @@
 // Import et export de paquets Anki (.apkg).
 // Bibliothèques hébergées dans vendor/ : JSZip (zip), sql.js (SQLite), fzstd (format récent d'Anki).
-import { $, state, newId, setStatus, plural, imageUrl, clozeParts, canEdit } from './ui.js?v=20261030230353';
-import { createChapterFile, updateChapterFile } from './sync.js?v=20261030230353';
-import { buildChecklist } from './practice.js?v=20261030230353';
+import { $, state, newId, setStatus, plural, imageUrl, clozeParts, canEdit } from './ui.js?v=20261030232723';
+import { createChapterFile, updateChapterFile } from './sync.js?v=20261030232723';
+import { buildChecklist } from './practice.js?v=20261030232723';
 
 // ---------- Bibliothèques ----------
 let libs = null;
