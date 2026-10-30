@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f3f5fa">
-<script>try{var t=JSON.parse(localStorage.getItem('fc.theme')||'{}');if(t.theme)document.documentElement.dataset.theme=t.theme;if(t.mode)document.documentElement.dataset.mode=t.mode;}catch(e){}</script>
+<script>try{var t=JSON.parse(localStorage.getItem('fc.theme')||'{}');if(t.theme)document.documentElement.dataset.theme=t.theme;if(t.mode)document.documentElement.dataset.mode=t.mode;if(localStorage.getItem('fc.sideMini')==='1')document.documentElement.classList.add('side-mini');}catch(e){}</script>
 <title>Flashcards prépa</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030204147">
-<link rel="stylesheet" href="css/themes.css?v=20261030204147">
+<link rel="stylesheet" href="css/app.css?v=20261030210746">
+<link rel="stylesheet" href="css/themes.css?v=20261030210746">
 </head>
 <body>
 <div class="app">
@@ -672,6 +672,7 @@
   <!-- ============ Réglages ============ -->
   <section id="view-parametres" class="view" hidden>
     <a class="panel stats-link" href="#stats"><span><b>Statistiques</b><span class="sub">Calendrier des révisions, rétention, temps, prévisions</span></span><span aria-hidden="true">›</span></a>
+    <div class="acc-wrap">
     <h2 class="acc-group">Révision</h2>
     <div class="acc-list">
       <details class="acc" data-acc="rythme">
@@ -714,6 +715,8 @@
         </div>
       </details>
     </div>
+    </div>
+    <div class="acc-wrap">
     <h2 class="acc-group">Appli</h2>
     <div class="acc-list">
       <details class="acc" data-acc="apparence">
@@ -763,6 +766,8 @@
         </div>
       </details>
     </div>
+    </div>
+    <div class="acc-wrap">
     <h2 class="acc-group">Compte et données</h2>
     <div class="acc-list">
       <details class="acc" data-acc="github">
@@ -809,17 +814,25 @@
         </div>
       </details>
     </div>
+    </div>
   </section>
 </div>
 
 <nav class="tabs" aria-label="Navigation">
-  <a href="#reviser" data-tab="reviser">Réviser</a>
-  <a href="#bachotage" data-tab="bachotage">Bachotage</a>
-  <a href="#cartes" data-tab="cartes">Cartes</a>
-  <a href="#classeur" data-tab="classeur">Classeur</a>
-  <a href="#calendrier" data-tab="calendrier">Calendrier</a>
-  <a href="#parametres" data-tab="parametres">Réglages</a>
+  <div class="side-head">
+    <button id="sideToggle" class="side-toggle" type="button" aria-label="Réduire le menu" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <img src="icons/favicon.svg" alt="" width="28" height="28"><span class="side-name">Flashcards</span>
+  </div>
+  <button id="sideDaily" class="primary side-daily" type="button" title="Révision du jour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg><span>Révision du jour</span></button>
+  <a href="#reviser" data-tab="reviser" title="Réviser"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="12" height="16" rx="2"/><path d="M19 7v12a2 2 0 0 1-2 2H8"/></svg><span class="tab-label">Réviser</span><b class="tab-count" id="cnt-reviser" hidden></b></a>
+  <a href="#bachotage" data-tab="bachotage" title="Bachotage"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6l1-7Z"/></svg><span class="tab-label">Bachotage</span></a>
+  <a href="#cartes" data-tab="cartes" title="Cartes"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13 7 4 4"/></svg><span class="tab-label">Cartes</span></a>
+  <a href="#classeur" data-tab="classeur" title="Classeur"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="tab-label">Classeur</span></a>
+  <a href="#calendrier" data-tab="calendrier" title="Calendrier"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span class="tab-label">Calendrier</span><b class="tab-count" id="cnt-calendrier" hidden></b></a>
+  <a href="#stats" data-tab="stats" class="desk-only" title="Statistiques"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6"/></svg><span class="tab-label">Statistiques</span></a>
+  <a href="#parametres" data-tab="parametres" title="Réglages"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span class="tab-label">Réglages</span></a>
 </nav>
+<aside id="todayPanel" class="today-panel" aria-label="Aujourd'hui"></aside>
 
 <div id="toast" class="toast" role="status" hidden></div>
 
@@ -837,6 +850,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030204147"></script>
+<script type="module" src="js/app.js?v=20261030210746"></script>
 </body>
 </html>

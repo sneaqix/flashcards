@@ -1,9 +1,9 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261030204147';
-import * as S from './store.js?v=20261030204147';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030204147';
-import { startPractice } from './practice.js?v=20261030204147';
+import { isConflict } from './github.js?v=20261030210746';
+import * as S from './store.js?v=20261030210746';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030210746';
+import { startPractice } from './practice.js?v=20261030210746';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
@@ -129,6 +129,7 @@ function upsert(item) {
   const i = agenda.items.findIndex((x) => x.id === item.id);
   if (i >= 0) agenda.items[i] = item; else agenda.items.push(item);
   changed();
+  setTimeout(() => document.dispatchEvent(new Event('nav-refresh')), 650);
 }
 function remove(id) {
   agenda.items = agenda.items.filter((x) => x.id !== id);
@@ -502,6 +503,24 @@ function closeItem() {
 // =====================================================================
 // Écran Réviser : à faire aujourd'hui
 // =====================================================================
+// Panneau « Aujourd'hui » à droite sur les grands écrans : en retard et aujourd'hui, demain, DS et colles à venir.
+export function renderTodayPanel(box) {
+  const t = todayIso(), tom = addDays(t, 1);
+  box.innerHTML = '<div class="tp-head"><h2>Aujourd\'hui</h2><a class="linklike" href="#calendrier">Calendrier</a></div>';
+  const section = (title, items, showDate, empty) => {
+    if (title) box.insertAdjacentHTML('beforeend', '<h3>' + title + '</h3>');
+    if (!items.length) { if (empty) box.insertAdjacentHTML('beforeend', '<p class="tp-empty">' + empty + '</p>'); return; }
+    const ul = document.createElement('ul');
+    ul.className = 'ag-list';
+    items.forEach((it) => ul.appendChild(row(it, showDate)));
+    box.appendChild(ul);
+  };
+  const now = dueNow();
+  section('', now, true, 'Rien à faire aujourd\'hui.');
+  section('Demain', agenda.items.filter((it) => !it.done && it.date === tom).sort(compare), false, 'Rien de prévu.');
+  section('DS et colles', upcomingExams().filter((it) => it.date !== tom), true, '');
+}
+
 export function renderTodo(container) {
   const items = dueNow();
   const exams = upcomingExams();

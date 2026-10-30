@@ -1,13 +1,13 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261030204147';
+import * as S from './store.js?v=20261030210746';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261030204147';
-import { scheduleSync } from './sync.js?v=20261030204147';
-import { renderTodo } from './agenda.js?v=20261030204147';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030204147';
-import { openEditor } from './editor.js?v=20261030204147';
+} from './ui.js?v=20261030210746';
+import { scheduleSync } from './sync.js?v=20261030210746';
+import { renderTodo } from './agenda.js?v=20261030210746';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261030210746';
+import { openEditor } from './editor.js?v=20261030210746';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 
@@ -26,6 +26,13 @@ function countsText(q) {
   const parts = [q.reviews + ' à revoir', plural(q.fresh, 'nouvelle', 'nouvelles')];
   if (q.learn) parts.push(q.learn + ' en cours');
   return parts.join(' · ');
+}
+
+// Lance la « Révision du jour » (bouton de l'accueil et de la barre latérale sur ordinateur).
+export function startDailyReview() {
+  const items = S.dailyQueue(state.progress, dailyChapters()).items;
+  if (!items.length) { toast('Rien à réviser pour l\'instant.'); return; }
+  startSession(items, 'srs', 'Révision du jour');
 }
 
 export function renderHome() {
@@ -512,7 +519,7 @@ export function resumeSession(card) {
 }
 
 export function bindReview() {
-  $('startDaily').addEventListener('click', () => startSession(S.dailyQueue(state.progress, dailyChapters()).items, 'srs', 'Révision du jour'));
+  $('startDaily').addEventListener('click', startDailyReview);
   $('show').addEventListener('click', reveal);
   [1, 2, 3, 4].forEach((g) => $('g' + g).addEventListener('click', () => grade(g)));
   $('quit').addEventListener('click', leaveSession);

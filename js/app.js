@@ -1,19 +1,20 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030204147';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030204147';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030204147';
-import { renderHome, bindReview } from './review.js?v=20261030204147';
-import { renderCartes, bindEditor } from './editor.js?v=20261030204147';
-import { renderCram, bindPractice } from './practice.js?v=20261030204147';
-import { bindImport, restoreImport } from './importer.js?v=20261030204147';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030204147';
-import { bindViewer } from './viewer.js?v=20261030204147';
-import { bindCarnets } from './carnets.js?v=20261030204147';
-import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030204147';
-import { renderStats } from './stats.js?v=20261030204147';
-import { renderSettings, bindSettings } from './settings.js?v=20261030204147';
-import { bindTheme } from './theme.js?v=20261030204147';
-import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030204147';
+import * as S from './store.js?v=20261030210746';
+import { GitHub } from './github.js?v=20261030210746';
+import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030210746';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030210746';
+import { renderHome, bindReview, startDailyReview } from './review.js?v=20261030210746';
+import { renderCartes, bindEditor } from './editor.js?v=20261030210746';
+import { renderCram, bindPractice } from './practice.js?v=20261030210746';
+import { bindImport, restoreImport } from './importer.js?v=20261030210746';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030210746';
+import { bindViewer } from './viewer.js?v=20261030210746';
+import { bindCarnets } from './carnets.js?v=20261030210746';
+import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030210746';
+import { renderStats } from './stats.js?v=20261030210746';
+import { renderSettings, bindSettings } from './settings.js?v=20261030210746';
+import { bindTheme } from './theme.js?v=20261030210746';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030210746';
 
 state.views = {
   reviser: renderHome,
@@ -25,7 +26,38 @@ state.views = {
   parametres: renderSettings,
 };
 
+// ---------- Ordinateur : barre latérale ----------
+const wide = matchMedia('(min-width: 900px)');
+const wider = matchMedia('(min-width: 1280px)');
+function setMini(on) {
+  document.documentElement.classList.toggle('side-mini', on);
+  $('sideToggle').setAttribute('aria-expanded', String(!on));
+  $('sideToggle').setAttribute('aria-label', on ? 'Déplier le menu' : 'Réduire le menu');
+}
+function refreshNav() {
+  if (!wide.matches || !state.chapters) return;
+  const setCount = (id, n) => { const el = $(id); el.textContent = n; el.hidden = !n; };
+  setCount('cnt-reviser', S.dailyQueue(state.progress, dailyChapters()).items.length);
+  setCount('cnt-calendrier', dueNow().length);
+  if (wider.matches && !state.session) renderTodayPanel($('todayPanel'));
+}
+function bindSidebar() {
+  let mini = false;
+  try { mini = localStorage.getItem('fc.sideMini') === '1'; } catch (e) { /* indisponible */ }
+  setMini(mini);
+  $('sideToggle').addEventListener('click', () => {
+    const on = !document.documentElement.classList.contains('side-mini');
+    setMini(on);
+    try { localStorage.setItem('fc.sideMini', on ? '1' : '0'); } catch (e) { /* indisponible */ }
+  });
+  $('sideDaily').addEventListener('click', startDailyReview);
+  document.addEventListener('nav-refresh', refreshNav);
+  wide.addEventListener('change', refreshNav);
+  wider.addEventListener('change', refreshNav);
+}
+
 function bindEvents() {
+  bindSidebar();
   window.addEventListener('hashchange', route);
   document.addEventListener('mathjax-ready', () => {
     document.querySelectorAll('.view:not([hidden])').forEach((v) => typeset(v));
