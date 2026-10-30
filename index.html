@@ -5,10 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2443b8">
 <title>Flashcards prépa</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Flashcards">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030124834">
+<link rel="stylesheet" href="css/app.css?v=20261030132251">
 </head>
 <body>
 <div class="app">
@@ -664,6 +670,32 @@
       <p class="sub limits-total" id="limitsTotal"></p>
       <p class="status" id="sStatus" role="status"></p>
     </div>
+    <div class="panel form" id="notifPanel">
+      <h2>Notifications</h2>
+      <p class="sub" id="nfIntro">Rappels envoyés environ une fois par heure par GitHub, avec 15 à 40 minutes de décalage après l'heure choisie. Les réglages valent pour tous tes appareils.</p>
+      <div class="nf-device">
+        <div><b id="nfDeviceTitle">Cet appareil</b><p class="sub" id="nfDeviceState"></p></div>
+        <button id="nfToggle" class="primary small" type="button" hidden>Activer</button>
+      </div>
+      <ol class="nf-howto" id="nfHowto" hidden>
+        <li>Ouvre ce site dans <b>Safari</b>.</li>
+        <li>Touche <b>Partager</b>, puis <b>Sur l'écran d'accueil</b>.</li>
+        <li>Ouvre l'appli <b>Flashcards</b> depuis l'écran d'accueil, puis reviens ici. Il faudra y recoller ton jeton GitHub une fois : l'appli de l'écran d'accueil ne partage pas les réglages de Safari.</li>
+      </ol>
+      <div class="nf-rows" id="nfRows">
+        <div class="nf-row">
+          <input type="checkbox" class="switch" id="nfRevOn" aria-describedby="nfRevSub">
+          <label for="nfRevOn"><b>Rappel de révision</b><span class="sub" id="nfRevSub">Nombre de cartes du jour, s'il en reste</span></label>
+          <select id="nfRevHour" aria-label="Heure du rappel de révision"></select>
+        </div>
+        <div class="nf-row">
+          <input type="checkbox" class="switch" id="nfSerOn" aria-describedby="nfSerSub">
+          <label for="nfSerOn"><b>Rappel de série</b><span class="sub" id="nfSerSub">Seulement si tu n'as pas encore révisé de la journée</span></label>
+          <select id="nfSerHour" aria-label="Heure du rappel de série"></select>
+        </div>
+      </div>
+      <p class="status" id="nfStatus" role="status"></p>
+    </div>
     <div class="panel form">
       <h2>Planification</h2>
       <label for="sRetention">Rétention visée</label>
@@ -755,6 +787,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030124834"></script>
+<script type="module" src="js/app.js?v=20261030132251"></script>
 </body>
 </html>

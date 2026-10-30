@@ -15,6 +15,7 @@ Appli web de flashcards pour réviser la prépa TSI, sur PC et téléphone : htt
 - Carnets de français-philo (thème « Les arcanes de la création ») : citations par œuvre (page, citation,
   contexte, justification, triées par page) et résumés des chapitres, un onglet par œuvre.
 - Statistiques détaillées (depuis les Réglages) et réglages par matière.
+- Notifications de rappel (cartes du jour, série) envoyées par GitHub Actions ; sur iPhone, depuis l'appli ajoutée à l'écran d'accueil.
 - Progression synchronisée dans un dépôt privé GitHub.
 
 ## Organisation
@@ -38,6 +39,10 @@ js/classeur.js        onglet Classeur : liste, ajout, modification des documents
 js/viewer.js          lecteur PDF (PDF.js) et annotations
 js/carnets.js         carnets de citations et de résumés (carnets/*.json du dépôt privé)
 js/agenda.js          onglet Calendrier (stocké dans agenda.json du dépôt privé)
+js/notifs.js          réglages des notifications et abonnement de l'appareil
+sw.js                 service worker : affiche les notifications reçues
+tools/notify.mjs      calcul et envoi des rappels (lancé par le workflow du dépôt privé)
+tools/webpush.mjs     envoi Web Push (chiffrement RFC 8291, VAPID) sans dépendance
 tools/bump_version.py numéro de version anti-cache, à lancer avant chaque publication
 decks/index.json      liste des matières et de leurs chapitres
 decks/<matière>/*.json  un fichier par chapitre
@@ -88,3 +93,17 @@ classeur/notes/<id>.json     surlignages, notes et dessins de chaque document
 ```
 
 Chaque cours importé pour générer des cartes y est rangé automatiquement, dans le chapitre de ses cartes.
+
+## Notifications
+
+Le dépôt privé contient `.github/workflows/notify.yml`, qui lance `tools/notify.mjs` de ce dépôt à la 17e minute
+de chaque heure (de 5 h à 23 h), et dès que les réglages changent. Fichiers du dépôt privé :
+
+```
+notifications/config.json   réglages (heures des rappels) et abonnement de chaque appareil, écrits par l'appli
+notifications/vapid.json    clés VAPID (la clé privée sert au workflow)
+notifications/state.json    rappels déjà envoyés aujourd'hui, abonnements expirés (écrit par le workflow)
+```
+
+Sur iPhone (iOS 16.4 ou plus) : Safari → Partager → Sur l'écran d'accueil, ouvrir l'appli depuis l'icône,
+recoller le jeton GitHub, puis Réglages → Notifications → Activer.

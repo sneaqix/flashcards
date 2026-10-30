@@ -1,17 +1,18 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import { GitHub } from './github.js?v=20261030124834';
-import { $, state, route, typeset, canSync } from './ui.js?v=20261030124834';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030124834';
-import { renderHome, bindReview } from './review.js?v=20261030124834';
-import { renderCartes, bindEditor } from './editor.js?v=20261030124834';
-import { renderCram, bindPractice } from './practice.js?v=20261030124834';
-import { bindImport, restoreImport } from './importer.js?v=20261030124834';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030124834';
-import { bindViewer } from './viewer.js?v=20261030124834';
-import { bindCarnets } from './carnets.js?v=20261030124834';
-import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030124834';
-import { renderStats } from './stats.js?v=20261030124834';
-import { renderSettings, bindSettings } from './settings.js?v=20261030124834';
+import { GitHub } from './github.js?v=20261030132251';
+import { $, state, route, typeset, canSync } from './ui.js?v=20261030132251';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030132251';
+import { renderHome, bindReview } from './review.js?v=20261030132251';
+import { renderCartes, bindEditor } from './editor.js?v=20261030132251';
+import { renderCram, bindPractice } from './practice.js?v=20261030132251';
+import { bindImport, restoreImport } from './importer.js?v=20261030132251';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030132251';
+import { bindViewer } from './viewer.js?v=20261030132251';
+import { bindCarnets } from './carnets.js?v=20261030132251';
+import { renderAgenda, bindAgenda, loadAgenda } from './agenda.js?v=20261030132251';
+import { renderStats } from './stats.js?v=20261030132251';
+import { renderSettings, bindSettings } from './settings.js?v=20261030132251';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030132251';
 
 state.views = {
   reviser: renderHome,
@@ -41,6 +42,7 @@ function bindEvents() {
   bindViewer();
   bindAgenda();
   bindCarnets();
+  bindNotifs();
 
   // Sauvegarde quand on quitte l'appli, récupération des changements de l'autre appareil au retour.
   document.addEventListener('visibilitychange', () => {
@@ -52,6 +54,7 @@ function bindEvents() {
 
 async function init() {
   bindEvents();
+  registerWorker();
   if (state.config.token) state.gh = new GitHub(state.config.token);
   setChip(canSync() ? 'busy' : 'local');
   try {
@@ -64,6 +67,7 @@ async function init() {
   route();
   restoreImport(); // relecture ou génération laissée en plan
   if (canSync()) syncNow();
+  setTimeout(checkSubscription, 5000);
   agendaReady.then(() => { if (!state.session && (!$('view-calendrier').hidden || currentTabIsHome())) route(); });
   // Le classeur est chargé en arrière-plan pour afficher les documents de chaque chapitre.
   if (canSync()) loadClasseur().then(() => { if (!state.session && currentTabIsHome()) route(); }).catch(() => {});

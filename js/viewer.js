@@ -1,9 +1,9 @@
 // Lecteur PDF du classeur (PDF.js) avec surlignage, notes et dessin à main levée.
 // Les annotations sont enregistrées dans le dépôt privé : classeur/notes/<id>.json.
-import { isConflict } from './github.js?v=20261030124834';
-import { $, state, escapeHtml, toast, newId, showView, route, canEdit, canSync } from './ui.js?v=20261030124834';
-import { openEditor } from './editor.js?v=20261030124834';
-import { generateFromDoc } from './classeur.js?v=20261030124834';
+import { isConflict } from './github.js?v=20261030132251';
+import { $, state, escapeHtml, toast, newId, showView, route, canEdit, canSync } from './ui.js?v=20261030132251';
+import { openEditor } from './editor.js?v=20261030132251';
+import { generateFromDoc } from './classeur.js?v=20261030132251';
 
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
 export const COLORS = { jaune: '#ffd60a', vert: '#34c759', bleu: '#3fa7ff', rose: '#ff6fb1' };
