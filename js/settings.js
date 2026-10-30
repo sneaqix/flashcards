@@ -1,13 +1,13 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030163147';
-import * as S from './store.js?v=20261030163147';
-import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030163147';
-import { renderAppearance, themeLabel } from './theme.js?v=20261030163147';
-import { renderNotifs, notifSummary } from './notifs.js?v=20261030163147';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030163147';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030163147';
-import { PALETTE, matColorKey } from './agenda.js?v=20261030163147';
-import { buildChecklist } from './practice.js?v=20261030163147';
+import { GitHub } from './github.js?v=20261030185053';
+import * as S from './store.js?v=20261030185053';
+import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030185053';
+import { renderAppearance, themeLabel } from './theme.js?v=20261030185053';
+import { renderNotifs, notifSummary } from './notifs.js?v=20261030185053';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030185053';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030185053';
+import { PALETTE, matColorKey } from './agenda.js?v=20261030185053';
+import { buildChecklist } from './practice.js?v=20261030185053';
 
 export function renderSettings() {
   const s = state.progress.settings;

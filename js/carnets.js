@@ -1,8 +1,8 @@
 // Carnets de français : relevé de citations (un carnet par œuvre, trié par page)
 // et résumés des chapitres (un carnet par matière, un onglet par œuvre).
 // Stockés dans le dépôt privé : carnets/<id>.json, fusionnés entre appareils.
-import { isConflict } from './github.js?v=20261030163147';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030163147';
+import { isConflict } from './github.js?v=20261030185053';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030185053';
 
 const stores = new Map(); // id du carnet -> { data: { items, deleted }, sha, dirty, loaded }
 let open = null;          // { kind: 'citations' | 'resumes', id, chap?, mat?, tab? }
@@ -154,6 +154,7 @@ function renderCarnet() {
   const list = $('cnList');
   list.innerHTML = '';
   $('cnTabs').hidden = open.kind !== 'resumes';
+  $('cnGoto').hidden = open.kind !== 'citations';
   if (open.kind === 'citations') {
     const items = st.data.items.slice().sort(byPage);
     $('cnTitle').textContent = 'Citations';
@@ -203,14 +204,18 @@ function citationRow(it) {
   li.dataset.id = it.id;
   li.innerHTML = '<button type="button" class="cn-card">' +
     '<span class="cn-page"></span>' +
-    '<span class="cn-main"><span class="cn-quote cn-clamp"></span>' +
-    '<span class="cn-field"><b>Contexte</b><span class="cn-ctx cn-clamp"></span></span>' +
-    '<span class="cn-field"><b>Pourquoi</b><span class="cn-why cn-clamp"></span></span>' +
-    '<span class="cn-more" aria-hidden="true">Lire la suite</span></span></button>';
+    '<span class="cn-main"><span class="cn-quote"></span>' +
+    '<span class="cn-field"><b>Contexte</b><span class="cn-ctx"></span></span>' +
+    '<span class="cn-field"><b>Pourquoi</b><span class="cn-why"></span></span>' +
+    '<span class="cn-more" aria-hidden="true">Contexte et justification</span></span></button>';
   li.querySelector('.cn-page').textContent = 'p. ' + it.page;
   li.querySelector('.cn-quote').textContent = '« ' + it.texte + ' »';
   li.querySelector('.cn-ctx').textContent = it.contexte || '—';
   li.querySelector('.cn-why').textContent = it.justification || '—';
+  li.classList.add('cit');
+  li.dataset.page = pageKey(it.page);
+  // Repliée : seulement la page et la citation ; le contexte et la justification au toucher.
+  li.dataset.details = (it.contexte || it.justification) ? '1' : '';
   return foldable(li, it);
 }
 
@@ -255,6 +260,7 @@ function foldable(li, it) {
 // Après affichage : signale les éléments repliés dont le texte est coupé.
 function markCut(li) {
   if (li.classList.contains('open')) return; // déplié : rien n'est coupé, on garde l'état précédent
+  if (li.classList.contains('cit')) { li.classList.toggle('cut', !!li.dataset.details); return; }
   li.classList.toggle('cut', [...li.querySelectorAll('.cn-clamp')].some((el) => el.scrollHeight > el.clientHeight + 1));
 }
 function markTruncated(list) { list.querySelectorAll('.cn-item').forEach(markCut); }
@@ -343,7 +349,22 @@ function backToCarnet() {
 // =====================================================================
 // Événements
 // =====================================================================
+// « Aller à la page » : fait défiler jusqu'à la première citation à partir de cette page.
+function gotoPage() {
+  const n = parseInt($('cnPage').value, 10);
+  if (!Number.isFinite(n)) return;
+  const items = [...$('cnList').querySelectorAll('.cn-item.cit')];
+  if (!items.length) return;
+  const el = items.find((li) => Number(li.dataset.page) >= n) || items[items.length - 1];
+  $('cnPage').blur();
+  $('cnList').querySelectorAll('.flash').forEach((x) => x.classList.remove('flash'));
+  void el.offsetWidth;
+  el.classList.add('flash');
+  el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
 export function bindCarnets() {
+  $('cnGoto').addEventListener('submit', (e) => { e.preventDefault(); gotoPage(); });
   $('cnBack').addEventListener('click', () => { open = null; flushCarnets(); route(); });
   $('cnAdd').addEventListener('click', () => openEntry(null));
   $('enBack').addEventListener('click', backToCarnet);

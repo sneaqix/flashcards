@@ -698,3 +698,16 @@ html[data-theme="epure"] .acc-list { border-color: transparent; }
 .acc-body .checkgroup { background: var(--paper); }
 .acc-sum .sum-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 3px 4px 0 0; }
 .acc .acc-body .panel { padding: 0; border: 0; }
+
+/* Citations : repliées, seulement la page et la citation */
+.cn-item.cit:not(.open) .cn-field { display: none; }
+.cn-item.cit:not(.open) .cn-card { padding-top: 9px; padding-bottom: 9px; }
+.cn-item.cit .cn-main { gap: 4px; }
+.cn-goto { display: flex; align-items: center; gap: 8px; }
+.cn-goto label { font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+.cn-goto input { width: 6.5rem; min-height: 38px; padding: 6px 10px; }
+.cn-goto button { flex: none; }
+.cn-item.cit .cn-more { display: none !important; }
+.cn-item.cit .cn-card { position: relative; padding-right: 30px; }
+.cn-item.cit.cut .cn-card::after, .cn-item.cit.open .cn-card::after { content: ""; position: absolute; right: 13px; top: 50%; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translateY(-70%) rotate(45deg); }
+.cn-item.cit.open .cn-card::after { transform: translateY(-30%) rotate(-135deg); }

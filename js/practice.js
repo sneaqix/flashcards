@@ -1,9 +1,9 @@
 // Onglet Bachotage : révision libre (cartes ou QCM) et jeu d'associations, sans effet sur la progression.
-import * as S from './store.js?v=20261030163147';
+import * as S from './store.js?v=20261030185053';
 import {
   $, state, textHtml, typeset, toast, plural, showView, goTab, faceContent, expectedAnswer,
-} from './ui.js?v=20261030163147';
-import { startSession } from './review.js?v=20261030163147';
+} from './ui.js?v=20261030185053';
+import { startSession } from './review.js?v=20261030185053';
 
 // =====================================================================
 // Listes de chapitres à cocher (bachotage et réglages)

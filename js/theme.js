@@ -1,6 +1,6 @@
 // Chartes graphiques (css/themes.css) et mode clair / sombre, choisis sur chaque appareil.
 // Le choix est appliqué avant l'affichage par un petit script dans <head> (index.html).
-import { $ } from './ui.js?v=20261030163147';
+import { $ } from './ui.js?v=20261030185053';
 
 const LS = 'fc.theme';
 export const THEMES = [

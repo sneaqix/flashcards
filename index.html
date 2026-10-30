@@ -15,8 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030163147">
-<link rel="stylesheet" href="css/themes.css?v=20261030163147">
+<link rel="stylesheet" href="css/app.css?v=20261030185053">
+<link rel="stylesheet" href="css/themes.css?v=20261030185053">
 </head>
 <body>
 <div class="app">
@@ -436,6 +436,11 @@
     </div>
     <p class="cn-sub" id="cnSub"></p>
     <div id="cnTabs" class="chips cn-tabs" role="group" aria-label="Œuvre" hidden></div>
+    <form id="cnGoto" class="cn-goto" hidden>
+      <label for="cnPage">Aller à la page</label>
+      <input id="cnPage" type="number" inputmode="numeric" min="1" enterkeyhint="go" placeholder="p.">
+      <button class="ghost small" type="submit">Aller</button>
+    </form>
     <ul id="cnList" class="cn-list"></ul>
     <div class="cn-addbar">
       <button id="cnAdd" class="primary" type="button">+ Nouvelle citation</button>
@@ -830,6 +835,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030163147"></script>
+<script type="module" src="js/app.js?v=20261030185053"></script>
 </body>
 </html>
