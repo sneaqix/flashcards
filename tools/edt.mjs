@@ -101,6 +101,7 @@ async function fetchNotes(user, student) {
     let ev = await attempt('notes ' + per.label, () => user.getEvaluation(student, per.id, 100));
     if (!ev) ev = await attempt('notes ' + per.label + ' (sans profs)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations', 'evaluations.evaluationResult']));
     if (!ev) ev = await attempt('notes ' + per.label + ' (minimal)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations']));
+    if (!ev) ev = await attempt('notes ' + per.label + ' (sans inclusions)', () => user.getEvaluation(student, per.id, 20, 0, {}, []));
     if (!ev) continue;
     out.periods.push({
       id: per.id, label: per.label, start: per.startDate, end: per.endDate,
@@ -128,6 +129,7 @@ async function fetchNotes(user, student) {
 
 // ---------- Pièces jointes des devoirs : enregistrées dans le dépôt privé ; PDF rangés au Classeur ----------
 const blobSha = (buf) => crypto.createHash('sha1').update(Buffer.concat([Buffer.from('blob ' + buf.length + '\0'), buf])).digest('hex');
+const diag = [];
 async function fetchAttachments(user, student, homework) {
   const indexPath = path.join(dataDir, 'classeur/index.json');
   const index = readJson(indexPath, { version: 1, docs: [] });
@@ -137,9 +139,11 @@ async function fetchAttachments(user, student, homework) {
   for (const h of homework) {
     if (parisParts(h.due).date < today) continue;
     let full = null;
-    try { full = await user.getHomeworkAssignment(student, h.id, undefined, ['subject', 'attachments']); } catch (e) {
-      try { full = await user.getHomeworkAssignment(student, h.id, undefined, ['attachments']); } catch (e2) { console.log('PJ', h.id, ':', e2.message); }
+    try { full = await user.getHomeworkAssignment(student, h.id); } catch (e) {
+      diag.push('devoir ' + h.id + ' : ' + e.message);
+      try { full = await user.getHomeworkAssignment(student, h.id, undefined, ['attachments']); } catch (e2) { diag.push('devoir ' + h.id + ' (PJ seules) : ' + e2.message); }
     }
+    if (full) diag.push('devoir ' + h.id + ' : ' + ((full.attachments || []).length) + ' PJ' + (full.pedagogicContent ? ', contenu pédagogique' : ''));
     const atts = (full && full.attachments) || [];
     h.attachments = [];
     for (const a of atts) {
@@ -220,7 +224,7 @@ try {
   console.log('Cours :', lessons.length, '| devoirs :', homework.length, '| du', start, 'au', end);
   addHomeworkToAgenda(homework);
   await fetchAttachments(user, student, homework);
-  write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework });
+  write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework, diag });
   await fetchNotes(user, student);
 } catch (e) {
   const status = e && e.response && e.response.status;
