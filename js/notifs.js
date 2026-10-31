@@ -1,9 +1,9 @@
 // Notifications de rappel (Web Push). L'appli enregistre l'abonnement de chaque appareil et les
 // réglages dans notifications/config.json du dépôt privé ; un workflow GitHub Actions de ce dépôt
 // envoie les rappels (tools/notify.mjs). Sur iPhone, il faut ouvrir l'appli depuis l'écran d'accueil.
-import { isConflict } from './github.js?v=20261031224745';
-import { deviceId } from './store.js?v=20261031224745';
-import { $, state, canSync } from './ui.js?v=20261031224745';
+import { isConflict } from './github.js?v=20261031225520';
+import { deviceId } from './store.js?v=20261031225520';
+import { $, state, canSync } from './ui.js?v=20261031225520';
 
 const CONFIG = 'notifications/config.json';
 const VAPID = 'notifications/vapid.json';

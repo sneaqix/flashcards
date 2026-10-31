@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031224745';
-import { matColor } from './agenda.js?v=20261031224745';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031225520';
+import { matColor } from './agenda.js?v=20261031225520';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -80,6 +80,7 @@ function render() {
   html += '<section class="panel"><h2>Évolution</h2>' + chart(pts) + '</section>';
   if (!p.subjects.length) html += '<p class="sub">Aucune note pour cette période.</p>';
   html += '<div class="notes-list">' + p.subjects.map((s, si) => {
+    if (!(s.evaluations || []).length && typeof s.average !== 'number') return ''; // matière sans note : masquée
     const c = s.mat ? matColor(s.mat) : 'var(--muted)';
     const marks = (s.evaluations || []).map((e, ei) => {
       const has = e.mark !== null && e.mark !== undefined;
