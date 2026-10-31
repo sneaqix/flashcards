@@ -147,6 +147,7 @@ async function fetchAttachments(user, student, homework) {
     const atts = (full && full.attachments) || [];
     h.attachments = [];
     for (const a of atts) {
+      diag.push('PJ trouvée : ' + (a.name || a.id) + ' · ' + (a.mimeType || '?') + ' · ' + (a.url ? String(a.url).replace(/[?#].*$/, '').slice(0, 80) : 'sans adresse'));
       const safe = String(a.id).replace(/[^a-zA-Z0-9]/g, '-');
       const name = a.name || ('piece-jointe-' + safe);
       const isPdf = /pdf/i.test(a.mimeType || '') || /\.pdf$/i.test(name);
@@ -160,7 +161,10 @@ async function fetchAttachments(user, student, homework) {
           fs.mkdirSync(path.dirname(abs), { recursive: true });
           fs.writeFileSync(abs, Buffer.concat(chunks));
           added++;
-        } catch (e) { console.log('Téléchargement impossible', name, ':', e.message); continue; }
+        } catch (e) {
+          diag.push('PJ ' + name + ' (' + (a.url || '?').slice(0, 80) + ') : ' + ((e.response && e.response.status) || '') + ' ' + e.message);
+          continue;
+        }
       }
       const att = { name, file, mime: a.mimeType || null, size: fs.statSync(abs).size };
       if (isPdf) {
