@@ -1008,3 +1008,15 @@ body { --side-off: 0px; --panel-off: 0px; }
 @media (min-width: 900px) { .edt-day { padding: 8px; } .edt-lesson { padding: 6px 8px; } }
 .df-make { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; background: var(--accent-soft); border-radius: var(--r1, 8px); }
 .df-make[hidden] { display: none; }
+/* Calendrier : détail dépliable d'un élément */
+.ag-item.has-detail { flex-wrap: wrap; }
+.ag-item.has-detail .ag-body::after { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); margin: -12px 4px 0 auto; align-self: flex-end; }
+.ag-item.open .ag-body::after { transform: rotate(-135deg); margin-top: -6px; }
+.ag-detail { flex-basis: 100%; margin: 4px 0 4px 34px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r1, 8px); display: flex; flex-direction: column; gap: 8px; font-size: 0.92rem; }
+.ag-detail[hidden] { display: none; }
+.ag-notes { margin: 0; overflow-wrap: anywhere; line-height: 1.45; }
+.ag-subs, .ag-atts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ag-subs .done { color: var(--muted); text-decoration: line-through; }
+.ag-att { display: inline-flex; min-height: 36px; padding: 6px 10px; border-radius: var(--r1, 8px); background: var(--card); border: 1px solid var(--line); color: var(--accent); font-weight: 600; font-size: 0.9rem; text-decoration: none; text-align: left; overflow-wrap: anywhere; }
+.ag-att-hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.ag-edit { align-self: flex-end; }

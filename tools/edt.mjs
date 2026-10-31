@@ -162,7 +162,9 @@ async function fetchAttachments(user, student, homework) {
           fs.writeFileSync(abs, Buffer.concat(chunks));
           added++;
         } catch (e) {
-          diag.push('PJ ' + name + ' (' + (a.url || '?').slice(0, 80) + ') : ' + ((e.response && e.response.status) || '') + ' ' + e.message);
+          // Fichier servi par le site de l'ENT (session du navigateur) : on garde le lien.
+          diag.push('PJ ' + name + ' : lien seulement (' + ((e.response && e.response.status) || '') + ' ' + e.message + ')');
+          h.attachments.push({ name, url: a.url, mime: a.mimeType || null });
           continue;
         }
       }

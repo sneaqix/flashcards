@@ -1,9 +1,10 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261031182323';
-import * as S from './store.js?v=20261031182323';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261031182323';
-import { startPractice } from './practice.js?v=20261031182323';
+import { isConflict } from './github.js?v=20261031185235';
+import * as S from './store.js?v=20261031185235';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261031185235';
+import { startPractice } from './practice.js?v=20261031185235';
+import { openClasseurDoc } from './classeur.js?v=20261031185235';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
@@ -367,7 +368,30 @@ function row(it, showDate) {
   li.querySelector('.ag-text').textContent = it.title;
   li.querySelector('.ag-check').setAttribute('aria-label', (it.done ? 'Marquer « ' : 'Terminer « ') + it.title + ' »' + (it.done ? ' comme à faire' : ''));
   li.querySelector('.ag-check').addEventListener('click', () => toggleDone(it, li));
-  li.querySelector('.ag-body').addEventListener('click', () => openItem(it));
+  // Toucher l'élément déplie son détail (texte, pièces jointes…) ; « Modifier » ouvre la fiche.
+  const detail = detailOf(it);
+  if (detail) {
+    li.classList.add('has-detail');
+    const box = document.createElement('div');
+    box.className = 'ag-detail';
+    box.hidden = true;
+    box.appendChild(detail);
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'ghost small ag-edit';
+    edit.textContent = 'Modifier';
+    edit.addEventListener('click', () => openItem(it));
+    box.appendChild(edit);
+    li.querySelector('.ag-body').after(box);
+    li.querySelector('.ag-body').setAttribute('aria-expanded', 'false');
+    li.querySelector('.ag-body').addEventListener('click', () => {
+      box.hidden = !box.hidden;
+      li.classList.toggle('open', !box.hidden);
+      li.querySelector('.ag-body').setAttribute('aria-expanded', String(!box.hidden));
+    });
+  } else {
+    li.querySelector('.ag-body').addEventListener('click', () => openItem(it));
+  }
   if ((it.type === 'ds' || it.type === 'colle') && !it.done && (it.chaps || []).length) {
     const b = document.createElement('button');
     b.type = 'button';
@@ -378,6 +402,57 @@ function row(it, showDate) {
     li.appendChild(b);
   }
   return li;
+}
+
+// Contenu du détail : notes (liens cliquables), étapes, chapitres, pièces jointes. null s'il n'y a rien.
+function linkify(text) {
+  return escapeHtml(text).replace(/\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g, (m, inParen, bare) => {
+    const url = inParen || bare;
+    return (inParen ? ' ' : '') + '<a href="' + url + '" target="_blank" rel="noopener">' + (inParen ? 'lien' : url.replace(/^https?:\/\//, '').slice(0, 40) + '…') + '</a>';
+  }).replace(/\n/g, '<br>');
+}
+function detailOf(it) {
+  const parts = [];
+  if (it.notes && it.notes.trim()) parts.push('<p class="ag-notes">' + linkify(it.notes.trim()) + '</p>');
+  if ((it.subs || []).length) parts.push('<ul class="ag-subs">' + it.subs.map((x) => '<li class="' + (x.done ? 'done' : '') + '">' + (x.done ? '☑ ' : '☐ ') + escapeHtml(x.title || x.text || '') + '</li>').join('') + '</ul>');
+  const atts = it.attachments || [];
+  if (!parts.length && !atts.length) return null;
+  const frag = document.createElement('div');
+  frag.innerHTML = parts.join('');
+  if (atts.length) {
+    const ul = document.createElement('ul');
+    ul.className = 'ag-atts';
+    atts.forEach((a) => {
+      const li = document.createElement('li');
+      const b = document.createElement(a.url && !a.file ? 'a' : 'button');
+      b.className = 'ag-att';
+      b.textContent = '📎 ' + a.name;
+      if (a.url && !a.file) {
+        b.href = a.url; b.target = '_blank'; b.rel = 'noopener';
+        b.title = 'S\'ouvre sur Mon Bureau Numérique (connexion à l\'ENT nécessaire)';
+      } else {
+        b.type = 'button';
+        b.addEventListener('click', () => openAttachment(a));
+      }
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    frag.appendChild(ul);
+    if (atts.some((a) => a.url && !a.file)) frag.insertAdjacentHTML('beforeend', '<p class="ag-att-hint">Les pièces jointes s\'ouvrent sur Mon Bureau Numérique.</p>');
+  }
+  return frag;
+}
+async function openAttachment(a) {
+  try {
+    if (a.doc) { openClasseurDoc(a.doc); return; }
+    toast('Téléchargement…');
+    const buf = await state.gh.getBinary(state.config.dataRepo, a.file);
+    const url = URL.createObjectURL(new Blob([buf], { type: a.mime || 'application/octet-stream' }));
+    const link = document.createElement('a');
+    link.href = url; link.download = a.name;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (e) { toast('Ouverture impossible : ' + e.message); }
 }
 
 function toggleDone(it, li) {

@@ -1,12 +1,12 @@
 // Onglet Classeur : documents PDF (cours, TD, DS) rangés par matière et chapitre,
 // stockés dans le dépôt privé de sauvegarde.
-import { isConflict } from './github.js?v=20261031182323';
-import { fileToBase64 } from './gemini.js?v=20261031182323';
-import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261031182323';
-import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261031182323';
-import { openViewer } from './viewer.js?v=20261031182323';
-import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261031182323';
-import { openImportWithDoc } from './importer.js?v=20261031182323';
+import { isConflict } from './github.js?v=20261031185235';
+import { fileToBase64 } from './gemini.js?v=20261031185235';
+import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261031185235';
+import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261031185235';
+import { openViewer } from './viewer.js?v=20261031185235';
+import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261031185235';
+import { openImportWithDoc } from './importer.js?v=20261031185235';
 
 export const DOC_TYPES = { cours: 'Cours', td: 'TD / exercices', ds: 'DS / colles' };
 const INDEX = 'classeur/index.json';
@@ -417,6 +417,14 @@ function docRow(d) {
   li.querySelector('.cls-open').addEventListener('click', () => openDoc(d));
   li.querySelector('.cls-edit').addEventListener('click', () => openDocForm(d));
   return li;
+}
+
+// Ouvre un document du classeur à partir de son identifiant (pièces jointes des devoirs).
+export async function openClasseurDoc(id) {
+  if (!state.classeur || !state.classeur.loaded) { try { await loadClasseur(); } catch (e) { /* hors ligne */ } }
+  const d = state.classeur.docs.find((x) => x.id === id);
+  if (!d) { toast('Document introuvable dans le classeur.'); return; }
+  return openDoc(d);
 }
 
 export async function openDoc(d) {
