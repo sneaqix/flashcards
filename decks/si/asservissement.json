@@ -32,11 +32,6 @@
       "r": "$$\\mathcal{L}\\big(f'(t)\\big) = p\\,F(p) - f(0^+)$$"
     },
     {
-      "id": "echelon",
-      "q": "Transformée de Laplace de l'échelon unitaire",
-      "r": "$$\\mathcal{L}\\big(u(t)\\big) = \\frac{1}{p}$$"
-    },
-    {
       "id": "precision",
       "q": "Erreur statique d'un système à retour unitaire dont la FTBO est de classe $\\geq 1$, pour une entrée en échelon",
       "r": "Elle est nulle : une intégration dans la boucle ouverte suffit."
