@@ -37,11 +37,6 @@
       ]
     },
     {
-      "id": "willis",
-      "q": "Formule de Willis pour un train épicycloïdal simple (planétaire $1$, couronne $3$, porte-satellites $PS$)",
-      "r": "$$\\frac{\\omega_{3/0} - \\omega_{PS/0}}{\\omega_{1/0} - \\omega_{PS/0}} = \\lambda$$ où $\\lambda$ est la raison basique, rapport obtenu quand le porte-satellites est fixe."
-    },
-    {
       "id": "raison-basique",
       "q": "Raison basique d'un train épicycloïdal simple (planétaire $Z_1$, couronne $Z_3$)",
       "r": "$$\\lambda = -\\frac{Z_1}{Z_3}$$ Négative : avec le porte-satellites fixe, planétaire et couronne tournent en sens opposés.",
