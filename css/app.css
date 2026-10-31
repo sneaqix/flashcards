@@ -1006,3 +1006,5 @@ body { --side-off: 0px; --panel-off: 0px; }
 }
 .edt-body b { overflow-wrap: anywhere; hyphens: auto; }
 @media (min-width: 900px) { .edt-day { padding: 8px; } .edt-lesson { padding: 6px 8px; } }
+.df-make { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; background: var(--accent-soft); border-radius: var(--r1, 8px); }
+.df-make[hidden] { display: none; }

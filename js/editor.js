@@ -1,14 +1,15 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261031143830';
-import { retrievability } from './scheduler.js?v=20261031143830';
+import * as S from './store.js?v=20261031164951';
+import { retrievability } from './scheduler.js?v=20261031164951';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
-  showView, route, firstLine, imageUrl, faceContent,
-} from './ui.js?v=20261031143830';
-import { updateChapterFile, createChapterFile } from './sync.js?v=20261031143830';
-import { returnToViewer } from './viewer.js?v=20261031143830';
-import { resumeSession } from './review.js?v=20261031143830';
-import { startPractice } from './practice.js?v=20261031143830';
+  showView, route, firstLine, imageUrl, faceContent, saveProgress,
+} from './ui.js?v=20261031164951';
+import { PALETTE, matColorKey } from './agenda.js?v=20261031164951';
+import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261031164951';
+import { returnToViewer } from './viewer.js?v=20261031164951';
+import { resumeSession } from './review.js?v=20261031164951';
+import { startPractice } from './practice.js?v=20261031164951';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
@@ -90,6 +91,7 @@ export function renderCartes() {
   $('editorLocked').hidden = !locked;
   $('newCard').disabled = locked;
   $('newChapter').disabled = locked;
+  $('newMatiere').disabled = locked;
   fillSelect($('fMat'), [['', 'Toutes les matières'], ...state.matieres.map((m) => [m.id, m.nom])], filters.mat);
   filters.mat = $('fMat').value;
   const chaps = state.chapters.filter((c) => !filters.mat || c.matiere === filters.mat);
@@ -120,7 +122,6 @@ function renderCardList() {
   const n = results.length;
   const filtered = filters.text || filters.mat || filters.chap || filters.etat || filters.type;
   $('resultCount').textContent = n ? plural(n, 'carte', 'cartes') + (filtered ? ' trouvée' + (n > 1 ? 's' : '') : '') + (n > MAX_SHOWN ? ', ' + MAX_SHOWN + ' premières affichées' : '') : '';
-  $('practiceSel').disabled = !n;
   if (!n) {
     ul.innerHTML = '<li class="empty">' + (filtered ? 'Aucune carte ne correspond.' : 'Aucune carte pour l\'instant.') + '</li>';
     return;
@@ -458,6 +459,56 @@ async function deleteCard() {
   }
 }
 
+// ---------- Nouvelle matière : nom, couleur et premier chapitre ----------
+let nmColor = null;
+function renderMatiereForm() {
+  const used = new Set(state.matieres.map((m) => matColorKey(m.id)));
+  nmColor = Object.keys(PALETTE).find((k) => !used.has(k)) || 'gris';
+  const box = $('nmColors');
+  box.innerHTML = '';
+  Object.entries(PALETTE).forEach(([k, hex]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch' + (k === nmColor ? ' on' : '');
+    b.style.setProperty('--sw', hex);
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(k === nmColor));
+    b.setAttribute('aria-label', k);
+    b.title = k;
+    b.addEventListener('click', () => {
+      nmColor = k;
+      box.querySelectorAll('.swatch').forEach((x) => { const on = x.title === k; x.classList.toggle('on', on); x.setAttribute('aria-checked', String(on)); });
+    });
+    box.appendChild(b);
+  });
+}
+async function createMatiereFromForm() {
+  const nom = $('nmNom').value.trim();
+  const chap = $('nmChap').value.trim();
+  if (!nom) { toast('Donne un nom à la matière.'); return; }
+  if (!chap) { toast('Donne un nom au premier chapitre.'); return; }
+  $('nmCreate').disabled = true;
+  try {
+    const id = await createMatiere(nom);
+    // Couleur : enregistrée avec les réglages (synchronisés).
+    state.progress.settings = { ...state.progress.settings, matColors: { ...(state.progress.settings.matColors || {}), [id]: nmColor }, updated: Date.now() };
+    saveProgress();
+    scheduleSync(2000);
+    const ch = await createChapterFile(id, chap);
+    filters.mat = id;
+    filters.chap = ch.id;
+    $('nmNom').value = '';
+    $('nmChap').value = '';
+    $('newMatiereForm').hidden = true;
+    toast('Matière « ' + nom + ' » créée.');
+    renderCartes();
+  } catch (e) {
+    toast(/existe déjà|Donne un nom/.test(e.message) ? e.message : 'Échec de la création : ' + e.message);
+  } finally {
+    $('nmCreate').disabled = false;
+  }
+}
+
 async function createChapter() {
   const mat = $('ncMatiere').value;
   const nom = $('ncNom').value.trim();
@@ -500,16 +551,6 @@ export function bindEditor() {
     Object.assign(filters, { text: '', mat: '', chap: '', etat: '', type: '' });
     renderCartes();
   });
-  $('practiceSel').addEventListener('click', () => {
-    const items = filteredCards().flatMap(({ chapter, card }) => S.faces(chapter).filter((f) => f.card === card));
-    startPractice(items, 'cram');
-  });
-  $('newCard').addEventListener('click', () => {
-    const ch = state.byId.get(filters.chap) || state.chapters.find((c) => !filters.mat || c.matiere === filters.mat);
-    if (!ch) return;
-    state.editReturn = null;
-    openEditor(ch, null);
-  });
   $('newChapter').addEventListener('click', () => {
     $('newChapterForm').hidden = false;
     if (filters.mat) $('ncMatiere').value = filters.mat;
@@ -517,6 +558,15 @@ export function bindEditor() {
   });
   $('ncCancel').addEventListener('click', () => { $('newChapterForm').hidden = true; });
   $('ncCreate').addEventListener('click', createChapter);
+  $('newMatiere').addEventListener('click', () => {
+    $('newChapterForm').hidden = true;
+    renderMatiereForm();
+    $('newMatiereForm').hidden = false;
+    $('nmNom').focus();
+  });
+  $('newChapter').addEventListener('click', () => { $('newMatiereForm').hidden = true; });
+  $('nmCancel').addEventListener('click', () => { $('newMatiereForm').hidden = true; });
+  $('nmCreate').addEventListener('click', createMatiereFromForm);
 
   $('editBack').addEventListener('click', () => {
     if (isEditorDirty() && Date.now() > state.discardUntil) {

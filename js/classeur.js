@@ -1,12 +1,12 @@
 // Onglet Classeur : documents PDF (cours, TD, DS) rangés par matière et chapitre,
 // stockés dans le dépôt privé de sauvegarde.
-import { isConflict } from './github.js?v=20261031143830';
-import { fileToBase64 } from './gemini.js?v=20261031143830';
-import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261031143830';
-import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261031143830';
-import { openViewer } from './viewer.js?v=20261031143830';
-import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261031143830';
-import { openImportWithDoc } from './importer.js?v=20261031143830';
+import { isConflict } from './github.js?v=20261031164951';
+import { fileToBase64 } from './gemini.js?v=20261031164951';
+import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261031164951';
+import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261031164951';
+import { openViewer } from './viewer.js?v=20261031164951';
+import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261031164951';
+import { openImportWithDoc } from './importer.js?v=20261031164951';
 
 export const DOC_TYPES = { cours: 'Cours', td: 'TD / exercices', ds: 'DS / colles' };
 const INDEX = 'classeur/index.json';
@@ -467,6 +467,12 @@ function openDocForm(doc) {
   $('dfNewChap').value = '';
   $('dfDelete').hidden = !doc;
   $('dfCards').hidden = !doc || !state.config.geminiKey;
+  $('dfMakeBox').hidden = !!doc;
+  $('dfMakeCards').checked = false;
+  $('dfMakeCards').disabled = !state.config.geminiKey;
+  $('dfMakeHint').textContent = state.config.geminiKey
+    ? 'Après l\'envoi, l\'écran de génération s\'ouvre avec ce cours, sa matière et son chapitre.'
+    : 'Ajoute d\'abord une clé Gemini dans Réglages › Import de cours.';
   $('dfDeleteConfirm').hidden = true;
   setStatus('dfStatus', '');
   showView('docform');
@@ -506,8 +512,16 @@ async function saveDoc() {
       toast('Document enregistré.');
     } else {
       const base64 = await fileToBase64(pickedFile);
-      await addDocument({ base64, size: pickedFile.size, nom, type: $('dfType').value, chapId: ch.id, matiere: ch.matiere });
+      const doc = await addDocument({ base64, size: pickedFile.size, nom, type: $('dfType').value, chapId: ch.id, matiere: ch.matiere });
       toast('Document ajouté au classeur.');
+      if ($('dfMakeCards').checked && state.config.geminiKey) {
+        // Génération de cartes à partir du cours qu'on vient de ranger (matière et chapitre déjà choisis).
+        const file = pickedFile;
+        editing = null;
+        pickedFile = null;
+        openImportWithDoc(doc, file);
+        return;
+      }
     }
     editing = null;
     pickedFile = null;

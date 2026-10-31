@@ -1,7 +1,7 @@
 // Synchronisation de la progression avec le dépôt privé, et chargement des cartes.
-import { isConflict } from './github.js?v=20261031143830';
-import * as S from './store.js?v=20261031143830';
-import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261031143830';
+import { isConflict } from './github.js?v=20261031164951';
+import * as S from './store.js?v=20261031164951';
+import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261031164951';
 
 export function setChip(kind, detail) {
   const chip = $('syncChip');
@@ -173,6 +173,20 @@ async function updateDeckIndex(mutate, message) {
 function refreshChapters() {
   state.chapters = state.matieres.flatMap((m) => m.chapitres);
   state.byId = new Map(state.chapters.map((c) => [c.id, c]));
+}
+
+// Crée une matière vide dans decks/index.json. Renvoie son identifiant.
+export async function createMatiere(nom) {
+  const base = slugify(nom);
+  if (!base) throw new Error('Donne un nom à la matière.');
+  if (state.matieres.some((m) => m.nom.trim().toLowerCase() === nom.trim().toLowerCase())) throw new Error('Cette matière existe déjà.');
+  let id = base, k = 2;
+  while (state.matieres.some((m) => m.id === id)) id = base + '-' + k++;
+  await updateDeckIndex((index) => {
+    if (!index.matieres.some((m) => m.id === id)) index.matieres.push({ id, nom, chapitres: [] });
+  }, 'Ajoute la matière ' + nom);
+  state.matieres.push({ id, nom, carnets: [], chapitres: [] });
+  return id;
 }
 
 // Le nouveau nom s'applique partout ; l'identifiant (et donc la progression) ne change pas.
