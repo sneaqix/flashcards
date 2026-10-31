@@ -30,11 +30,6 @@
       "id": "derivation",
       "q": "Transformée de Laplace d'une dérivée",
       "r": "$$\\mathcal{L}\\big(f'(t)\\big) = p\\,F(p) - f(0^+)$$"
-    },
-    {
-      "id": "precision",
-      "q": "Erreur statique d'un système à retour unitaire dont la FTBO est de classe $\\geq 1$, pour une entrée en échelon",
-      "r": "Elle est nulle : une intégration dans la boucle ouverte suffit."
     }
   ]
 }
