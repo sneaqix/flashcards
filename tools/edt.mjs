@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import crypto from 'node:crypto';
 
 const dataDir = path.resolve(process.argv[2] || '.');
 const authPath = path.join(dataDir, 'edt/auth.json');
@@ -89,34 +90,98 @@ function addHomeworkToAgenda(homework) {
 // ---------- Notes (module Évaluations de Skolengo, s'il est activé par le lycée) ----------
 async function fetchNotes(user, student) {
   const out = { updated: Date.now(), periods: [] };
-  try {
-    const settings = await user.getEvaluationSettings(student);
-    const s0 = settings && settings[0];
-    if (!s0 || !(s0.periods || []).length) out.error = 'Aucune période de notes publiée sur l\'ENT.';
-    for (const per of (s0 && s0.periods) || []) {
-      const ev = await user.getEvaluation(student, per.id, 100);
-      out.periods.push({
-        id: per.id, label: per.label, start: per.startDate, end: per.endDate,
-        subjects: ev.map((e) => ({
-          label: (e.subject && e.subject.label) || '', mat: matiereOf(e.subject && e.subject.label),
-          coef: e.coefficient, average: e.studentAverage, classAverage: e.average, scale: e.scale,
-          evaluations: (e.evaluations || []).map((x) => ({
-            title: x.title || x.topic || '', date: x.dateTime, coef: x.coefficient, scale: x.scale,
-            mark: x.evaluationResult ? x.evaluationResult.mark : null,
-            reason: x.evaluationResult ? x.evaluationResult.nonEvaluationReason : null,
-            comment: x.evaluationResult ? x.evaluationResult.comment : null,
-            classAverage: x.average, min: x.min, max: x.max,
-          })),
+  const tries = [];
+  // Le serveur refuse parfois certaines ressources liées (professeurs…) : on réessaie avec moins d'inclusions.
+  const attempt = async (label, fn) => { try { return await fn(); } catch (e) { tries.push(label + ' : ' + ((e && e.response && e.response.status) || '') + ' ' + ((e && e.message) || e)); return null; } };
+  let settings = await attempt('réglages', () => user.getEvaluationSettings(student));
+  if (!settings) settings = await attempt('réglages (périodes)', () => user.getEvaluationSettings(student, 20, 0, {}, ['periods']));
+  const s0 = settings && settings[0];
+  if (!s0 || !(s0.periods || []).length) out.error = 'Aucune période de notes accessible.';
+  for (const per of (s0 && s0.periods) || []) {
+    let ev = await attempt('notes ' + per.label, () => user.getEvaluation(student, per.id, 100));
+    if (!ev) ev = await attempt('notes ' + per.label + ' (sans profs)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations', 'evaluations.evaluationResult']));
+    if (!ev) ev = await attempt('notes ' + per.label + ' (minimal)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations']));
+    if (!ev) continue;
+    out.periods.push({
+      id: per.id, label: per.label, start: per.startDate, end: per.endDate,
+      subjects: ev.map((e) => ({
+        label: (e.subject && e.subject.label) || '', mat: matiereOf(e.subject && e.subject.label),
+        teachers: (e.teachers || []).map((t) => [t.title, t.lastName].filter(Boolean).join(' ')).filter(Boolean),
+        coef: e.coefficient, average: e.studentAverage, classAverage: e.average, scale: e.scale,
+        evaluations: (e.evaluations || []).map((x) => ({
+          title: x.title || x.topic || '', date: x.dateTime, coef: x.coefficient, scale: x.scale,
+          mark: x.evaluationResult ? x.evaluationResult.mark : null,
+          reason: x.evaluationResult ? x.evaluationResult.nonEvaluationReason : null,
+          comment: x.evaluationResult ? x.evaluationResult.comment : null,
+          classAverage: x.average, min: x.min, max: x.max,
         })),
-      });
-    }
-  } catch (e) {
-    const status = e && e.response && e.response.status;
-    out.error = 'Notes indisponibles (' + (status ? 'HTTP ' + status : (e && e.message) || e) + ') : le module Évaluations n\'est peut-être pas activé par le lycée.';
+      })),
+    });
   }
+  if (!out.periods.length && !out.error) out.error = 'Notes inaccessibles par l\'API de Skolengo.';
+  if (out.periods.length) delete out.error;
+  out.tries = tries;
   write(notesPath, out);
   const n = out.periods.reduce((a, p) => a + p.subjects.reduce((b, sb) => b + sb.evaluations.length, 0), 0);
-  console.log('Notes :', out.periods.length, 'périodes,', n, 'évaluations', out.error ? '| ' + out.error : '');
+  console.log('Notes :', out.periods.length, 'périodes,', n, 'évaluations |', tries.join(' / '));
+}
+
+// ---------- Pièces jointes des devoirs : enregistrées dans le dépôt privé ; PDF rangés au Classeur ----------
+const blobSha = (buf) => crypto.createHash('sha1').update(Buffer.concat([Buffer.from('blob ' + buf.length + '\0'), buf])).digest('hex');
+async function fetchAttachments(user, student, homework) {
+  const indexPath = path.join(dataDir, 'classeur/index.json');
+  const index = readJson(indexPath, { version: 1, docs: [] });
+  index.docs = index.docs || [];
+  let added = 0, indexChanged = false;
+  const today = parisParts(new Date().toISOString()).date;
+  for (const h of homework) {
+    if (parisParts(h.due).date < today) continue;
+    let full = null;
+    try { full = await user.getHomeworkAssignment(student, h.id, undefined, ['subject', 'attachments']); } catch (e) {
+      try { full = await user.getHomeworkAssignment(student, h.id, undefined, ['attachments']); } catch (e2) { console.log('PJ', h.id, ':', e2.message); }
+    }
+    const atts = (full && full.attachments) || [];
+    h.attachments = [];
+    for (const a of atts) {
+      const safe = String(a.id).replace(/[^a-zA-Z0-9]/g, '-');
+      const name = a.name || ('piece-jointe-' + safe);
+      const isPdf = /pdf/i.test(a.mimeType || '') || /\.pdf$/i.test(name);
+      const file = isPdf ? 'classeur/files/ent-' + safe + '.pdf' : 'edt/files/' + safe + '-' + name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const abs = path.join(dataDir, file);
+      if (!fs.existsSync(abs)) {
+        try {
+          const stream = await user.downloadAttachment(a);
+          const chunks = [];
+          for await (const c of stream) chunks.push(Buffer.from(c));
+          fs.mkdirSync(path.dirname(abs), { recursive: true });
+          fs.writeFileSync(abs, Buffer.concat(chunks));
+          added++;
+        } catch (e) { console.log('Téléchargement impossible', name, ':', e.message); continue; }
+      }
+      const att = { name, file, mime: a.mimeType || null, size: fs.statSync(abs).size };
+      if (isPdf) {
+        const docId = 'ent-' + safe;
+        if (!index.docs.some((d) => d.id === docId)) {
+          index.docs.push({ id: docId, nom: name.replace(/\.pdf$/i, ''), type: 'td', chapId: '', matiere: matiereOf(h.subject), file, sha: blobSha(fs.readFileSync(abs)), size: att.size, added: Date.now(), src: 'ent' });
+          indexChanged = true;
+        }
+        att.doc = docId;
+      }
+      h.attachments.push(att);
+    }
+  }
+  if (indexChanged) fs.writeFileSync(indexPath, JSON.stringify(index, null, 2) + '\n');
+  // Les devoirs déjà dans le calendrier reçoivent la liste de leurs pièces jointes.
+  const agenda = readJson(agendaPath, null);
+  if (agenda && agenda.items) {
+    let changed = false;
+    homework.forEach((h) => {
+      const it = agenda.items.find((x) => x.id === 'ent-' + String(h.id).replace(/[^a-zA-Z0-9]/g, '-'));
+      if (it && (h.attachments || []).length && JSON.stringify(it.attachments || []) !== JSON.stringify(h.attachments)) { it.attachments = h.attachments; it.t = Date.now(); changed = true; }
+    });
+    if (changed) fs.writeFileSync(agendaPath, JSON.stringify(agenda));
+  }
+  console.log('Pièces jointes téléchargées :', added);
 }
 
 let refreshed = false;
@@ -154,6 +219,8 @@ try {
   write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework });
   console.log('Cours :', lessons.length, '| devoirs :', homework.length, '| du', start, 'au', end);
   addHomeworkToAgenda(homework);
+  await fetchAttachments(user, student, homework);
+  write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework });
   await fetchNotes(user, student);
 } catch (e) {
   const status = e && e.response && e.response.status;
