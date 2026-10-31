@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261031185235">
-<link rel="stylesheet" href="css/themes.css?v=20261031185235">
+<link rel="stylesheet" href="css/app.css?v=20261031191712">
+<link rel="stylesheet" href="css/themes.css?v=20261031191712">
 </head>
 <body>
 <div class="app">
@@ -663,6 +663,16 @@
   </section>
 
   <!-- ============ Statistiques ============ -->
+  <section id="view-notes" class="view" hidden>
+    <div class="notes-head">
+      <h1>Notes</h1>
+      <p id="notesState" class="edt-state"></p>
+      <button id="notesRefresh" class="ghost small" type="button">↻ Actualiser</button>
+    </div>
+    <div id="notesPeriods" class="notes-periods" role="group" aria-label="Période"></div>
+    <div id="notesBody" class="notes-body"></div>
+  </section>
+
   <section id="view-stats" class="view" hidden>
     <div class="bar-top">
       <a class="button ghost" href="#parametres">Retour</a>
@@ -903,8 +913,9 @@
   <a href="#classeur" data-tab="classeur" title="Classeur"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="tab-label">Classeur</span></a>
   <a href="#calendrier" data-tab="calendrier" title="Calendrier"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span class="tab-label">Calendrier</span><b class="tab-count" id="cnt-calendrier" hidden></b></a>
   <a href="#stats" data-tab="stats" class="desk-only" title="Statistiques"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6"/></svg><span class="tab-label">Statistiques</span></a>
+  <a href="#notes" data-tab="notes" class="desk-only" title="Notes"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5Z"/><path d="M8 11h8M8 15h5"/><path d="m9 7.5 1.2 1.2L12.5 6.5"/></svg><span class="tab-label">Notes</span></a>
   <a href="#parametres" data-tab="parametres" title="Réglages"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span class="tab-label">Réglages</span></a>
-  <button id="tabMore" class="tab-more" type="button" aria-haspopup="dialog" aria-label="Plus : Cartes, Statistiques, Réglages"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span class="tab-label">Plus</span></button>
+  <button id="tabMore" class="tab-more" type="button" aria-haspopup="dialog" aria-label="Plus : Cartes, Statistiques, Notes, Réglages"><svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span class="tab-label">Plus</span></button>
 </nav>
 <div id="moreSheet" class="more-sheet" hidden>
   <div class="more-backdrop" data-close></div>
@@ -912,6 +923,7 @@
     <div class="more-grip" aria-hidden="true"></div>
     <a href="#cartes" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13 7 4 4"/></svg><span><b>Cartes</b><small>Rechercher, modifier, importer un cours</small></span></a>
     <a href="#stats" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6"/></svg><span><b>Statistiques</b><small>Révisions, rétention, prévisions</small></span></a>
+    <a href="#notes" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5Z"/><path d="M8 11h8M8 15h5"/><path d="m9 7.5 1.2 1.2L12.5 6.5"/></svg><span><b>Notes</b><small>Moyennes et évaluations de Mon Bureau Numérique</small></span></a>
     <a href="#parametres" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span><b>Réglages</b><small>Rythme, apparence, notifications, GitHub</small></span></a>
   </div>
 </div>
@@ -934,6 +946,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261031185235"></script>
+<script type="module" src="js/app.js?v=20261031191712"></script>
 </body>
 </html>

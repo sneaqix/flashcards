@@ -231,7 +231,7 @@ try {
   addHomeworkToAgenda(homework);
   await fetchAttachments(user, student, homework);
   write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework, diag });
-  await fetchNotes(user, student);
+  // Les notes viennent de tools/notes.mjs (l'API de Skolengo plante pour ce lycée).
 } catch (e) {
   const status = e && e.response && e.response.status;
   const msg = /invalid_grant|refresh/i.test(String(e && e.message)) || status === 401

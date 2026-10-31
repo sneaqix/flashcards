@@ -1,8 +1,8 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261031185235';
+import * as S from './store.js?v=20261031191712';
 
 export const $ = (id) => document.getElementById(id);
-export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'parametres'];
+export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'notes', 'parametres'];
 
 export const state = {
   matieres: [],          // [{ id, nom, chapitres: [chapter] }]
@@ -137,8 +137,8 @@ export function showView(name) {
   document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
   // Téléphone : « Plus » regroupe Cartes, Statistiques et Réglages ; l'en-tête affiche le nom de l'onglet.
   const more = document.getElementById('tabMore');
-  if (more) more.classList.toggle('active', ['cartes', 'stats', 'parametres'].includes(name === 'stats' ? 'stats' : tab));
-  const label = name === 'edt' ? 'Emploi du temps' : { reviser: 'Réviser', bachotage: 'Bachotage', cartes: 'Cartes', classeur: 'Classeur', calendrier: 'Calendrier', stats: 'Statistiques', parametres: 'Réglages' }[name === 'stats' ? 'stats' : tab];
+  if (more) more.classList.toggle('active', ['cartes', 'stats', 'notes', 'parametres'].includes(name === 'stats' ? 'stats' : tab));
+  const label = name === 'edt' ? 'Emploi du temps' : { reviser: 'Réviser', bachotage: 'Bachotage', cartes: 'Cartes', classeur: 'Classeur', calendrier: 'Calendrier', stats: 'Statistiques', notes: 'Notes', parametres: 'Réglages' }[name === 'stats' ? 'stats' : tab];
   const hTab = document.getElementById('hTab');
   if (hTab && label) hTab.textContent = label;
   document.body.classList.toggle('reviewing', name === 'session');
