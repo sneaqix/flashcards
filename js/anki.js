@@ -1,8 +1,8 @@
 // Import et export de paquets Anki (.apkg).
 // Bibliothèques hébergées dans vendor/ : JSZip (zip), sql.js (SQLite), fzstd (format récent d'Anki).
-import { $, state, newId, setStatus, plural, imageUrl, clozeParts, canEdit } from './ui.js?v=20261031134227';
-import { createChapterFile, updateChapterFile } from './sync.js?v=20261031134227';
-import { buildChecklist } from './practice.js?v=20261031134227';
+import { $, state, newId, setStatus, plural, imageUrl, clozeParts, canEdit } from './ui.js?v=20261031143830';
+import { createChapterFile, updateChapterFile } from './sync.js?v=20261031143830';
+import { buildChecklist } from './practice.js?v=20261031143830';
 
 // ---------- Bibliothèques ----------
 let libs = null;
@@ -301,6 +301,8 @@ async function pickFile(input) {
   const file = input.files && input.files[0];
   input.value = '';
   if (!file) return;
+  // Pas de filtre dans le sélecteur (l'iPhone grise les .apkg qu'il ne connaît pas) : on vérifie ici.
+  if (!/\.(apkg|colpkg|zip)$/i.test(file.name)) { setStatus('ankiStatus', 'Choisis un fichier .apkg exporté depuis Anki.', 'error'); return; }
   pending = null;
   renderPreview();
   setStatus('ankiStatus', 'Lecture du paquet…');

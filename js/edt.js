@@ -1,6 +1,6 @@
 // Emploi du temps de Mon Bureau Numérique (Skolengo), récupéré par le workflow edt.yml du dépôt privé.
 // L'appli lit edt/edt.json ; le jeton (edt/auth.json) se colle dans les Réglages.
-import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261031134227';
+import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261031143830';
 
 const DATA = 'edt/edt.json';
 const AUTH = 'edt/auth.json';
