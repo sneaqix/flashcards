@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261030233452';
+import * as S from './store.js?v=20261031134227';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'parametres'];
@@ -133,12 +133,12 @@ export function showView(name) {
   document.querySelectorAll('.view').forEach((v) => { v.hidden = v.id !== 'view-' + name; });
   const fromViewer = state.editReturn === 'classeur';
   const tab = name === 'carte' ? (state.editReturn === 'session' ? null : fromViewer ? 'classeur' : 'cartes')
-    : name === 'assoc' ? 'bachotage' : name === 'import' ? 'cartes' : name === 'lecteur' || name === 'docform' || name === 'carnet' || name === 'entree' ? 'classeur' : name === 'tache' ? 'calendrier' : name === 'stats' ? (matchMedia('(min-width: 900px)').matches ? 'stats' : 'parametres') : name;
+    : name === 'assoc' ? 'bachotage' : name === 'import' ? 'cartes' : name === 'lecteur' || name === 'docform' || name === 'carnet' || name === 'entree' ? 'classeur' : name === 'tache' || name === 'edt' ? 'calendrier' : name === 'stats' ? (matchMedia('(min-width: 900px)').matches ? 'stats' : 'parametres') : name;
   document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
   // Téléphone : « Plus » regroupe Cartes, Statistiques et Réglages ; l'en-tête affiche le nom de l'onglet.
   const more = document.getElementById('tabMore');
   if (more) more.classList.toggle('active', ['cartes', 'stats', 'parametres'].includes(name === 'stats' ? 'stats' : tab));
-  const label = { reviser: 'Réviser', bachotage: 'Bachotage', cartes: 'Cartes', classeur: 'Classeur', calendrier: 'Calendrier', stats: 'Statistiques', parametres: 'Réglages' }[name === 'stats' ? 'stats' : tab];
+  const label = name === 'edt' ? 'Emploi du temps' : { reviser: 'Réviser', bachotage: 'Bachotage', cartes: 'Cartes', classeur: 'Classeur', calendrier: 'Calendrier', stats: 'Statistiques', parametres: 'Réglages' }[name === 'stats' ? 'stats' : tab];
   const hTab = document.getElementById('hTab');
   if (hTab && label) hTab.textContent = label;
   document.body.classList.toggle('reviewing', name === 'session');

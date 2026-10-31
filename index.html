@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261030233452">
-<link rel="stylesheet" href="css/themes.css?v=20261030233452">
+<link rel="stylesheet" href="css/app.css?v=20261031134227">
+<link rel="stylesheet" href="css/themes.css?v=20261031134227">
 </head>
 <body>
 <div class="app">
@@ -547,6 +547,7 @@
           <button type="button" data-mode="semaine">Semaine</button>
         </div>
         <button id="agToday" class="ghost small" type="button">Aujourd'hui</button>
+        <button id="agEdt" class="ghost small" type="button">Emploi du temps</button>
       </div>
       <div id="agGrid" class="cal-grid"></div>
       <div class="ag-grip" aria-hidden="true"></div>
@@ -560,6 +561,23 @@
       <input id="agQuickInput" type="text" autocomplete="off" enterkeyhint="done" placeholder="Ajouter aujourd'hui…">
       <button id="agQuickInfo" class="ghost small" type="button" aria-label="Ajouter avec tous les détails">i</button>
     </div>
+  </section>
+
+  <section id="view-edt" class="view" hidden>
+    <div class="bar-top">
+      <button id="edtBack" class="ghost" type="button">Retour</button>
+      <span class="mode-label">Emploi du temps</span>
+      <button id="edtRefresh" class="ghost small" type="button" aria-label="Actualiser">↻</button>
+    </div>
+    <div class="edt-nav">
+      <button id="edtPrev" class="ghost nav-btn" type="button" aria-label="Semaine précédente">‹</button>
+      <h2 id="edtWeek"></h2>
+      <button id="edtNext" class="ghost nav-btn" type="button" aria-label="Semaine suivante">›</button>
+    </div>
+    <div class="edt-tools"><button id="edtToday" class="ghost small" type="button">Cette semaine</button></div>
+    <div id="edtDays" class="edt-days" role="group" aria-label="Jour"></div>
+    <div id="edtBody" class="edt-body"></div>
+    <p id="edtState" class="edt-state"></p>
   </section>
 
   <section id="view-tache" class="view" hidden>
@@ -819,6 +837,22 @@
     
         </div>
       </details>
+      <details class="acc" data-acc="edt">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M8 14h3M8 17h6"/></svg></span><span class="acc-t"><b>Emploi du temps (Mon Bureau Numérique)</b><span class="acc-sum" id="sum-edt"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form">
+          <p class="sub">L'appli récupère ton emploi du temps deux fois par jour grâce à un jeton de connexion. Ton mot de passe n'est enregistré nulle part.</p>
+          <ol class="edt-steps">
+            <li>Sur ton ordinateur, télécharge <b>scolengo-token</b> depuis <a href="https://github.com/maelgangloff/scolengo-token/releases/latest" target="_blank" rel="noopener">sa page de téléchargement</a> (fichier .exe pour Windows).</li>
+            <li>Ouvre-le, cherche ton lycée puis connecte-toi comme sur Mon Bureau Numérique.</li>
+            <li>Copie tout le texte affiché à la fin (il commence par « { ») et colle-le ci-dessous.</li>
+          </ol>
+          <label for="edtToken">Jeton</label>
+          <textarea id="edtToken" rows="4" spellcheck="false" autocomplete="off" placeholder='{"tokenSet": …, "school": …}'></textarea>
+          <button id="edtSave" class="primary" type="button">Enregistrer le jeton</button>
+          <p class="sub">Ce jeton donne accès à ton compte ENT : ne le partage avec personne. Il est rangé dans ton dépôt privé.</p>
+          <p class="status" id="edtTokStatus" role="status"></p>
+        </div>
+      </details>
       <details class="acc" data-acc="anki">
         <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="14" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v12"/><path d="m7 13 2 2 4-4"/></svg></span><span class="acc-t"><b>Paquets Anki</b><span class="acc-sum" id="sum-anki"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
         <div class="acc-body form">
@@ -884,6 +918,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261030233452"></script>
+<script type="module" src="js/app.js?v=20261031134227"></script>
 </body>
 </html>

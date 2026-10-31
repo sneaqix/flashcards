@@ -1,8 +1,8 @@
 // Carnets de français : relevé de citations (un carnet par œuvre, trié par page)
 // et résumés des chapitres (un carnet par matière, un onglet par œuvre).
 // Stockés dans le dépôt privé : carnets/<id>.json, fusionnés entre appareils.
-import { isConflict } from './github.js?v=20261030233452';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261030233452';
+import { isConflict } from './github.js?v=20261031134227';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261031134227';
 
 const stores = new Map(); // id du carnet -> { data: { items, deleted }, sha, dirty, loaded }
 let open = null;          // { kind: 'citations' | 'resumes', id, chap?, mat?, tab? }

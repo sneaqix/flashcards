@@ -1,20 +1,21 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import * as S from './store.js?v=20261030233452';
-import { GitHub } from './github.js?v=20261030233452';
-import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261030233452';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261030233452';
-import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261030233452';
-import { renderCartes, bindEditor } from './editor.js?v=20261030233452';
-import { renderCram, bindPractice } from './practice.js?v=20261030233452';
-import { bindImport, restoreImport } from './importer.js?v=20261030233452';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261030233452';
-import { bindViewer } from './viewer.js?v=20261030233452';
-import { bindCarnets } from './carnets.js?v=20261030233452';
-import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261030233452';
-import { renderStats } from './stats.js?v=20261030233452';
-import { renderSettings, bindSettings } from './settings.js?v=20261030233452';
-import { bindTheme } from './theme.js?v=20261030233452';
-import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261030233452';
+import * as S from './store.js?v=20261031134227';
+import { GitHub } from './github.js?v=20261031134227';
+import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261031134227';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261031134227';
+import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261031134227';
+import { renderCartes, bindEditor } from './editor.js?v=20261031134227';
+import { renderCram, bindPractice } from './practice.js?v=20261031134227';
+import { bindImport, restoreImport } from './importer.js?v=20261031134227';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261031134227';
+import { bindViewer } from './viewer.js?v=20261031134227';
+import { bindCarnets } from './carnets.js?v=20261031134227';
+import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261031134227';
+import { renderStats } from './stats.js?v=20261031134227';
+import { renderSettings, bindSettings } from './settings.js?v=20261031134227';
+import { bindEdt } from './edt.js?v=20261031134227';
+import { bindTheme } from './theme.js?v=20261031134227';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261031134227';
 
 state.views = {
   reviser: renderHome,
@@ -150,6 +151,7 @@ function bindEvents() {
   bindAgenda();
   bindCarnets();
   bindNotifs();
+  bindEdt();
 
   // Sauvegarde quand on quitte l'appli, récupération des changements de l'autre appareil au retour.
   document.addEventListener('visibilitychange', () => {

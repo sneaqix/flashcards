@@ -1,14 +1,15 @@
 // Onglet Réglages.
-import { GitHub } from './github.js?v=20261030233452';
-import * as S from './store.js?v=20261030233452';
-import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261030233452';
-import { renderAppearance, themeLabel } from './theme.js?v=20261030233452';
-import { renderAnki, bindAnki } from './anki.js?v=20261030233452';
-import { renderNotifs, notifSummary } from './notifs.js?v=20261030233452';
-import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261030233452';
-import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261030233452';
-import { PALETTE, matColorKey } from './agenda.js?v=20261030233452';
-import { buildChecklist } from './practice.js?v=20261030233452';
+import { GitHub } from './github.js?v=20261031134227';
+import * as S from './store.js?v=20261031134227';
+import { $, state, setStatus, plural, saveProgress, canSync, dailyOff } from './ui.js?v=20261031134227';
+import { renderAppearance, themeLabel } from './theme.js?v=20261031134227';
+import { renderEdtSettings, edtSummary } from './edt.js?v=20261031134227';
+import { renderAnki, bindAnki } from './anki.js?v=20261031134227';
+import { renderNotifs, notifSummary } from './notifs.js?v=20261031134227';
+import { scheduleSync, syncNow, setChip, loadDecks } from './sync.js?v=20261031134227';
+import { MODELS, DEFAULT_MODEL } from './gemini.js?v=20261031134227';
+import { PALETTE, matColorKey } from './agenda.js?v=20261031134227';
+import { buildChecklist } from './practice.js?v=20261031134227';
 
 export function renderSettings() {
   const s = state.progress.settings;
@@ -17,6 +18,7 @@ export function renderSettings() {
   renderNotifs();
   renderAppearance();
   renderAnki();
+  renderEdtSettings();
   $('sRetention').value = String(Math.round(s.retention * 100));
   $('sMaxIvl').value = s.maxIvl;
   $('sLearn').value = (s.learnSteps || []).join(' ');
@@ -69,6 +71,7 @@ function renderSummaries() {
   set('gemini', state.config.geminiKey ? 'Clé enregistrée · ' + model : 'Aucune clé sur cet appareil');
   set('sauvegarde', 'Exporter ou importer un fichier');
   set('anki', 'Importer ou exporter des paquets .apkg');
+  set('edt', edtSummary());
 }
 
 function bindAccordion() {
