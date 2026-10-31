@@ -1,14 +1,14 @@
 // Accueil (révision du jour) et déroulement d'une session de révision.
-import * as S from './store.js?v=20261031220830';
+import * as S from './store.js?v=20261031222819';
 import {
   $, state, escapeHtml, textHtml, renderFace, typeset, toast, plural, saveProgress, activeChapters, dailyChapters, dailyOff,
   canEdit, faceContent, expectedAnswer, firstLine, chapterCounts, showView, goTab, clozeParts, isCloze, imageUrl,
-} from './ui.js?v=20261031220830';
-import { scheduleSync } from './sync.js?v=20261031220830';
-import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261031220830';
-import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261031220830';
-import { openEditor } from './editor.js?v=20261031220830';
-import { startMixRound } from './practice.js?v=20261031220830';
+} from './ui.js?v=20261031222819';
+import { scheduleSync } from './sync.js?v=20261031222819';
+import { renderTodo, examsAhead, openAgendaItem, TYPES, matColor } from './agenda.js?v=20261031222819';
+import { docsOfChapter, showChapterDocs } from './classeur.js?v=20261031222819';
+import { openEditor } from './editor.js?v=20261031222819';
+import { startMixRound } from './practice.js?v=20261031222819';
 
 const GRADE_LABELS = ['À revoir', 'Difficile', 'Correct', 'Facile'];
 

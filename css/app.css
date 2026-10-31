@@ -1052,7 +1052,7 @@ body { --side-off: 0px; --panel-off: 0px; }
 .notes-subject .sub { font-size: 0.8rem; }
 .ns-avg { font-size: 1.5rem; font-variant-numeric: tabular-nums; color: var(--c); }
 .ns-class { margin: 4px 0 8px; font-size: 0.8rem; color: var(--muted); }
-.ns-marks { display: flex; flex-wrap: wrap; gap: 6px; }
+.ns-marks { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .nt { display: inline-flex; align-items: baseline; gap: 1px; padding: 4px 8px; border-radius: 8px; background: color-mix(in srgb, var(--c) 12%, transparent); font-variant-numeric: tabular-nums; }
 .nt b { font-size: 0.95rem; }
 .nt small { font-size: 0.7rem; color: var(--muted); }
@@ -1060,3 +1060,25 @@ body { --side-off: 0px; --panel-off: 0px; }
 .nt.low b { color: var(--again); }
 .nt.empty { opacity: 0.6; } .nt.empty b { font-size: 0.8rem; font-weight: 500; }
 .nt[title] { cursor: help; text-decoration: underline dotted color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 3px; }
+button.nt { border: 1px solid transparent; font: inherit; color: inherit; cursor: pointer; }
+button.nt:hover { border-color: var(--c); }
+.nt.off { background: transparent; border: 1px dashed var(--muted); opacity: 0.6; }
+.nt.off b { color: var(--muted); }
+.notes-key { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); margin: 0; }
+.notes-key .nt { --c: var(--muted); }
+.note-dlg { border: 1px solid var(--line); border-radius: 14px; background: var(--card); color: inherit; padding: 20px 22px; width: min(420px, calc(100vw - 32px)); position: fixed; }
+.note-dlg::backdrop { background: rgb(0 0 0 / 0.45); }
+.nd-close { position: absolute; top: 10px; right: 10px; font-size: 1.2rem; }
+.note-dlg h2 { margin: 2px 32px 2px 0; font-size: 1.15rem; }
+.note-dlg h3 { margin: 16px 0 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.nd-mat { margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--c); }
+.nd-date { margin: 6px 0 0; color: var(--muted); font-size: 0.9rem; }
+.nd-mark { margin: 0; font-size: 1rem; }
+.nd-mark b { font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.nd-mark.off b { color: var(--muted); }
+.nd-off { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+.nd-comment { margin: 8px 0 0; font-style: italic; }
+.nd-class { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
+.nd-class div { display: flex; flex-direction: column; }
+.nd-class dt { font-size: 0.75rem; color: var(--muted); }
+.nd-class dd { margin: 0; font-size: 1.05rem; font-variant-numeric: tabular-nums; }

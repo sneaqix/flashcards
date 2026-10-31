@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031220830';
-import { matColor } from './agenda.js?v=20261031220830';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031222819';
+import { matColor } from './agenda.js?v=20261031222819';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -79,20 +79,47 @@ function render() {
     '<div><span class="sub">Classe</span><b class="cl">' + fmt(p.classGeneral) + '</b></div></section>';
   html += '<section class="panel"><h2>Évolution</h2>' + chart(pts) + '</section>';
   if (!p.subjects.length) html += '<p class="sub">Aucune note pour cette période.</p>';
-  html += '<div class="notes-list">' + p.subjects.map((s) => {
+  html += '<div class="notes-list">' + p.subjects.map((s, si) => {
     const c = s.mat ? matColor(s.mat) : 'var(--muted)';
-    const marks = (s.evaluations || []).map((e) => {
+    const marks = (s.evaluations || []).map((e, ei) => {
       const has = e.mark !== null && e.mark !== undefined;
-      const tone = has && e.scale ? (e.mark / e.scale >= 0.7 ? ' good' : e.mark / e.scale < 0.45 ? ' low' : '') : '';
+      const off = e.counted === false;
+      const tone = has && e.scale && !off ? (e.mark / e.scale >= 0.7 ? ' good' : e.mark / e.scale < 0.45 ? ' low' : '') : '';
       const label = has ? fmt(e.mark) : (e.raw || '');
-      return '<span class="nt' + (has ? tone : ' empty') + '"' + (e.info ? ' title="' + escapeHtml(e.info) + '"' : '') + '><b>' + escapeHtml(label || '·') + '</b>' + (has ? '<small>/' + fmt(e.scale) + '</small>' : '') + '</span>';
+      return '<button type="button" class="nt' + (has ? tone : ' empty') + (off ? ' off' : '') + '" data-ev="' + si + ':' + ei + '"' +
+        ' aria-label="' + escapeHtml(label + (has ? ' sur ' + fmt(e.scale) : '') + (off ? ', ne compte pas dans la moyenne' : '') + ' : voir le détail') + '">' +
+        '<b>' + escapeHtml(label || '·') + '</b>' + (has ? '<small>/' + fmt(e.scale) + '</small>' : '') + '</button>';
     }).join('');
     return '<article class="panel notes-subject" style="--c:' + escapeHtml(c) + '"><header><div><h3>' + escapeHtml(s.label) + '</h3>' +
       (s.teacher ? '<span class="sub">' + escapeHtml(s.teacher) + '</span>' : '') + '</div><b class="ns-avg">' + fmt(s.average) + '</b></header>' +
       (s.classAverage !== null && s.classAverage !== undefined ? '<p class="ns-class">Classe ' + fmt(s.classAverage) + (s.min !== null && s.min !== undefined ? ' · min ' + fmt(s.min) + ' · max ' + fmt(s.max) : '') + '</p>' : '') +
       (marks ? '<div class="ns-marks">' + marks + '</div>' : '') + '</article>';
   }).join('') + '</div>';
+  if (p.subjects.some((x) => (x.evaluations || []).some((e) => e.counted === false))) {
+    html += '<p class="notes-key"><span class="nt off"><b>14</b><small>/20</small></span> Note grisée : elle ne compte pas dans la moyenne.</p>';
+  }
   box.innerHTML = html;
+}
+
+// ---------- Détail d'une note ----------
+function openDetail(btn) {
+  const p = data.notes.periods.find((x) => x.id === period);
+  const [si, ei] = btn.dataset.ev.split(':').map(Number);
+  const s = p.subjects[si], e = s.evaluations[ei];
+  const has = e.mark !== null && e.mark !== undefined;
+  const d = e.date ? new Date(e.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' }) : '';
+  const row = (k, v) => (v === null || v === undefined ? '' : '<div><dt>' + k + '</dt><dd>' + fmt(v) + '</dd></div>');
+  const cls = row('Moyenne', e.classAverage) + row('Min.', e.min) + row('Max.', e.max);
+  $('noteDlgBody').innerHTML =
+    '<p class="nd-mat" style="--c:' + escapeHtml(s.mat ? matColor(s.mat) : 'var(--muted)') + '">' + escapeHtml(s.label) + '</p>' +
+    '<h2>' + escapeHtml(e.topic || e.title || 'Évaluation') + '</h2>' +
+    (d ? '<p class="nd-date">' + escapeHtml(d) + '</p>' : '') +
+    '<h3>Élève</h3><p class="nd-mark' + (e.counted === false ? ' off' : '') + '">' + (has ? '<b>' + fmt(e.mark) + '</b> / ' + fmt(e.scale) : '<b>' + escapeHtml(e.raw || 'Non évalué') + '</b>') +
+    (e.coef !== null && e.coef !== undefined ? ' <span class="sub">(coef. ' + fmt(e.coef) + ')</span>' : '') + '</p>' +
+    (e.counted === false ? '<p class="nd-off">Cette note ne compte pas dans la moyenne.</p>' : '') +
+    (e.comment ? '<p class="nd-comment">' + escapeHtml(e.comment) + '</p>' : '') +
+    (cls ? '<h3>Classe</h3><dl class="nd-class">' + cls + '</dl>' : '');
+  $('noteDlg').showModal();
 }
 
 // Actualiser : dépose edt/notes-refresh, ce qui relance le workflow de l'emploi du temps et des notes.
@@ -115,9 +142,11 @@ async function refresh() {
 export function bindNotes() {
   if (!$('view-notes')) return;
   $('notesRefresh').addEventListener('click', refresh);
-  // Téléphone : pas de survol, toucher une note affiche son intitulé.
+  // Toucher une note ouvre son détail.
   $('notesBody').addEventListener('click', (e) => {
-    const t = e.target.closest('.nt[title]');
-    if (t) toast(t.getAttribute('title'));
+    const t = e.target.closest('.nt[data-ev]');
+    if (t) openDetail(t);
   });
+  const dlg = $('noteDlg');
+  dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
 }
