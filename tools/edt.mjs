@@ -94,16 +94,28 @@ const histPath = path.join(dataDir, 'edt/notes-history.json');
 async function fetchNotes(user, student) {
   const prev = readJson(notesPath, {});
   const tries = [];
-  const attempt = async (label, fn) => { try { return await fn(); } catch (e) { tries.push(label + ' : ' + ((e && e.response && e.response.status) || '') + ' ' + ((e && e.message) || e)); return null; } };
+  const attempt = async (label, fn) => { try { return await fn(); } catch (e) { tries.push(label + ' : ' + [e && (e.status || (e.response && e.response.status)), e && e.code, e && e.title, (e && e.message) || e].filter(Boolean).join(' | ')); return null; } };
   let settings = await attempt('réglages', () => user.getEvaluationSettings(student));
   if (!settings) settings = await attempt('réglages (périodes)', () => user.getEvaluationSettings(student, 20, 0, {}, ['periods']));
   const s0 = settings && settings[0];
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
   const periods = [];
   for (const per of (s0 && s0.periods) || []) {
-    let ev = await attempt('notes ' + per.label, () => user.getEvaluation(student, per.id, 100));
-    if (!ev) ev = await attempt('notes ' + per.label + ' (sans profs)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations', 'evaluations.evaluationResult']));
-    if (!ev) ev = await attempt('notes ' + per.label + ' (minimal)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations']));
+    // L'appli officielle demande seulement certains champs (« fields ») : le serveur évite alors
+    // de construire les fiches complètes des personnes, là où il plante.
+    const FIELDS = { fields: {
+      evaluationService: 'coefficient,average,studentAverage,scale,subject,evaluations,teachers',
+      subject: 'label,color',
+      evaluation: 'title,topic,dateTime,coefficient,average,min,max,scale,evaluationResult',
+      evaluationResult: 'mark,nonEvaluationReason,comment',
+      teacher: 'firstName,lastName,title',
+    } };
+    const BASE = ['subject', 'evaluations', 'evaluations.evaluationResult'];
+    let ev = await attempt('notes ' + per.label + ' (champs choisis)', () => user.getEvaluation(student, per.id, 100, 0, FIELDS, [...BASE, 'teachers']));
+    if (!ev) ev = await attempt('notes ' + per.label + ' (champs choisis, sans profs)', () => user.getEvaluation(student, per.id, 100, 0, FIELDS, BASE));
+    if (!ev) ev = await attempt('notes ' + per.label + ' (sans profs)', () => user.getEvaluation(student, per.id, 100, 0, {}, BASE));
+    if (!ev) ev = await attempt('notes ' + per.label + ' (sans inclusions)', () => user.getEvaluation(student, per.id, 100, 0, { fields: { evaluationService: 'coefficient,average,studentAverage,scale' } }, []));
+    if (!ev) ev = await attempt('notes ' + per.label, () => user.getEvaluation(student, per.id, 100));
     if (!ev) continue;
     const subjects = ev.map((e) => ({
       label: (e.subject && e.subject.label) || '', mat: matiereOf(e.subject && e.subject.label),
