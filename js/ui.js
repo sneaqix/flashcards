@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261031220645';
+import * as S from './store.js?v=20261031220830';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'notes', 'parametres'];

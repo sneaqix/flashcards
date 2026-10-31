@@ -1,12 +1,12 @@
 // Import d'un cours en PDF : génération des cartes par Gemini, relecture, puis ajout dans un chapitre.
-import * as G from './gemini.js?v=20261031220645';
+import * as G from './gemini.js?v=20261031220830';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId, showView,
   faceContent, route, canSync,
-} from './ui.js?v=20261031220645';
-import { updateChapterFile, createChapterFile } from './sync.js?v=20261031220645';
-import { addDocument } from './classeur.js?v=20261031220645';
-import { showChapterCards } from './editor.js?v=20261031220645';
+} from './ui.js?v=20261031220830';
+import { updateChapterFile, createChapterFile } from './sync.js?v=20261031220830';
+import { addDocument } from './classeur.js?v=20261031220830';
+import { showChapterCards } from './editor.js?v=20261031220830';
 
 const MAX_MB = 30;
 const TYPES = ['classique', 'qcm', 'trou', 'saisie'];

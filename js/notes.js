@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031220645';
-import { matColor } from './agenda.js?v=20261031220645';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031220830';
+import { matColor } from './agenda.js?v=20261031220830';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -74,7 +74,7 @@ function render() {
   });
   const p = periods.find((x) => x.id === period);
   const pts = ((data.history && data.history.points) || []).filter((x) => x.period === p.label);
-  if (!p.subjects.length) { box.innerHTML = '<p class="sub">Aucune note pour cette période.</p>'; return; }
+  if (!p.subjects.some((x) => (x.evaluations || []).length || typeof x.average === 'number')) { box.innerHTML = '<p class="sub">Aucune note pour cette période.</p>'; return; }
   let html = '<section class="panel notes-general"><div><span class="sub">Moyenne générale</span><b>' + fmt(p.general) + '</b></div>' +
     '<div><span class="sub">Classe</span><b class="cl">' + fmt(p.classGeneral) + '</b></div></section>';
   html += '<section class="panel"><h2>Évolution</h2>' + chart(pts) + '</section>';
@@ -85,7 +85,7 @@ function render() {
       const has = e.mark !== null && e.mark !== undefined;
       const tone = has && e.scale ? (e.mark / e.scale >= 0.7 ? ' good' : e.mark / e.scale < 0.45 ? ' low' : '') : '';
       const label = has ? fmt(e.mark) : (e.raw || '');
-      return '<span class="nt' + (has ? tone : ' empty') + '"' + (e.info ? ' title="' + escapeHtml(e.info) + '"' : '') + '><b>' + escapeHtml(label || '·') + '</b><small>/' + fmt(e.scale) + '</small></span>';
+      return '<span class="nt' + (has ? tone : ' empty') + '"' + (e.info ? ' title="' + escapeHtml(e.info) + '"' : '') + '><b>' + escapeHtml(label || '·') + '</b>' + (has ? '<small>/' + fmt(e.scale) + '</small>' : '') + '</span>';
     }).join('');
     return '<article class="panel notes-subject" style="--c:' + escapeHtml(c) + '"><header><div><h3>' + escapeHtml(s.label) + '</h3>' +
       (s.teacher ? '<span class="sub">' + escapeHtml(s.teacher) + '</span>' : '') + '</div><b class="ns-avg">' + fmt(s.average) + '</b></header>' +
