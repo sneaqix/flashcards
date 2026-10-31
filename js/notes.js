@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031210330';
-import { matColor } from './agenda.js?v=20261031210330';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031214820';
+import { matColor } from './agenda.js?v=20261031214820';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -52,7 +52,7 @@ function render() {
   const periods = (n && n.periods) || [];
   const st = $('notesState');
   if (!n || (!periods.length && !n.error)) {
-    st.innerHTML = 'Pas encore de notes. Elles sont lues avec ton jeton Skolengo (le même que l'emploi du temps), deux fois par jour.';
+    st.innerHTML = 'Pas encore de notes. Elles sont lues avec ton jeton Skolengo (le même que l\'emploi du temps), deux fois par jour.';
     st.className = 'edt-state warn';
   } else {
     const when = n.updated ? new Date(n.updated).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';

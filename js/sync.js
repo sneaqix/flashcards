@@ -1,7 +1,7 @@
 // Synchronisation de la progression avec le dépôt privé, et chargement des cartes.
-import { isConflict } from './github.js?v=20261031210330';
-import * as S from './store.js?v=20261031210330';
-import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261031210330';
+import { isConflict } from './github.js?v=20261031214820';
+import * as S from './store.js?v=20261031214820';
+import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261031214820';
 
 export function setChip(kind, detail) {
   const chip = $('syncChip');
