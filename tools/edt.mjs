@@ -126,19 +126,19 @@ async function fetchNotes(user, student) {
         const mark = typeof r.mark === 'number' ? r.mark : null;
         return {
           id: x.id, mark, raw: mark === null ? (r.nonEvaluationReason || 'Non évalué') : String(mark), scale: x.scale ?? 20,
-          title: x.title || x.topic || null, date: x.dateTime || null, coef: x.coefficient ?? null,
+          title: x.title || null, topic: x.topic || null, date: x.dateTime || null, coef: x.coefficient ?? null,
           classAverage: x.average ?? null, min: x.min ?? null, max: x.max ?? null, comment: r.comment || null,
         };
       }),
     })).filter((x, i, all) => x.evaluations.length || all.findIndex((y) => y.label === x.label) === i); // matières en double (EPS)
     // Intitulés : absents de la liste, on les lit dans le détail de chaque évaluation (mêmes champs réduits).
     for (const sub of subjects) for (const x of sub.evaluations) {
-      if (x.title || !x.id) continue;
+      if (x.topic || !x.id) continue;
       const d = await attempt('détail ' + x.id, () => user.getEvaluationDetail(student, x.id, { fields: {
         evaluation: 'title,topic,dateTime,coefficient,min,max,average,scale,evaluationResult', evaluationResult: 'mark,nonEvaluationReason,comment',
       } }, ['evaluationResult']));
       if (!d) continue;
-      x.title = d.title || d.topic || null;
+      x.title = d.title || x.title; x.topic = d.topic || null;
       if (x.classAverage === null) x.classAverage = d.average ?? null;
       if (x.min === null) x.min = d.min ?? null;
       if (x.max === null) x.max = d.max ?? null;
