@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031222819';
-import { matColor } from './agenda.js?v=20261031222819';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031224745';
+import { matColor } from './agenda.js?v=20261031224745';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -95,9 +95,6 @@ function render() {
       (s.classAverage !== null && s.classAverage !== undefined ? '<p class="ns-class">Classe ' + fmt(s.classAverage) + (s.min !== null && s.min !== undefined ? ' · min ' + fmt(s.min) + ' · max ' + fmt(s.max) : '') + '</p>' : '') +
       (marks ? '<div class="ns-marks">' + marks + '</div>' : '') + '</article>';
   }).join('') + '</div>';
-  if (p.subjects.some((x) => (x.evaluations || []).some((e) => e.counted === false))) {
-    html += '<p class="notes-key"><span class="nt off"><b>14</b><small>/20</small></span> Note grisée : elle ne compte pas dans la moyenne.</p>';
-  }
   box.innerHTML = html;
 }
 
