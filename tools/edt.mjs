@@ -124,10 +124,29 @@ async function fetchNotes(user, student) {
       evaluations: (e.evaluations || []).slice().sort((a, b) => String(b.dateTime || '').localeCompare(String(a.dateTime || ''))).map((x) => {
         const r = x.evaluationResult || {};
         const mark = typeof r.mark === 'number' ? r.mark : null;
-        const info = [x.title || x.topic, x.dateTime ? new Date(x.dateTime).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' }) : null, x.coefficient && x.coefficient !== 1 ? 'coef ' + x.coefficient : null, r.comment].filter(Boolean).join(' · ');
-        return { mark, raw: mark === null ? (r.nonEvaluationReason || 'Non évalué') : String(mark), scale: x.scale ?? 20, info: info || null };
+        return {
+          id: x.id, mark, raw: mark === null ? (r.nonEvaluationReason || 'Non évalué') : String(mark), scale: x.scale ?? 20,
+          title: x.title || x.topic || null, date: x.dateTime || null, coef: x.coefficient ?? null,
+          classAverage: x.average ?? null, min: x.min ?? null, max: x.max ?? null, comment: r.comment || null,
+        };
       }),
     })).filter((x, i, all) => x.evaluations.length || all.findIndex((y) => y.label === x.label) === i); // matières en double (EPS)
+    // Intitulés : absents de la liste, on les lit dans le détail de chaque évaluation (mêmes champs réduits).
+    for (const sub of subjects) for (const x of sub.evaluations) {
+      if (x.title || !x.id) continue;
+      const d = await attempt('détail ' + x.id, () => user.getEvaluationDetail(student, x.id, { fields: {
+        evaluation: 'title,topic,dateTime,coefficient,min,max,average,scale,evaluationResult', evaluationResult: 'mark,nonEvaluationReason,comment',
+      } }, ['evaluationResult']));
+      if (!d) continue;
+      x.title = d.title || d.topic || null;
+      if (x.classAverage === null) x.classAverage = d.average ?? null;
+      if (x.min === null) x.min = d.min ?? null;
+      if (x.max === null) x.max = d.max ?? null;
+      if (x.coef === null) x.coef = d.coefficient ?? null;
+      if (!x.comment && d.evaluationResult) x.comment = d.evaluationResult.comment || null;
+    }
+    // Une note ne compte pas dans la moyenne quand son coefficient est nul (grisée sur l'ENT).
+    for (const sub of subjects) for (const x of sub.evaluations) x.counted = x.coef !== 0;
     // Moyenne générale : moyenne des matières pondérée par leurs coefficients.
     const avg = (k) => { const v = subjects.filter((x) => typeof x[k] === 'number'); const w = v.reduce((a, x) => a + (x.coef || 1), 0); return w ? Math.round(v.reduce((a, x) => a + x[k] * (x.coef || 1), 0) / w * 100) / 100 : null; };
     periods.push({ id: per.id, label: per.label, current: (per.startDate || '') <= today && today <= (per.endDate || '9999'), general: avg('average'), classGeneral: avg('classAverage'), subjects });
