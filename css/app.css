@@ -1058,5 +1058,5 @@ body { --side-off: 0px; --panel-off: 0px; }
 .nt small { font-size: 0.7rem; color: var(--muted); }
 .nt.good b { color: var(--good); }
 .nt.low b { color: var(--again); }
-.nt.empty { opacity: 0.55; }
+.nt.empty { opacity: 0.6; } .nt.empty b { font-size: 0.8rem; font-weight: 500; }
 .nt[title] { cursor: help; text-decoration: underline dotted color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 3px; }

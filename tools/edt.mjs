@@ -121,13 +121,13 @@ async function fetchNotes(user, student) {
       label: (e.subject && e.subject.label) || '', mat: matiereOf(e.subject && e.subject.label),
       teacher: (e.teachers || []).map((t) => [t.title, t.lastName].filter(Boolean).join(' ')).filter(Boolean).join(', '),
       coef: e.coefficient ?? 1, average: e.studentAverage ?? null, classAverage: e.average ?? null, min: e.min ?? null, max: e.max ?? null,
-      evaluations: (e.evaluations || []).map((x) => {
+      evaluations: (e.evaluations || []).slice().sort((a, b) => String(b.dateTime || '').localeCompare(String(a.dateTime || ''))).map((x) => {
         const r = x.evaluationResult || {};
         const mark = typeof r.mark === 'number' ? r.mark : null;
         const info = [x.title || x.topic, x.dateTime ? new Date(x.dateTime).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' }) : null, x.coefficient && x.coefficient !== 1 ? 'coef ' + x.coefficient : null, r.comment].filter(Boolean).join(' · ');
-        return { mark, raw: mark === null ? (r.nonEvaluationReason || '') : String(mark), scale: x.scale ?? 20, info: info || null };
+        return { mark, raw: mark === null ? (r.nonEvaluationReason || 'Non évalué') : String(mark), scale: x.scale ?? 20, info: info || null };
       }),
-    }));
+    })).filter((x, i, all) => x.evaluations.length || all.findIndex((y) => y.label === x.label) === i); // matières en double (EPS)
     // Moyenne générale : moyenne des matières pondérée par leurs coefficients.
     const avg = (k) => { const v = subjects.filter((x) => typeof x[k] === 'number'); const w = v.reduce((a, x) => a + (x.coef || 1), 0); return w ? Math.round(v.reduce((a, x) => a + x[k] * (x.coef || 1), 0) / w * 100) / 100 : null; };
     periods.push({ id: per.id, label: per.label, current: (per.startDate || '') <= today && today <= (per.endDate || '9999'), general: avg('average'), classGeneral: avg('classAverage'), subjects });

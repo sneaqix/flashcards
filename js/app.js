@@ -1,22 +1,22 @@
 // Point d'entrée : chargement, navigation entre les onglets et synchronisation automatique.
-import * as S from './store.js?v=20261031214820';
-import { GitHub } from './github.js?v=20261031214820';
-import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261031214820';
-import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261031214820';
-import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261031214820';
-import { renderCartes, bindEditor } from './editor.js?v=20261031214820';
-import { renderCram, bindPractice } from './practice.js?v=20261031214820';
-import { bindImport, restoreImport } from './importer.js?v=20261031214820';
-import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261031214820';
-import { bindViewer } from './viewer.js?v=20261031214820';
-import { bindCarnets } from './carnets.js?v=20261031214820';
-import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261031214820';
-import { renderStats } from './stats.js?v=20261031214820';
-import { renderSettings, bindSettings } from './settings.js?v=20261031214820';
-import { bindEdt } from './edt.js?v=20261031214820';
-import { renderNotes, bindNotes } from './notes.js?v=20261031214820';
-import { bindTheme } from './theme.js?v=20261031214820';
-import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261031214820';
+import * as S from './store.js?v=20261031220645';
+import { GitHub } from './github.js?v=20261031220645';
+import { $, state, route, typeset, canSync, dailyChapters } from './ui.js?v=20261031220645';
+import { setChip, syncNow, scheduleSync, flushSync, loadDecks } from './sync.js?v=20261031220645';
+import { renderHome, bindReview, startDailyReview, dailyToday } from './review.js?v=20261031220645';
+import { renderCartes, bindEditor } from './editor.js?v=20261031220645';
+import { renderCram, bindPractice } from './practice.js?v=20261031220645';
+import { bindImport, restoreImport } from './importer.js?v=20261031220645';
+import { renderClasseur, bindClasseur, loadClasseur } from './classeur.js?v=20261031220645';
+import { bindViewer } from './viewer.js?v=20261031220645';
+import { bindCarnets } from './carnets.js?v=20261031220645';
+import { renderAgenda, bindAgenda, loadAgenda, dueNow, renderTodayPanel } from './agenda.js?v=20261031220645';
+import { renderStats } from './stats.js?v=20261031220645';
+import { renderSettings, bindSettings } from './settings.js?v=20261031220645';
+import { bindEdt } from './edt.js?v=20261031220645';
+import { renderNotes, bindNotes } from './notes.js?v=20261031220645';
+import { bindTheme } from './theme.js?v=20261031220645';
+import { registerWorker, bindNotifs, checkSubscription } from './notifs.js?v=20261031220645';
 
 state.views = {
   reviser: renderHome,

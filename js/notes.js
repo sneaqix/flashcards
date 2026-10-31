@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031214820';
-import { matColor } from './agenda.js?v=20261031214820';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031220645';
+import { matColor } from './agenda.js?v=20261031220645';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -89,7 +89,7 @@ function render() {
     }).join('');
     return '<article class="panel notes-subject" style="--c:' + escapeHtml(c) + '"><header><div><h3>' + escapeHtml(s.label) + '</h3>' +
       (s.teacher ? '<span class="sub">' + escapeHtml(s.teacher) + '</span>' : '') + '</div><b class="ns-avg">' + fmt(s.average) + '</b></header>' +
-      '<p class="ns-class">Classe ' + fmt(s.classAverage) + ' · min ' + fmt(s.min) + ' · max ' + fmt(s.max) + '</p>' +
+      (s.classAverage !== null && s.classAverage !== undefined ? '<p class="ns-class">Classe ' + fmt(s.classAverage) + (s.min !== null && s.min !== undefined ? ' · min ' + fmt(s.min) + ' · max ' + fmt(s.max) : '') + '</p>' : '') +
       (marks ? '<div class="ns-marks">' + marks + '</div>' : '') + '</article>';
   }).join('') + '</div>';
   box.innerHTML = html;
