@@ -1,15 +1,15 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261031164951';
-import { retrievability } from './scheduler.js?v=20261031164951';
+import * as S from './store.js?v=20261031175012';
+import { retrievability } from './scheduler.js?v=20261031175012';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
   showView, route, firstLine, imageUrl, faceContent, saveProgress,
-} from './ui.js?v=20261031164951';
-import { PALETTE, matColorKey } from './agenda.js?v=20261031164951';
-import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261031164951';
-import { returnToViewer } from './viewer.js?v=20261031164951';
-import { resumeSession } from './review.js?v=20261031164951';
-import { startPractice } from './practice.js?v=20261031164951';
+} from './ui.js?v=20261031175012';
+import { PALETTE, matColorKey } from './agenda.js?v=20261031175012';
+import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261031175012';
+import { returnToViewer } from './viewer.js?v=20261031175012';
+import { resumeSession } from './review.js?v=20261031175012';
+import { startPractice } from './practice.js?v=20261031175012';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
@@ -550,6 +550,12 @@ export function bindEditor() {
   $('filtersReset').addEventListener('click', () => {
     Object.assign(filters, { text: '', mat: '', chap: '', etat: '', type: '' });
     renderCartes();
+  });
+  $('newCard').addEventListener('click', () => {
+    const ch = state.byId.get(filters.chap) || state.chapters.find((c) => !filters.mat || c.matiere === filters.mat);
+    if (!ch) { toast('Crée d\'abord un chapitre.'); return; }
+    state.editReturn = null;
+    openEditor(ch, null);
   });
   $('newChapter').addEventListener('click', () => {
     $('newChapterForm').hidden = false;
