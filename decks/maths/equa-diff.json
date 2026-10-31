@@ -15,11 +15,6 @@
       ]
     },
     {
-      "id": "structure",
-      "q": "Structure des solutions d'une équation linéaire avec second membre",
-      "r": "Solution générale = solution générale de l'équation homogène + une solution particulière."
-    },
-    {
       "id": "carac",
       "q": "Équation caractéristique de $y'' + ay' + by = 0$",
       "r": "$$r^2 + ar + b = 0$$",
