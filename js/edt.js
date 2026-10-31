@@ -1,7 +1,7 @@
 // Emploi du temps de Mon Bureau Numérique (Skolengo), récupéré par le workflow edt.yml du dépôt privé.
 // L'appli lit edt/edt.json ; le jeton (edt/auth.json) se colle dans les Réglages.
-import { matColor } from './agenda.js?v=20261031181747';
-import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261031181747';
+import { matColor, PALETTE } from './agenda.js?v=20261031182323';
+import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261031182323';
 
 const DATA = 'edt/edt.json';
 const AUTH = 'edt/auth.json';
@@ -50,9 +50,28 @@ export async function openEdt() {
   if (!$('view-edt').hidden) render();
 }
 
+// TIPE : les heures « TX.INIT.PERSO.ENCAD. » qui se suivent forment un seul bloc nommé TIPE
+// (salle et professeurs de la première heure), en bleu clair.
+const isTipe = (l) => /TX\.?\s*INIT|TIPE/.test(plain(l.title));
+function mergeTipe(list) {
+  const out = [];
+  list.forEach((l) => {
+    if (!isTipe(l)) { out.push(l); return; }
+    const prev = out[out.length - 1];
+    if (prev && prev.tipe && new Date(l.start) - new Date(prev.end) <= 15 * 60000) {
+      prev.end = l.end;
+      prev.canceled = prev.canceled && l.canceled;
+      return;
+    }
+    out.push({ ...l, title: 'TIPE', tipe: true, teachers: [...(l.teachers || [])] });
+  });
+  return out;
+}
+
 function lessonsOf(day) {
   const key = ymd(day);
-  return ((edt && edt.lessons) || []).filter((l) => ymd(new Date(l.start)) === key);
+  return mergeTipe(((edt && edt.lessons) || []).filter((l) => ymd(new Date(l.start)) === key)
+    .sort((a, b) => a.start.localeCompare(b.start)));
 }
 
 // Couleur : celle de la matière de l'appli (Réglages › Couleurs des matières) quand le cours lui correspond,
@@ -67,6 +86,7 @@ function subjectOf(title) {
   return r ? r[1] : null;
 }
 function colorOf(l) {
+  if (l.tipe) return PALETTE.ciel;
   const id = subjectOf(l.title);
   return id ? matColor(id) : (l.color || 'var(--accent)');
 }

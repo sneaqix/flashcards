@@ -1,7 +1,7 @@
 // Onglet Statistiques.
-import * as S from './store.js?v=20261031181747';
-import { $, state, escapeHtml, plural, activeChapters, typeset, faceContent } from './ui.js?v=20261031181747';
-import { openFromElsewhere } from './editor.js?v=20261031181747';
+import * as S from './store.js?v=20261031182323';
+import { $, state, escapeHtml, plural, activeChapters, typeset, faceContent } from './ui.js?v=20261031182323';
+import { openFromElsewhere } from './editor.js?v=20261031182323';
 
 const W = 360; // largeur logique des graphiques (ils s'adaptent à l'écran)
 
