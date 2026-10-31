@@ -1,6 +1,7 @@
 // Emploi du temps de Mon Bureau Numérique (Skolengo), récupéré par le workflow edt.yml du dépôt privé.
 // L'appli lit edt/edt.json ; le jeton (edt/auth.json) se colle dans les Réglages.
-import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261031175012';
+import { matColor } from './agenda.js?v=20261031181747';
+import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261031181747';
 
 const DATA = 'edt/edt.json';
 const AUTH = 'edt/auth.json';
@@ -54,9 +55,25 @@ function lessonsOf(day) {
   return ((edt && edt.lessons) || []).filter((l) => ymd(new Date(l.start)) === key);
 }
 
+// Couleur : celle de la matière de l'appli (Réglages › Couleurs des matières) quand le cours lui correspond,
+// sinon celle de Mon Bureau Numérique.
+const plain = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+const RULES = [[/SPORT|\bEPS\b/, null], [/MATH/, 'maths'], [/CHIM/, 'chimie'], [/PHYS/, 'physique'], [/INDUS|INGENIEUR|^S\.?I\.?$/, 'si'], [/ANGL/, 'anglais'], [/FRANC|PHILO/, 'francais']];
+function subjectOf(title) {
+  const t = plain(title);
+  const own = state.matieres.find((m) => plain(m.nom) === t || plain(m.id) === t);
+  if (own) return own.id;
+  const r = RULES.find(([re, id]) => re.test(t) && (id === null || state.matieres.some((m) => m.id === id)));
+  return r ? r[1] : null;
+}
+function colorOf(l) {
+  const id = subjectOf(l.title);
+  return id ? matColor(id) : (l.color || 'var(--accent)');
+}
+
 function lessonHtml(l) {
   const meta = [l.room, (l.teachers || []).join(', ')].filter(Boolean).map(escapeHtml).join(' · ');
-  return '<li class="edt-lesson' + (l.canceled ? ' canceled' : '') + '" style="--c:' + escapeHtml(l.color || 'var(--accent)') + '">' +
+  return '<li class="edt-lesson' + (l.canceled ? ' canceled' : '') + '" style="--c:' + escapeHtml(colorOf(l)) + '">' +
     '<span class="edt-time">' + hm(l.start) + '<br><small>' + hm(l.end) + '</small></span>' +
     '<span class="edt-body"><b>' + escapeHtml(l.title) + '</b>' + (l.canceled ? '<em> · annulé</em>' : '') +
     (meta ? '<small>' + meta + '</small>' : '') + '</span></li>';

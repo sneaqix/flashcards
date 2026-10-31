@@ -32,7 +32,7 @@ const day = 86400000;
 const now = new Date();
 const monday = new Date(now.getTime() - ((now.getDay() + 6) % 7) * day);
 const start = iso(new Date(monday.getTime() - 7 * day));  // semaine précédente
-const end = iso(new Date(monday.getTime() + 27 * day));   // et trois semaines à venir
+const end = iso(new Date(monday.getTime() + (8 * 7 - 1) * day)); // et huit semaines à venir
 
 let refreshed = false;
 try {
