@@ -1,6 +1,6 @@
 // Récupère l'emploi du temps (et les devoirs) de Mon Bureau Numérique / Skolengo.
 // Lancé par le workflow edt.yml du dépôt privé : node tools/edt.mjs <dossier du dépôt privé>
-// Lit edt/auth.json (jeton obtenu avec scolengo-token, collé dans l'appli) et écrit edt/edt.json.
+// Lit edt/auth.json (jeton obtenu avec scolengo-token, collé dans l'appli) et écrit edt/edt.json et edt/notes.json.
 // Le jeton renouvelé est réenregistré dans edt/auth.json.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -87,44 +87,53 @@ function addHomeworkToAgenda(homework) {
   console.log('Devoirs ajoutés au calendrier :', added);
 }
 
-// ---------- Notes (module Évaluations de Skolengo, s'il est activé par le lycée) ----------
+// ---------- Notes (module Évaluations de Skolengo) ----------
+// Pour l'instant le serveur de Skolengo plante sur ce module pour ce lycée : on réessaie à chaque passage
+// (deux fois par jour) et on garde les dernières notes connues tant que ça échoue.
+const histPath = path.join(dataDir, 'edt/notes-history.json');
 async function fetchNotes(user, student) {
-  const out = { updated: Date.now(), periods: [] };
+  const prev = readJson(notesPath, {});
   const tries = [];
-  // Le serveur refuse parfois certaines ressources liées (professeurs…) : on réessaie avec moins d'inclusions.
   const attempt = async (label, fn) => { try { return await fn(); } catch (e) { tries.push(label + ' : ' + ((e && e.response && e.response.status) || '') + ' ' + ((e && e.message) || e)); return null; } };
   let settings = await attempt('réglages', () => user.getEvaluationSettings(student));
   if (!settings) settings = await attempt('réglages (périodes)', () => user.getEvaluationSettings(student, 20, 0, {}, ['periods']));
   const s0 = settings && settings[0];
-  if (!s0 || !(s0.periods || []).length) out.error = 'Aucune période de notes accessible.';
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
+  const periods = [];
   for (const per of (s0 && s0.periods) || []) {
     let ev = await attempt('notes ' + per.label, () => user.getEvaluation(student, per.id, 100));
     if (!ev) ev = await attempt('notes ' + per.label + ' (sans profs)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations', 'evaluations.evaluationResult']));
     if (!ev) ev = await attempt('notes ' + per.label + ' (minimal)', () => user.getEvaluation(student, per.id, 100, 0, {}, ['subject', 'evaluations']));
-    if (!ev) ev = await attempt('notes ' + per.label + ' (sans inclusions)', () => user.getEvaluation(student, per.id, 20, 0, {}, []));
     if (!ev) continue;
-    out.periods.push({
-      id: per.id, label: per.label, start: per.startDate, end: per.endDate,
-      subjects: ev.map((e) => ({
-        label: (e.subject && e.subject.label) || '', mat: matiereOf(e.subject && e.subject.label),
-        teachers: (e.teachers || []).map((t) => [t.title, t.lastName].filter(Boolean).join(' ')).filter(Boolean),
-        coef: e.coefficient, average: e.studentAverage, classAverage: e.average, scale: e.scale,
-        evaluations: (e.evaluations || []).map((x) => ({
-          title: x.title || x.topic || '', date: x.dateTime, coef: x.coefficient, scale: x.scale,
-          mark: x.evaluationResult ? x.evaluationResult.mark : null,
-          reason: x.evaluationResult ? x.evaluationResult.nonEvaluationReason : null,
-          comment: x.evaluationResult ? x.evaluationResult.comment : null,
-          classAverage: x.average, min: x.min, max: x.max,
-        })),
-      })),
-    });
+    const subjects = ev.map((e) => ({
+      label: (e.subject && e.subject.label) || '', mat: matiereOf(e.subject && e.subject.label),
+      teacher: (e.teachers || []).map((t) => [t.title, t.lastName].filter(Boolean).join(' ')).filter(Boolean).join(', '),
+      coef: e.coefficient ?? 1, average: e.studentAverage ?? null, classAverage: e.average ?? null, min: e.min ?? null, max: e.max ?? null,
+      evaluations: (e.evaluations || []).map((x) => {
+        const r = x.evaluationResult || {};
+        const mark = typeof r.mark === 'number' ? r.mark : null;
+        const info = [x.title || x.topic, x.dateTime ? new Date(x.dateTime).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' }) : null, x.coefficient && x.coefficient !== 1 ? 'coef ' + x.coefficient : null, r.comment].filter(Boolean).join(' · ');
+        return { mark, raw: mark === null ? (r.nonEvaluationReason || '') : String(mark), scale: x.scale ?? 20, info: info || null };
+      }),
+    }));
+    // Moyenne générale : moyenne des matières pondérée par leurs coefficients.
+    const avg = (k) => { const v = subjects.filter((x) => typeof x[k] === 'number'); const w = v.reduce((a, x) => a + (x.coef || 1), 0); return w ? Math.round(v.reduce((a, x) => a + x[k] * (x.coef || 1), 0) / w * 100) / 100 : null; };
+    periods.push({ id: per.id, label: per.label, current: (per.startDate || '') <= today && today <= (per.endDate || '9999'), general: avg('average'), classGeneral: avg('classAverage'), subjects });
   }
-  if (!out.periods.length && !out.error) out.error = 'Notes inaccessibles par l\'API de Skolengo.';
-  if (out.periods.length) delete out.error;
-  out.tries = tries;
-  write(notesPath, out);
-  const n = out.periods.reduce((a, p) => a + p.subjects.reduce((b, sb) => b + sb.evaluations.length, 0), 0);
-  console.log('Notes :', out.periods.length, 'périodes,', n, 'évaluations |', tries.join(' / '));
+  if (!periods.some((p) => p.subjects.length)) {
+    write(notesPath, { ...prev, periods: prev.periods || [], source: 'api', error: 'L\'API de Skolengo ne donne pas encore les notes (panne de leur serveur). Nouvel essai automatique deux fois par jour.', errorAt: Date.now(), tries });
+    console.log('Notes : échec |', tries.join(' / '));
+    return;
+  }
+  write(notesPath, { source: 'api', updated: Date.now(), periods });
+  const hist = readJson(histPath, { points: [] });
+  periods.forEach((p) => {
+    if (p.general === null) return;
+    hist.points = hist.points.filter((x) => !(x.date === today && x.period === p.label));
+    hist.points.push({ date: today, period: p.label, general: p.general, classGeneral: p.classGeneral });
+  });
+  write(histPath, hist);
+  console.log('Notes :', periods.map((p) => p.label + ' ' + p.subjects.length + ' matières').join(', '));
 }
 
 // ---------- Pièces jointes des devoirs : enregistrées dans le dépôt privé ; PDF rangés au Classeur ----------
@@ -231,7 +240,7 @@ try {
   addHomeworkToAgenda(homework);
   await fetchAttachments(user, student, homework);
   write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework, diag });
-  // Les notes viennent de tools/notes.mjs (l'API de Skolengo plante pour ce lycée).
+  await fetchNotes(user, student);
 } catch (e) {
   const status = e && e.response && e.response.status;
   const msg = /invalid_grant|refresh/i.test(String(e && e.message)) || status === 401

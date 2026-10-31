@@ -1,7 +1,7 @@
-// Page Notes : relevé de Mon Bureau Numérique lu chaque jour par le workflow notes.yml du dépôt privé
+// Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031191712';
-import { matColor } from './agenda.js?v=20261031191712';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261031210330';
+import { matColor } from './agenda.js?v=20261031210330';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -52,7 +52,7 @@ function render() {
   const periods = (n && n.periods) || [];
   const st = $('notesState');
   if (!n || (!periods.length && !n.error)) {
-    st.innerHTML = 'Pas encore de notes. Ajoute tes identifiants EduConnect dans les secrets de ton dépôt privé (voir les explications de Claude), puis touche « Actualiser ».';
+    st.innerHTML = 'Pas encore de notes. Elles sont lues avec ton jeton Skolengo (le même que l'emploi du temps), deux fois par jour.';
     st.className = 'edt-state warn';
   } else {
     const when = n.updated ? new Date(n.updated).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
@@ -95,7 +95,7 @@ function render() {
   box.innerHTML = html;
 }
 
-// Actualiser : dépose edt/notes-refresh, ce qui relance le workflow des notes (environ 2 minutes).
+// Actualiser : dépose edt/notes-refresh, ce qui relance le workflow de l'emploi du temps et des notes.
 async function refresh() {
   if (!canSync()) { toast('Configure d\'abord la synchronisation GitHub.'); return; }
   $('notesRefresh').disabled = true;
@@ -103,8 +103,8 @@ async function refresh() {
     let sha = null;
     try { const f = await state.gh.getFile(state.config.dataRepo, 'edt/notes-refresh'); sha = f && f.sha; } catch (e) { /* nouveau */ }
     await state.gh.putFile(state.config.dataRepo, 'edt/notes-refresh', String(Date.now()) + '\n', sha, 'Notes : actualisation demandée');
-    toast('Relevé demandé : les notes arrivent dans 2 à 3 minutes.');
-    setTimeout(async () => { await load(); if (!$('view-notes').hidden) render(); }, 180000);
+    toast('Nouvel essai demandé : réponse dans 1 à 2 minutes.');
+    setTimeout(async () => { await load(); if (!$('view-notes').hidden) render(); }, 120000);
   } catch (e) {
     toast('Impossible de demander le relevé : ' + e.message);
   } finally {

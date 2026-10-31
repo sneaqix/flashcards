@@ -1,12 +1,12 @@
 // Onglet Classeur : documents PDF (cours, TD, DS) rangés par matière et chapitre,
 // stockés dans le dépôt privé de sauvegarde.
-import { isConflict } from './github.js?v=20261031191712';
-import { fileToBase64 } from './gemini.js?v=20261031191712';
-import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261031191712';
-import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261031191712';
-import { openViewer } from './viewer.js?v=20261031191712';
-import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261031191712';
-import { openImportWithDoc } from './importer.js?v=20261031191712';
+import { isConflict } from './github.js?v=20261031210330';
+import { fileToBase64 } from './gemini.js?v=20261031210330';
+import { $, state, escapeHtml, toast, setStatus, plural, canSync, canEdit, newId, showView, route } from './ui.js?v=20261031210330';
+import { createChapterFile, renameChapter, renameMatiere, reorderChapters, deleteChapter } from './sync.js?v=20261031210330';
+import { openViewer } from './viewer.js?v=20261031210330';
+import { openCitations, openResumes, oeuvresOf, citationsId, resumesId, countCitations, countResumes, loadCarnet } from './carnets.js?v=20261031210330';
+import { openImportWithDoc } from './importer.js?v=20261031210330';
 
 export const DOC_TYPES = { cours: 'Cours', td: 'TD / exercices', ds: 'DS / colles' };
 const INDEX = 'classeur/index.json';
