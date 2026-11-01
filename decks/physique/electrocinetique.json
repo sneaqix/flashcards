@@ -18,18 +18,6 @@
       "r": "$$\\tau = RC$$ Le régime transitoire est terminé à 1 % près après environ $5\\tau$."
     },
     {
-      "id": "rl-tau",
-      "q": "Constante de temps d'un circuit RL série",
-      "r": "$$\\tau = \\frac{L}{R}$$",
-      "mode": "qcm",
-      "attendu": "$\\tau = \\dfrac{L}{R}$",
-      "choix": [
-        "$\\tau = RL$",
-        "$\\tau = \\dfrac{R}{L}$",
-        "$\\tau = \\sqrt{LR}$"
-      ]
-    },
-    {
       "id": "energie-c",
       "q": "Énergie stockée dans un condensateur",
       "r": "$$E_C = \\frac{1}{2} C u^2$$"
