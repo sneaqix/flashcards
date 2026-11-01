@@ -1,10 +1,10 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261101194810';
-import * as S from './store.js?v=20261101194810';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261101194810';
-import { startPractice } from './practice.js?v=20261101194810';
-import { openClasseurDoc } from './classeur.js?v=20261101194810';
+import { isConflict } from './github.js?v=20261101203500';
+import * as S from './store.js?v=20261101203500';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261101203500';
+import { startPractice } from './practice.js?v=20261101203500';
+import { openClasseurDoc } from './classeur.js?v=20261101203500';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];
@@ -654,8 +654,14 @@ export function renderTodo(container) {
       const line = document.createElement('div');
       line.className = 'todo-exam';
       const days = Math.round((parse(it.date) - parse(t)) / 86400000);
-      line.innerHTML = '<span><b></b> ' + (days === 0 ? 'aujourd\'hui' : days === 1 ? 'demain' : 'dans ' + days + ' jours') + '</span>';
-      line.querySelector('b').textContent = TYPES[it.type] + ' : ' + it.title;
+      // Colles : jour et heure précis ; DS : « dans X jours ».
+      const when = it.type === 'colle'
+        ? fmtDay(it.date, { weekday: 'long', day: 'numeric', month: 'long' }) + (it.time ? ' à ' + it.time.replace(':', 'h') : '')
+        : (days === 0 ? 'aujourd\'hui' : days === 1 ? 'demain' : 'dans ' + days + ' jours');
+      line.innerHTML = '<span><b></b> ' + when + '</span>';
+      const m = it.type === 'colle' && state.matieres.find((x) => x.id === it.mat);
+      const nom = m ? (m.nom === m.nom.toUpperCase() ? m.nom : m.nom.toLowerCase()) : '';
+      line.querySelector('b').textContent = TYPES[it.type] + (nom ? (/^[aeiouyéèh]/i.test(nom) ? ' d\'' : ' de ') + nom : '') + ' : ' + it.title;
       if ((it.chaps || []).length) {
         const b = document.createElement('button');
         b.type = 'button';

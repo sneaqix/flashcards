@@ -1,15 +1,15 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261101194810';
-import { retrievability } from './scheduler.js?v=20261101194810';
+import * as S from './store.js?v=20261101203500';
+import { retrievability } from './scheduler.js?v=20261101203500';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
   showView, route, firstLine, imageUrl, faceContent, saveProgress,
-} from './ui.js?v=20261101194810';
-import { PALETTE, matColorKey } from './agenda.js?v=20261101194810';
-import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261101194810';
-import { returnToViewer } from './viewer.js?v=20261101194810';
-import { resumeSession } from './review.js?v=20261101194810';
-import { startPractice } from './practice.js?v=20261101194810';
+} from './ui.js?v=20261101203500';
+import { PALETTE, matColorKey } from './agenda.js?v=20261101203500';
+import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261101203500';
+import { returnToViewer } from './viewer.js?v=20261101203500';
+import { resumeSession } from './review.js?v=20261101203500';
+import { startPractice } from './practice.js?v=20261101203500';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
