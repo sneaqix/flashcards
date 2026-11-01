@@ -81,7 +81,7 @@ function applyColles(lessons) {
   const c = readJson(collesPath);
   if (!c || !Array.isArray(c.colles)) return;
   const hide = plain(c.hideTitle || 'COLLES TSI');
-  for (let i = lessons.length - 1; i >= 0; i--) if (plain(lessons[i].title) === hide) lessons.splice(i, 1);
+  for (let i = lessons.length - 1; i >= 0; i--) if (lessons[i].colle || plain(lessons[i].title) === hide) lessons.splice(i, 1); // anciennes colles comprises : pas de doublon
   for (const k of c.colles) {
     lessons.push({ id: k.id, start: parisToIso(k.date, k.start), end: parisToIso(k.date, k.end), title: colleTitle(k.mat), mat: k.mat,
       colle: true, room: k.room || null, teachers: k.teacher ? [k.teacher] : [], canceled: false });
