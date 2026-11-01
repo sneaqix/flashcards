@@ -1,7 +1,7 @@
 // Emploi du temps de Mon Bureau Numérique (Skolengo), récupéré par le workflow edt.yml du dépôt privé.
 // L'appli lit edt/edt.json ; le jeton (edt/auth.json) se colle dans les Réglages.
-import { matColor, PALETTE } from './agenda.js?v=20261101203500';
-import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261101203500';
+import { matColor, PALETTE } from './agenda.js?v=20261101204229';
+import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261101204229';
 
 const DATA = 'edt/edt.json';
 const AUTH = 'edt/auth.json';
@@ -91,6 +91,12 @@ function colorOf(l) {
   return id ? matColor(id) : (l.color || 'var(--accent)');
 }
 
+function inSourdine(d = new Date()) {
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', weekday: 'short', hour: '2-digit', hourCycle: 'h23' }).formatToParts(d);
+  const wd = p.find((x) => x.type === 'weekday').value, h = Number(p.find((x) => x.type === 'hour').value);
+  return wd === 'Sat' || wd === 'Sun' || (wd === 'Mon' && h < 7);
+}
+
 function lessonHtml(l) {
   const meta = [l.room, (l.teachers || []).join(', ')].filter(Boolean).map(escapeHtml).join(' · ');
   return '<li class="edt-lesson' + (l.canceled ? ' canceled' : '') + (l.colle ? ' colle' : '') + '" style="--c:' + escapeHtml(colorOf(l)) + '">' +
@@ -138,8 +144,11 @@ function render() {
     st.className = 'edt-state warn';
   } else {
     const when = new Date(edt.updated).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    st.textContent = (edt.error ? edt.error + ' Dernière mise à jour réussie : ' : 'Mis à jour ') + when + '.';
-    st.className = 'edt-state' + (edt.error ? ' warn' : '');
+    // Le week-end (du samedi au lundi 7 h), l'ENT est en « sourdine » : l'échec est normal, on ne l'affiche pas.
+    // Un jeton expiré reste signalé, il faut agir.
+    const err = edt.error && !(inSourdine() && !/jeton expir/i.test(edt.error)) ? edt.error : '';
+    st.textContent = (err ? err + ' Dernière mise à jour réussie : ' : 'Mis à jour ') + when + '.';
+    st.className = 'edt-state' + (err ? ' warn' : '');
   }
 }
 
