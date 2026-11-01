@@ -279,9 +279,15 @@ async function fetchAttachments(user, student, homework) {
   console.log('Pièces jointes téléchargées :', added);
 }
 
-let refreshed = false;
+let refreshed = false, oidErr = '';
 try {
-  const user = await Skolengo.fromConfigObject(auth, {
+  // Client OpenID Connect (nécessaire pour renouveler le jeton) : quelques essais, l'adresse répond parfois mal.
+  let oid = null;
+  for (let i = 0; i < 3 && !oid; i++) {
+    try { oid = await Skolengo.getOIDClient(auth.school); } catch (e) { oidErr = (e && e.message) || String(e); await new Promise((r) => setTimeout(r, 4000)); }
+  }
+  if (!oid) console.log('Client OpenID Connect indisponible (' + auth.school.emsOIDCWellKnownUrl + ') :', oidErr);
+  const user = new Skolengo(oid, auth.school, auth.tokenSet, {
     onTokenRefresh: (tokenSet) => { auth.tokenSet = tokenSet; refreshed = true; },
   });
   // Renouvelle le jeton s'il expire bientôt (le jeton de renouvellement reste ainsi valide).
@@ -323,7 +329,7 @@ try {
   const status = e && e.response && e.response.status;
   const msg = /invalid_grant|refresh/i.test(String(e && e.message)) || status === 401
     ? 'Jeton expiré ou révoqué : recrée-le avec scolengo-token et colle-le dans les réglages.'
-    : 'Échec de la récupération (' + (status ? 'HTTP ' + status : (e && e.message) || e) + ').';
+    : 'Échec de la récupération (' + (status ? 'HTTP ' + status : (e && e.message) || e) + ').' + (oidErr ? ' Détail : ' + oidErr : '');
   if (refreshed) write(authPath, auth);
   fail(msg);
 }
