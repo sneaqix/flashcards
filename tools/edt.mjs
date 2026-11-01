@@ -25,7 +25,10 @@ if (!auth || !auth.tokenSet || !auth.school) { console.log('Pas de jeton : rien 
 
 function fail(msg) {
   console.log('Erreur :', msg);
-  write(outPath, { ...previous, error: msg, errorAt: Date.now() });
+  // Même sans Skolengo, le colloscope s'applique aux cours déjà connus.
+  const lessons = [...(previous.lessons || [])];
+  try { applyColles(lessons); lessons.sort((x, y) => x.start.localeCompare(y.start)); addCollesToAgenda(); } catch (e) { console.log('Colloscope :', e.message); }
+  write(outPath, { ...previous, lessons, error: msg, errorAt: Date.now() });
   process.exit(0);
 }
 
