@@ -1082,3 +1082,8 @@ button.nt:hover { border-color: var(--c); }
 .nd-class div { display: flex; flex-direction: column; }
 .nd-class dt { font-size: 0.75rem; color: var(--muted); }
 .nd-class dd { margin: 0; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+
+/* Colles : contour doré et badge */
+:root { --colle: #e0a100; }
+.edt-lesson.colle { border: 2px solid var(--colle); border-left: 5px solid var(--colle); box-shadow: 0 0 0 1px color-mix(in srgb, var(--colle) 25%, transparent); }
+.edt-badge { display: inline-block; align-self: flex-start; width: fit-content; margin-bottom: 2px; padding: 1px 6px; border-radius: 4px; background: var(--colle); color: #241a00; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.5; }

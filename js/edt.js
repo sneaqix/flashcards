@@ -1,7 +1,7 @@
 // Emploi du temps de Mon Bureau Numérique (Skolengo), récupéré par le workflow edt.yml du dépôt privé.
 // L'appli lit edt/edt.json ; le jeton (edt/auth.json) se colle dans les Réglages.
-import { matColor, PALETTE } from './agenda.js?v=20261101192513';
-import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261101192513';
+import { matColor, PALETTE } from './agenda.js?v=20261101194810';
+import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261101194810';
 
 const DATA = 'edt/edt.json';
 const AUTH = 'edt/auth.json';
@@ -93,9 +93,9 @@ function colorOf(l) {
 
 function lessonHtml(l) {
   const meta = [l.room, (l.teachers || []).join(', ')].filter(Boolean).map(escapeHtml).join(' · ');
-  return '<li class="edt-lesson' + (l.canceled ? ' canceled' : '') + '" style="--c:' + escapeHtml(colorOf(l)) + '">' +
+  return '<li class="edt-lesson' + (l.canceled ? ' canceled' : '') + (l.colle ? ' colle' : '') + '" style="--c:' + escapeHtml(colorOf(l)) + '">' +
     '<span class="edt-time">' + hm(l.start) + '<br><small>' + hm(l.end) + '</small></span>' +
-    '<span class="edt-body"><b>' + escapeHtml(l.title) + '</b>' + (l.canceled ? '<em> · annulé</em>' : '') +
+    '<span class="edt-body">' + (l.colle ? '<span class="edt-badge">Colle</span>' : '') + '<b>' + escapeHtml(l.title) + '</b>' + (l.canceled ? '<em> · annulé</em>' : '') +
     (meta ? '<small>' + meta + '</small>' : '') + '</span></li>';
 }
 
