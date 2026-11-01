@@ -61,6 +61,51 @@ function parisParts(isoStr) {
   const f = (loc, o) => new Intl.DateTimeFormat(loc, { timeZone: 'Europe/Paris', ...o }).format(d);
   return { date: f('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }), time: f('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) };
 }
+// ---------- Colloscope (edt/colles.json) : vraies colles du groupe à la place des créneaux « COLLES TSI » ----------
+const collesPath = path.join(dataDir, 'edt/colles.json');
+const COLLE_NOM = { maths: 'maths', physique: 'physique', chimie: 'chimie', si: 'SI', anglais: 'anglais', francais: 'français' };
+const colleTitle = (mat) => 'Colle ' + (/^[aeiouyé]/i.test(COLLE_NOM[mat] || mat) ? 'd\'' : 'de ') + (COLLE_NOM[mat] || mat);
+// Heure de Paris (date « AAAA-MM-JJ », heure « HH:MM ») vers ISO UTC.
+function parisToIso(date, hm) {
+  for (const off of ['+01:00', '+02:00']) {
+    const iso = new Date(date + 'T' + hm + ':00' + off).toISOString();
+    const p = parisParts(iso);
+    if (p.date === date && p.time === hm) return iso;
+  }
+  return new Date(date + 'T' + hm + ':00+01:00').toISOString();
+}
+function applyColles(lessons) {
+  const c = readJson(collesPath);
+  if (!c || !Array.isArray(c.colles)) return;
+  const hide = plain(c.hideTitle || 'COLLES TSI');
+  for (let i = lessons.length - 1; i >= 0; i--) if (plain(lessons[i].title) === hide) lessons.splice(i, 1);
+  for (const k of c.colles) {
+    lessons.push({ id: k.id, start: parisToIso(k.date, k.start), end: parisToIso(k.date, k.end), title: colleTitle(k.mat), mat: k.mat,
+      colle: true, room: k.room || null, teachers: k.teacher ? [k.teacher] : [], canceled: false });
+  }
+}
+function addCollesToAgenda() {
+  const c = readJson(collesPath);
+  if (!c || !Array.isArray(c.colles)) return;
+  const agenda = readJson(agendaPath, { version: 1, items: [], deleted: [] });
+  agenda.items = agenda.items || [];
+  const gone = new Set(agenda.deleted || []);
+  const have = new Set(agenda.items.map((it) => it.id));
+  const today = parisParts(new Date().toISOString()).date;
+  let added = 0;
+  for (const k of c.colles) {
+    if (have.has(k.id) || gone.has(k.id) || k.date < today) continue;
+    const now = Date.now();
+    agenda.items.push({
+      id: k.id, title: [k.teacher, k.room].filter(Boolean).join(' · '), type: 'colle', mat: k.mat, chaps: [],
+      date: k.date, time: k.start, prio: 0, flag: false, notes: 'De ' + k.start.replace(':', 'h') + ' à ' + k.end.replace(':', 'h') + (k.room ? ', salle ' + k.room : '') + '.',
+      subs: [], done: false, created: now, t: now, doneAt: null, src: 'colloscope',
+    });
+    added++;
+  }
+  if (added) fs.writeFileSync(agendaPath, JSON.stringify(agenda));
+  console.log('Colles ajoutées au calendrier :', added);
+}
 function addHomeworkToAgenda(homework) {
   const agenda = readJson(agendaPath, { version: 1, items: [], deleted: [] });
   agenda.items = agenda.items || [];
@@ -265,10 +310,12 @@ try {
       });
     }
   }
+  applyColles(lessons);
   lessons.sort((x, y) => x.start.localeCompare(y.start));
   write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework });
   console.log('Cours :', lessons.length, '| devoirs :', homework.length, '| du', start, 'au', end);
   addHomeworkToAgenda(homework);
+  addCollesToAgenda();
   await fetchAttachments(user, student, homework);
   write(outPath, { updated: Date.now(), from: start, to: end, lessons, homework, diag });
   await fetchNotes(user, student);
