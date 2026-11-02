@@ -30,18 +30,6 @@
       ]
     },
     {
-      "id": "poisson",
-      "q": "Loi de Poisson $\\mathcal{P}(\\lambda)$ : $P(X=k)$, espérance, variance",
-      "r": "$$P(X=k) = e^{-\\lambda}\\frac{\\lambda^k}{k!}$$ $E(X) = V(X) = \\lambda$.",
-      "mode": "qcm",
-      "attendu": "$E(X) = V(X) = \\lambda$",
-      "choix": [
-        "$E(X) = \\lambda$ et $V(X) = \\lambda^2$",
-        "$E(X) = V(X) = \\dfrac{1}{\\lambda}$",
-        "$E(X) = \\lambda$ et $V(X) = \\sqrt{\\lambda}$"
-      ]
-    },
-    {
       "id": "koenig",
       "q": "Formule de König-Huygens",
       "r": "$$V(X) = E(X^2) - E(X)^2$$"
