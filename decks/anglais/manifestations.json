@@ -188,6 +188,261 @@
       "r": "to mobilise / mobilisation\nturnout: le nombre de participants"
     },
     {
+      "id": "un-mouvement-mene-par-les-jeunes",
+      "q": "un mouvement mené par les jeunes",
+      "r": "a youth-led movement"
+    },
+    {
+      "id": "la-societe-civile",
+      "q": "la société civile",
+      "r": "civil society"
+    },
+    {
+      "id": "la-mobilisation-citoyenne-locale",
+      "q": "la mobilisation citoyenne locale",
+      "r": "grassroots organising"
+    },
+    {
+      "id": "l-action-collective",
+      "q": "l'action collective",
+      "r": "collective action"
+    },
+    {
+      "id": "un-mouvement-social",
+      "q": "un mouvement social",
+      "r": "a social movement"
+    },
+    {
+      "id": "une-greve-scolaire",
+      "q": "une grève scolaire",
+      "r": "a school strike"
+    },
+    {
+      "id": "un-boycott-boycotter",
+      "q": "un boycott, boycotter",
+      "r": "a boycott / to boycott"
+    },
+    {
+      "id": "la-mobilisation-numerique",
+      "q": "la mobilisation numérique",
+      "r": "digital mobilisation"
+    },
+    {
+      "id": "le-militantisme-par-hashtags",
+      "q": "le militantisme par hashtags",
+      "r": "hashtag activism"
+    },
+    {
+      "id": "le-clic-militant-le-militantisme-par-cli",
+      "q": "le clic militant, le militantisme par clic",
+      "r": "clicktivism"
+    },
+    {
+      "id": "le-militantisme-symbolique-a-faible-enga",
+      "q": "le militantisme symbolique à faible engagement",
+      "r": "slacktivism\nSlacker + activism : liker, partager, sans agir vraiment."
+    },
+    {
+      "id": "un-grief-un-motif-de-mecontentement",
+      "q": "un grief, un motif de mécontentement",
+      "r": "a grievance"
+    },
+    {
+      "id": "l-obligation-de-rendre-des-comptes-la-re",
+      "q": "l'obligation de rendre des comptes, la responsabilité",
+      "r": "accountability"
+    },
+    {
+      "id": "la-transparence",
+      "q": "la transparence",
+      "r": "transparency"
+    },
+    {
+      "id": "la-corruption",
+      "q": "la corruption",
+      "r": "corruption"
+    },
+    {
+      "id": "les-inegalites",
+      "q": "les inégalités",
+      "r": "inequality\nIndénombrable en anglais : inequality (sans s), ou inequalities pour des formes précises."
+    },
+    {
+      "id": "la-justice-sociale",
+      "q": "la justice sociale",
+      "r": "social justice"
+    },
+    {
+      "id": "les-libertes-fondamentales",
+      "q": "les libertés fondamentales",
+      "r": "civil liberties"
+    },
+    {
+      "id": "la-participation-politique",
+      "q": "la participation politique",
+      "r": "political participation"
+    },
+    {
+      "id": "un-changement-de-politique-une-reforme",
+      "q": "un changement de politique, une réforme",
+      "r": "a policy change"
+    },
+    {
+      "id": "les-decideurs",
+      "q": "les décideurs",
+      "r": "decision-makers"
+    },
+    {
+      "id": "influencer-la-prise-de-decision",
+      "q": "influencer la prise de décision",
+      "r": "to influence decision-making"
+    },
+    {
+      "id": "viral-qui-devient-viral",
+      "q": "viral, qui devient viral",
+      "r": "viral / to go viral"
+    },
+    {
+      "id": "amplifier-un-message",
+      "q": "amplifier un message",
+      "r": "to amplify a message"
+    },
+    {
+      "id": "sensibiliser-faire-prendre-conscience",
+      "q": "sensibiliser, faire prendre conscience",
+      "r": "to raise awareness (of)\nTo raise awareness of climate change."
+    },
+    {
+      "id": "la-mesinformation-les-informations-fauss",
+      "q": "la mésinformation, les informations fausses",
+      "r": "misinformation\nMisinformation : fausse information partagée de bonne foi. Disinformation : diffusée volontairement pour tromper."
+    },
+    {
+      "id": "la-desinformation",
+      "q": "la désinformation",
+      "r": "disinformation\nDisinformation : fausse information diffusée volontairement. Misinformation : partagée de bonne foi."
+    },
+    {
+      "id": "le-harcelement-en-ligne",
+      "q": "le harcèlement en ligne",
+      "r": "online harassment"
+    },
+    {
+      "id": "la-surveillance",
+      "q": "la surveillance",
+      "r": "surveillance"
+    },
+    {
+      "id": "une-chambre-d-echo",
+      "q": "une chambre d'écho",
+      "r": "an echo chamber"
+    },
+    {
+      "id": "une-empreinte-numerique",
+      "q": "une empreinte numérique",
+      "r": "a digital footprint"
+    },
+    {
+      "id": "mobiliser-l-opinion-publique",
+      "q": "mobiliser l'opinion publique",
+      "r": "to mobilise public opinion"
+    },
+    {
+      "id": "la-fracture-numerique",
+      "q": "la fracture numérique",
+      "r": "the digital divide"
+    },
+    {
+      "id": "la-vie-privee",
+      "q": "la vie privée",
+      "r": "privacy\nPrononciation britannique : /ˈprɪv.ə.si/."
+    },
+    {
+      "id": "le-militantisme-en-ligne-et-hors-ligne",
+      "q": "le militantisme en ligne et hors ligne",
+      "r": "online and offline activism"
+    },
+    {
+      "id": "organiser-une-manifestation",
+      "q": "organiser une manifestation",
+      "r": "to stage a protest"
+    },
+    {
+      "id": "exprimer-ses-preoccupations",
+      "q": "exprimer ses préoccupations",
+      "r": "to voice concerns"
+    },
+    {
+      "id": "exiger-que-les-responsables-rendent-des-",
+      "q": "exiger que les responsables rendent des comptes",
+      "r": "to demand accountability\nTo demand accountability (from the government)."
+    },
+    {
+      "id": "reclamer-des-reformes",
+      "q": "réclamer des réformes",
+      "r": "to call for reform"
+    },
+    {
+      "id": "mobiliser-des-soutiens",
+      "q": "mobiliser des soutiens",
+      "r": "to mobilise support"
+    },
+    {
+      "id": "organiser-un-rassemblement",
+      "q": "organiser un rassemblement",
+      "r": "to organise a rally"
+    },
+    {
+      "id": "susciter-un-debat",
+      "q": "susciter un débat",
+      "r": "to spark a debate"
+    },
+    {
+      "id": "prendre-de-l-ampleur",
+      "q": "prendre de l'ampleur",
+      "r": "to gain momentum"
+    },
+    {
+      "id": "entrainer-provoquer-un-changement",
+      "q": "entraîner, provoquer un changement",
+      "r": "to bring about change"
+    },
+    {
+      "id": "exercer-ses-droits",
+      "q": "exercer ses droits",
+      "r": "to exercise one's rights"
+    },
+    {
+      "id": "faire-entendre-sa-voix",
+      "q": "faire entendre sa voix",
+      "r": "to make one's voice heard"
+    },
+    {
+      "id": "faire-pression-sur-les-decideurs",
+      "q": "faire pression sur les décideurs",
+      "r": "to put pressure on decision-makers"
+    },
+    {
+      "id": "transformer-le-soutien-en-ligne-en-actio",
+      "q": "transformer le soutien en ligne en actions concrètes",
+      "r": "to translate online support into action"
+    },
+    {
+      "id": "obtenir-des-resultats-concrets",
+      "q": "obtenir des résultats concrets",
+      "r": "to achieve tangible results"
+    },
+    {
+      "id": "avoir-voix-au-chapitre-participer-aux-de",
+      "q": "avoir voix au chapitre, participer aux décisions",
+      "r": "to have a seat at the table"
+    },
+    {
+      "id": "demander-des-comptes-a-quelqu-un",
+      "q": "demander des comptes à quelqu'un",
+      "r": "to hold someone accountable"
+    },
+    {
       "id": "traduction-1",
       "q": "Traduire : « Les manifestants exigent le retrait de la réforme. »",
       "r": "The protesters are demanding that the reform be withdrawn."
@@ -280,6 +535,66 @@
       "q": "Union leaders agreed to {{enter into talks/hold talks::entamer des négociations}} with the {{management::direction}}.",
       "mode": "trou",
       "r": "Les dirigeants syndicaux ont accepté d'entamer des négociations avec la direction."
+    },
+    {
+      "id": "trou-the-school-strikes-for-climate-started-a",
+      "q": "The school strikes for climate started as a {{youth-led movement::mouvement mené par les jeunes}} and quickly {{gained momentum::ont pris de l'ampleur}}.",
+      "r": "Les grèves scolaires pour le climat ont commencé comme un mouvement mené par les jeunes et ont rapidement pris de l'ampleur."
+    },
+    {
+      "id": "trou-critics-dismiss-liking-and-sharing-posts",
+      "q": "Critics dismiss liking and sharing posts as {{slacktivism::militantisme symbolique}}, but it can help {{raise awareness::sensibiliser}}.",
+      "r": "Les critiques rejettent le fait de liker et partager des publications comme du militantisme symbolique, mais cela peut aider à sensibiliser."
+    },
+    {
+      "id": "trou-the-video-went-viral-overnight-and-spark",
+      "q": "The video {{went viral::est devenue virale}} overnight and {{sparked a debate::a suscité un débat}} about police violence.",
+      "r": "La vidéo est devenue virale en une nuit et a suscité un débat sur les violences policières."
+    },
+    {
+      "id": "trou-citizens-are-demanding-accountability-af",
+      "q": "Citizens are {{demanding accountability::exigent que les responsables rendent des comptes}} after the {{corruption::corruption}} scandal.",
+      "r": "Les citoyens exigent que les responsables rendent des comptes après le scandale de corruption."
+    },
+    {
+      "id": "trou-social-media-can-trap-users-in-an-echo-c",
+      "q": "Social media can trap users in an {{echo chamber::chambre d'écho}} where {{disinformation::désinformation}} spreads easily.",
+      "r": "Les réseaux sociaux peuvent enfermer les utilisateurs dans une chambre d'écho où la désinformation se propage facilement."
+    },
+    {
+      "id": "trou-the-challenge-for-activists-is-to-transl",
+      "q": "The challenge for activists is to {{translate online support into action::transformer le soutien en ligne en actions concrètes}}.",
+      "r": "Le défi pour les militants est de transformer le soutien en ligne en actions concrètes."
+    },
+    {
+      "id": "trou-young-people-feel-they-do-not-have-a-sea",
+      "q": "Young people feel they do not {{have a seat at the table::ont voix au chapitre}} when {{decision-makers::les décideurs}} discuss climate policy.",
+      "r": "Les jeunes ont le sentiment de ne pas avoir voix au chapitre quand les décideurs discutent de la politique climatique."
+    },
+    {
+      "id": "trou-consumers-decided-to-boycott-the-brand-t",
+      "q": "Consumers decided to {{boycott::boycotter}} the brand to {{put pressure on::faire pression sur}} the company.",
+      "r": "Les consommateurs ont décidé de boycotter la marque pour faire pression sur l'entreprise."
+    },
+    {
+      "id": "trou-civil-liberties-such-as-privacy-are-thre",
+      "q": "{{Civil liberties::les libertés fondamentales}} such as {{privacy::la vie privée}} are threatened by mass {{surveillance::surveillance}}.",
+      "r": "Les libertés fondamentales comme la vie privée sont menacées par la surveillance de masse."
+    },
+    {
+      "id": "trou-protesters-took-to-the-streets-to-make-t",
+      "q": "Protesters {{took to the streets::sont descendus dans la rue}} to {{make their voices heard::faire entendre leur voix}} and {{call for reform::réclamer des réformes}}.",
+      "r": "Les manifestants sont descendus dans la rue pour faire entendre leur voix et réclamer des réformes."
+    },
+    {
+      "id": "trou-without-collective-action-it-is-hard-to-",
+      "q": "Without {{collective action::action collective}}, it is hard to {{bring about change::provoquer un changement}} or {{achieve tangible results::obtenir des résultats concrets}}.",
+      "r": "Sans action collective, il est difficile de provoquer un changement ou d'obtenir des résultats concrets."
+    },
+    {
+      "id": "trou-the-digital-divide-means-that-not-everyo",
+      "q": "{{The digital divide::la fracture numérique}} means that not everyone can take part in {{digital mobilisation::la mobilisation numérique}}.",
+      "r": "La fracture numérique signifie que tout le monde ne peut pas participer à la mobilisation numérique."
     }
   ]
 }
