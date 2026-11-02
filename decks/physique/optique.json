@@ -42,11 +42,6 @@
       "r": "$$\\gamma = \\frac{\\overline{A'B'}}{\\overline{AB}} = \\frac{\\overline{OA'}}{\\overline{OA}}$$"
     },
     {
-      "id": "newton",
-      "q": "Relation de conjugaison de Newton",
-      "r": "$$\\overline{FA}\\cdot\\overline{F'A'} = -f'^2$$"
-    },
-    {
       "id": "vergence",
       "q": "Définition de la vergence",
       "r": "$$V = \\frac{1}{f'}$$ en dioptries ($\\delta$), avec $f'$ en mètres."
