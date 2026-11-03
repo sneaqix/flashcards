@@ -29,6 +29,9 @@ function fail(msg) {
   const lessons = [...(previous.lessons || [])];
   try { applyColles(lessons); lessons.sort((x, y) => x.start.localeCompare(y.start)); addCollesToAgenda(); } catch (e) { console.log('Colloscope :', e.message); }
   write(outPath, { ...previous, lessons, error: msg, errorAt: Date.now() });
+  // La page Notes signale aussi que ses notes ne sont plus à jour.
+  const notes = readJson(notesPath);
+  if (notes && notes.periods) write(notesPath, { ...notes, error: 'Mise à jour impossible : la connexion à Mon Bureau Numérique échoue.', errorAt: Date.now() });
   process.exit(0);
 }
 
