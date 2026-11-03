@@ -52,11 +52,6 @@
       "r": "Pour $\\varphi$ de classe $\\mathcal{C}^1$ sur $[a,b]$ et $f$ continue sur $\\varphi([a,b])$ :$$\\int_a^b f(\\varphi(t))\\,\\varphi'(t)\\,dt = \\int_{\\varphi(a)}^{\\varphi(b)} f(x)\\,dx$$"
     },
     {
-      "id": "tfa",
-      "q": "Théorème fondamental de l'analyse",
-      "r": "Si $f$ est continue sur un intervalle $I$ et $a \\in I$, alors $F : x \\mapsto \\int_a^x f(t)\\,dt$ est l'unique primitive de $f$ sur $I$ qui s'annule en $a$ : $F' = f$."
-    },
-    {
       "id": "riemann",
       "q": "Sommes de Riemann (pas constant, points à gauche)",
       "r": "Pour $f$ continue sur $[a,b]$ :$$\\frac{b-a}{n}\\sum_{k=0}^{n-1} f\\!\\left(a + k\\,\\frac{b-a}{n}\\right) \\xrightarrow[n\\to+\\infty]{} \\int_a^b f(t)\\,dt$$"
