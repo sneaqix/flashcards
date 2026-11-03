@@ -45,11 +45,6 @@
         "$B = \\mu_0\\, N\\, I$ ($N$ spires au total)",
         "$B = \\dfrac{\\mu_0 I}{2\\pi r}$"
       ]
-    },
-    {
-      "id": "couplage",
-      "q": "Bilan de puissance du couplage électromécanique parfait",
-      "r": "$$P_{\\text{Laplace}} + e\\,i = 0$$"
     }
   ]
 }
