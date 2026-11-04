@@ -67,11 +67,6 @@
         "$U_{\\text{eff}} = \\sqrt{2}\\,U_m$",
         "$U_{\\text{eff}} = \\dfrac{U_m}{\\pi}$"
       ]
-    },
-    {
-      "id": "puissance",
-      "q": "Puissance moyenne en régime sinusoïdal",
-      "r": "$$P = U_{\\text{eff}}\\, I_{\\text{eff}} \\cos\\varphi$$ $\\cos\\varphi$ est le facteur de puissance."
     }
   ]
 }
