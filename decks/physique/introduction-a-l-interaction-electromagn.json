@@ -113,7 +113,7 @@
     {
       "id": "mvungjm4h2n7",
       "q": "Énoncer le théorème d'Ostrogradsky pour un champ de vecteurs $\\vec{a}$ à travers une surface fermée $S$ délimitant le volume $V_{int}$.",
-      "r": "$\\oiint_S \\vec{a} \\cdot \\text{d}\\vec{S} = \\iiint_{V_{int}} \\text{div}(\\vec{a}) \\text{d}\\tau$, avec $\\text{d}\\vec{S}$ orienté vers l'extérieur de la surface fermée.",
+      "r": "$\\iint_S \\vec{a} \\cdot \\text{d}\\vec{S} = \\iiint_{V_{int}} \\text{div}(\\vec{a}) \\text{d}\\tau$, avec $\\text{d}\\vec{S}$ orienté vers l'extérieur de la surface fermée.",
       "attendu": "$\\oiint_S \\vec{a} \\cdot \\text{d}\\vec{S} = \\iiint_{V_{int}} \\text{div}(\\vec{a}) \\text{d}\\tau$"
     },
     {
