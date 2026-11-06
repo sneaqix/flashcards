@@ -1087,3 +1087,17 @@ button.nt:hover { border-color: var(--c); }
 :root { --colle: #e0a100; }
 .edt-lesson.colle { border: 2px solid var(--colle); border-left: 5px solid var(--colle); box-shadow: 0 0 0 1px color-mix(in srgb, var(--colle) 25%, transparent); }
 .edt-badge { display: inline-block; align-self: flex-start; width: fit-content; margin-bottom: 2px; padding: 1px 6px; border-radius: 4px; background: var(--colle); color: #241a00; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.5; }
+
+/* Cartes : sélection multiple et déplacement */
+.result-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.move-bar { position: sticky; top: 8px; z-index: 5; display: grid; gap: 8px; padding: 10px 12px; margin: 8px 0; border: 1px solid var(--accent); border-radius: 12px; background: var(--card); box-shadow: 0 6px 18px rgb(0 0 0 / 0.25); }
+.move-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.move-top .linklike { white-space: nowrap; }
+.move-row { display: flex; gap: 8px; }
+.move-row select { flex: 1; min-width: 0; }
+#cardList button.pick { display: flex; align-items: center; gap: 10px; }
+.pick-box { flex: none; width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--muted); display: grid; place-items: center; }
+#cardList button.pick[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+#cardList button.pick[aria-pressed="true"] .pick-box { background: var(--accent); border-color: var(--accent); }
+#cardList button.pick[aria-pressed="true"] .pick-box::after { content: ''; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+@media (max-width: 899px) { .move-bar { position: fixed; top: auto; left: 16px; right: 16px; bottom: calc(var(--tabs-h, 72px) + 10px); margin: 0; } #view-cartes:has(#moveBar:not([hidden])) #cardList { padding-bottom: 140px; } }

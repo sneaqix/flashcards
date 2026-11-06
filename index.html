@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261101204229">
-<link rel="stylesheet" href="css/themes.css?v=20261101204229">
+<link rel="stylesheet" href="css/app.css?v=20261106211525">
+<link rel="stylesheet" href="css/themes.css?v=20261106211525">
 </head>
 <body>
 <div class="app">
@@ -165,7 +165,21 @@
       </div>
       <div class="result-bar">
         <p class="sub" id="resultCount"></p>
-        <button id="filtersReset" class="ghost small" type="button">Effacer les filtres</button>
+        <span class="result-acts">
+          <button id="selectToggle" class="ghost small" type="button" aria-pressed="false">Sélectionner</button>
+          <button id="filtersReset" class="ghost small" type="button">Effacer les filtres</button>
+        </span>
+      </div>
+      <div id="moveBar" class="move-bar" hidden>
+        <div class="move-top">
+          <b id="moveCount">0 carte sélectionnée</b>
+          <button id="selectAll" class="linklike" type="button">Tout sélectionner</button>
+        </div>
+        <div class="move-row">
+          <label for="moveTarget" class="sr-only">Chapitre de destination</label>
+          <select id="moveTarget"></select>
+          <button id="moveGo" class="primary small" type="button" disabled>Déplacer</button>
+        </div>
       </div>
       <div class="row">
         <button id="newCard" class="primary" type="button">Ajouter une carte</button>
@@ -950,6 +964,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261101204229"></script>
+<script type="module" src="js/app.js?v=20261106211525"></script>
 </body>
 </html>

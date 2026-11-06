@@ -1,18 +1,20 @@
 // Onglet Cartes : recherche dans toutes les matières, filtres et éditeur de cartes.
-import * as S from './store.js?v=20261101204229';
-import { retrievability } from './scheduler.js?v=20261101204229';
+import * as S from './store.js?v=20261106211525';
+import { retrievability } from './scheduler.js?v=20261106211525';
 import {
   $, state, escapeHtml, renderFace, typeset, toast, setStatus, plural, canEdit, newId,
   showView, route, firstLine, imageUrl, faceContent, saveProgress,
-} from './ui.js?v=20261101204229';
-import { PALETTE, matColorKey } from './agenda.js?v=20261101204229';
-import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261101204229';
-import { returnToViewer } from './viewer.js?v=20261101204229';
-import { resumeSession } from './review.js?v=20261101204229';
-import { startPractice } from './practice.js?v=20261101204229';
+} from './ui.js?v=20261106211525';
+import { PALETTE, matColorKey } from './agenda.js?v=20261106211525';
+import { updateChapterFile, createChapterFile, createMatiere, scheduleSync } from './sync.js?v=20261106211525';
+import { returnToViewer } from './viewer.js?v=20261106211525';
+import { resumeSession } from './review.js?v=20261106211525';
+import { startPractice } from './practice.js?v=20261106211525';
 
 const filters = { text: '', mat: '', chap: '', etat: '', type: '' };
 let results = []; // [{ chapter, card }] affichés dans la liste, dans l'ordre
+let selecting = false;
+const picked = new Set(); // « chapitre/carte » des cartes cochées
 
 // =====================================================================
 // Recherche et filtres
@@ -135,11 +137,26 @@ function renderCardList() {
       [S.BUCKETS[S.bucketOf(st)], ...flagsOf(card)].map(escapeHtml).join(' · ') + '</span>';
     b.querySelector('.where').textContent = chapter.matiereNom + ' · ' + chapter.nom;
     b.querySelector('.q').innerHTML = escapeHtml(card.q);
-    b.addEventListener('click', () => { state.editReturn = null; openEditor(chapter, card); });
+    const key = chapter.id + '/' + card.id;
+    if (selecting) {
+      b.classList.add('pick');
+      b.setAttribute('aria-pressed', String(picked.has(key)));
+      b.insertAdjacentHTML('afterbegin', '<span class="pick-box" aria-hidden="true"></span>');
+    }
+    b.addEventListener('click', () => {
+      if (selecting) {
+        if (picked.has(key)) picked.delete(key); else picked.add(key);
+        b.setAttribute('aria-pressed', String(picked.has(key)));
+        paintMoveBar();
+        return;
+      }
+      state.editReturn = null; openEditor(chapter, card);
+    });
     li.appendChild(b);
     ul.appendChild(li);
   });
   typeset(ul);
+  paintMoveBar();
 }
 
 // =====================================================================
@@ -537,6 +554,105 @@ export function showChapterCards(ch) {
   else route();
 }
 
+// =====================================================================
+// Sélection de plusieurs cartes et déplacement vers un autre chapitre
+// =====================================================================
+function setSelecting(on) {
+  selecting = on;
+  picked.clear();
+  $('selectToggle').textContent = on ? 'Annuler' : 'Sélectionner';
+  $('selectToggle').setAttribute('aria-pressed', String(on));
+  $('moveBar').hidden = !on;
+  if (on) {
+    const sel = $('moveTarget');
+    sel.innerHTML = '<option value="">Déplacer vers…</option>';
+    state.matieres.forEach((m) => {
+      if (!m.chapitres.length) return;
+      const og = document.createElement('optgroup');
+      og.label = m.nom;
+      m.chapitres.forEach((ch) => og.appendChild(new Option(ch.nom, ch.id)));
+      sel.appendChild(og);
+    });
+  }
+  renderCardList();
+  paintMoveBar();
+}
+
+function paintMoveBar() {
+  if (!selecting) return;
+  const n = picked.size;
+  $('moveCount').textContent = n ? plural(n, 'carte sélectionnée', 'cartes sélectionnées') : 'Touche les cartes à déplacer';
+  $('moveGo').disabled = !n || !$('moveTarget').value || !canEdit();
+  const shown = results.slice(0, MAX_SHOWN);
+  const all = shown.length && shown.every(({ chapter, card }) => picked.has(chapter.id + '/' + card.id));
+  $('selectAll').textContent = all ? 'Tout désélectionner' : 'Tout sélectionner';
+}
+
+function toggleAll() {
+  const shown = results.slice(0, MAX_SHOWN).map(({ chapter, card }) => chapter.id + '/' + card.id);
+  const all = shown.every((k) => picked.has(k));
+  shown.forEach((k) => (all ? picked.delete(k) : picked.add(k)));
+  renderCardList();
+  paintMoveBar();
+}
+
+// La carte garde sa progression : ses faces (« chapitre/carte » et « ~r ») changent seulement de clé.
+function moveProgress(from, oldId, to, newCardId) {
+  const p = state.progress;
+  const now = Date.now();
+  ['', '~r'].forEach((suf) => {
+    const a = from.id + '/' + oldId + suf, b = to.id + '/' + newCardId + suf;
+    if (!p.cards[a]) return;
+    p.cards[b] = { ...p.cards[a], last: now };
+    p.cards[a] = { state: 'new', last: now };
+  });
+}
+
+async function moveSelected() {
+  const target = state.byId.get($('moveTarget').value);
+  if (!target || !picked.size) return;
+  const groups = new Map(); // chapitre d'origine -> cartes
+  picked.forEach((k) => {
+    const [chId, cardId] = k.split('/');
+    if (chId === target.id) return; // déjà dans ce chapitre
+    const ch = state.byId.get(chId);
+    const card = ch && ch.cartes.find((c) => c.id === cardId);
+    if (!card) return;
+    if (!groups.has(ch)) groups.set(ch, []);
+    groups.get(ch).push(card);
+  });
+  const total = [...groups.values()].reduce((n, l) => n + l.length, 0);
+  if (!total) { toast('Ces cartes sont déjà dans « ' + target.nom + ' ».'); return; }
+  $('moveGo').disabled = true;
+  $('moveCount').textContent = 'Déplacement de ' + plural(total, 'carte', 'cartes') + '…';
+  try {
+    // D'abord l'ajout dans le chapitre de destination, puis le retrait : aucune carte ne peut se perdre.
+    const ids = new Map(); // carte d'origine -> id dans la destination
+    await updateChapterFile(target, (list) => {
+      const used = new Set(list.map((c) => c.id));
+      groups.forEach((cards) => cards.forEach((card) => {
+        const id = used.has(card.id) ? newId() : card.id;
+        used.add(id);
+        ids.set(card, id);
+        list.push({ ...card, id });
+      }));
+      return list;
+    }, 'Déplace ' + plural(total, 'carte', 'cartes') + ' vers ' + target.nom);
+    for (const [ch, cards] of groups) {
+      const gone = new Set(cards.map((c) => c.id));
+      await updateChapterFile(ch, (list) => list.filter((c) => !gone.has(c.id)), 'Déplace ' + plural(cards.length, 'carte', 'cartes') + ' vers ' + target.nom);
+      cards.forEach((card) => moveProgress(ch, card.id, target, ids.get(card)));
+    }
+    saveProgress();
+    scheduleSync();
+    toast(plural(total, 'carte déplacée', 'cartes déplacées') + ' vers « ' + target.nom + ' ».');
+    setSelecting(false);
+  } catch (e) {
+    toast('Déplacement interrompu : ' + e.message + '. Recharge l\'appli avant de réessayer.');
+    paintMoveBar();
+  }
+}
+
 export function bindEditor() {
   let searchTimer;
   $('cardSearch').addEventListener('input', () => {
@@ -547,6 +663,10 @@ export function bindEditor() {
   $('fChap').addEventListener('change', () => { filters.chap = $('fChap').value; renderCardList(); });
   $('fEtat').addEventListener('change', () => { filters.etat = $('fEtat').value; renderCardList(); });
   $('fType').addEventListener('change', () => { filters.type = $('fType').value; renderCardList(); });
+  $('selectToggle').addEventListener('click', () => setSelecting(!selecting));
+  $('selectAll').addEventListener('click', toggleAll);
+  $('moveTarget').addEventListener('change', paintMoveBar);
+  $('moveGo').addEventListener('click', moveSelected);
   $('filtersReset').addEventListener('click', () => {
     Object.assign(filters, { text: '', mat: '', chap: '', etat: '', type: '' });
     renderCartes();
