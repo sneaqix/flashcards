@@ -1,5 +1,42 @@
 {
   "id": "physique-electromagnetisme-equation-de-maxwell",
   "nom": "Electromagnétisme equation de Maxwell",
-  "cartes": []
+  "cartes": [
+    {
+      "id": "mvungjm4jcng",
+      "q": "Quelle est l'expression locale de l'équation de Maxwell-Gauss reliant le champ électrique $\\vec{E}$ à la densité de charge volumique $\\rho$ ?",
+      "r": "$\\text{div}(\\vec{E}) = \\frac{\\rho}{\\varepsilon_0}$, où $\\varepsilon_0$ est la permittivité diélectrique du vide.",
+      "mode": "qcm",
+      "attendu": "$\\text{div}(\\vec{E}) = \\frac{\\rho}{\\varepsilon_0}$",
+      "choix": [
+        "$\\text{div}(\\vec{E}) = 0$",
+        "$\\text{div}(\\vec{E}) = \\mu_0 \\rho$",
+        "$\\vec{\\text{rot}}(\\vec{E}) = \\frac{\\rho}{\\varepsilon_0}$"
+      ]
+    },
+    {
+      "id": "mvungjm4zef4",
+      "q": "Donner l'équation locale de Maxwell-Thomson (aussi appelée Maxwell-flux).",
+      "r": "$\\text{div}(\\vec{B}) = 0$.",
+      "attendu": "$\\text{div}(\\vec{B}) = 0$"
+    },
+    {
+      "id": "mvungjm4amv9",
+      "q": "Quelle est l'expression locale de l'équation de Maxwell-Faraday ?",
+      "r": "$\\vec{\\text{rot}}(\\vec{E}) = -\\frac{\\partial \\vec{B}}{\\partial t}$, traduisant le fait qu'une variation temporelle du champ magnétique induit un champ électrique.",
+      "mode": "qcm",
+      "attendu": "$\\vec{\\text{rot}}(\\vec{E}) = -\\frac{\\partial \\vec{B}}{\\partial t}$",
+      "choix": [
+        "$\\vec{\\text{rot}}(\\vec{E}) = \\frac{\\partial \\vec{B}}{\\partial t}$",
+        "$\\text{div}(\\vec{E}) = -\\frac{\\partial \\vec{B}}{\\partial t}$",
+        "$\\vec{\\text{rot}}(\\vec{E}) = -\\mu_0 \\frac{\\partial \\vec{B}}{\\partial t}$"
+      ]
+    },
+    {
+      "id": "mvungjm4ixku",
+      "q": "Donner l'expression de l'équation de Maxwell-Ampère sous forme locale.",
+      "r": "$\\vec{\\text{rot}}(\\vec{B}) = \\mu_0 \\vec{j} + \\varepsilon_0 \\mu_0 \\frac{\\partial \\vec{E}}{\\partial t}$.",
+      "attendu": "$\\vec{\\text{rot}}(\\vec{B}) = \\mu_0 \\vec{j} + \\varepsilon_0 \\mu_0 \\frac{\\partial \\vec{E}}{\\partial t}$"
+    }
+  ]
 }
