@@ -23,7 +23,8 @@
         "physique/optique.json",
         "physique/induction.json",
         "physique/unites.json",
-        "physique/introduction-a-l-interaction-electromagn.json"
+        "physique/introduction-a-l-interaction-electromagn.json",
+        "physique/electromagnetisme-equation-de-maxwell.json"
       ]
     },
     {
