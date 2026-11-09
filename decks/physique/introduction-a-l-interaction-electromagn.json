@@ -133,6 +133,16 @@
         "$\\vec{\\text{rot}}(\\vec{a}) = \\vec{\\nabla} a$",
         "$\\vec{\\text{rot}}(\\vec{a}) = \\Delta \\vec{a}$"
       ]
+    },
+    {
+      "id": "champ-charge-ponctuelle",
+      "q": "Quelle est l'expression du champ électrique $\\vec{E}(M)$ créé par une charge ponctuelle $q$ placée en $O$ ?",
+      "r": "$$\\vec{E}(M) = \\frac{q}{4\\pi\\varepsilon_0\\, r^2}\\,\\vec{u}_r$$ avec $r = OM$ et $\\vec{u}_r = \\dfrac{\\overrightarrow{OM}}{OM}$.\nChamp radial, en $1/r^2$, sortant si $q>0$, entrant si $q<0$."
+    },
+    {
+      "id": "champ-plan-infini",
+      "q": "Quelle est l'expression du champ électrique $\\vec{E}(M)$ créé par un plan infini $z=0$ uniformément chargé, de densité surfacique $\\sigma$ ?",
+      "r": "$$\\vec{E}(M) = \\frac{\\sigma}{2\\varepsilon_0}\\,\\text{sgn}(z)\\,\\vec{u}_z$$ soit $+\\dfrac{\\sigma}{2\\varepsilon_0}\\vec{u}_z$ si $z>0$ et $-\\dfrac{\\sigma}{2\\varepsilon_0}\\vec{u}_z$ si $z<0$.\nChamp uniforme dans chaque demi-espace, discontinu de $\\dfrac{\\sigma}{\\varepsilon_0}$ à la traversée du plan."
     }
   ]
 }
