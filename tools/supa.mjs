@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -130,8 +130,27 @@ async function push() {
   console.log('Documents envoyés :', sent, '· conflits :', conflicts, '· nouveaux fichiers :', local.length);
 }
 
+// Structure des cartes d'un compte (matières, chapitres, nombre de cartes et premières questions).
+async function inspect() {
+  const { id: uid } = await userId();
+  const rows = await api('GET', '/rest/v1/docs?select=path,content&user_id=eq.' + uid + '&path=like.decks/*&order=path');
+  const byPath = new Map(rows.map((r) => [r.path, JSON.parse(r.content)]));
+  const index = byPath.get('decks/index.json') || { matieres: [] };
+  console.log('== Index');
+  index.matieres.forEach((m) => {
+    console.log('MATIERE', m.id, '|', m.nom);
+    m.chapitres.forEach((f) => {
+      const d = byPath.get('decks/' + f);
+      console.log('  CHAP', f, '|', d ? d.id + ' | ' + d.nom + ' | ' + (d.cartes || []).length + ' cartes' : 'ABSENT');
+      (d && d.cartes || []).forEach((c) => console.log('    Q', c.id, '|', String(c.q).replace(/\s+/g, ' ').slice(0, 90)));
+    });
+  });
+  const orphan = [...byPath.keys()].filter((p) => p !== 'decks/index.json' && !index.matieres.some((m) => m.chapitres.includes(p.slice(6))));
+  if (orphan.length) console.log('Hors index :', orphan.join(', '));
+}
+
 try {
-  await ({ migrate, pull, push })[cmd]();
+  await ({ migrate, pull, push, inspect })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
