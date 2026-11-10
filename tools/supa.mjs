@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -149,8 +149,104 @@ async function inspect() {
   if (orphan.length) console.log('Hors index :', orphan.join(', '));
 }
 
+// Range les chapitres importés « Matière – Chapitre » d'un compte comme ceux du compte de référence
+// (mêmes matières, noms, identifiants et ordre). Progression, chapitres désactivés et calendrier suivent.
+// « reorganize » affiche le plan sans rien changer ; « reorganize-apply » l'applique.
+const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+async function docsOf(uid, filter) {
+  return api('GET', '/rest/v1/docs?select=path,content,version&user_id=eq.' + uid + (filter || '') + '&order=path&limit=1000');
+}
+async function reorganize(apply) {
+  const ref = process.env.REF_USERNAME || 'Louison-BLEGER';
+  const target = await userId();
+  const refRows = await api('GET', '/rest/v1/profiles?select=id&username=eq.' + encodeURIComponent(ref.toLowerCase()));
+  if (!refRows.length) throw new Error('Compte de référence introuvable : ' + ref);
+  const refDocs = new Map((await docsOf(refRows[0].id, '&path=like.decks/*')).map((r) => [r.path, JSON.parse(r.content)]));
+  const refIndex = refDocs.get('decks/index.json');
+  const rows = await docsOf(target.id);
+  const docs = new Map(rows.map((r) => [r.path, r]));
+  const index = JSON.parse(docs.get('decks/index.json').content);
+  // Chapitres de référence : « matière – chapitre » normalisé → { matière, fichier, id, nom }.
+  const refChap = new Map();
+  refIndex.matieres.forEach((m) => m.chapitres.forEach((f) => {
+    const d = refDocs.get('decks/' + f);
+    if (d) refChap.set(norm(m.nom) + '|' + norm(d.nom), { mat: m, file: f, id: d.id, nom: d.nom });
+  }));
+  const plan = [];          // { from: {file, id}, to: refChap, cards }
+  const keep = [];          // chapitres non importés et non vides : { mat, file }
+  const drop = [];          // chapitres vides supprimés
+  const ownMats = new Map();
+  index.matieres.forEach((m) => m.chapitres.forEach((f) => {
+    const r = docs.get('decks/' + f);
+    const d = r ? JSON.parse(r.content) : null;
+    const cards = (d && d.cartes) || [];
+    const parts = d ? String(d.nom).split(/\s+[–-]\s+/) : [];
+    const hit = parts.length === 2 ? refChap.get(norm(parts[0]) + '|' + norm(parts[1])) : null;
+    if (hit && cards.length) plan.push({ from: { file: f, id: d.id }, to: hit, cards });
+    else if (!cards.length) drop.push(f);
+    else { keep.push({ mat: m, file: f }); ownMats.set(m.id, m); }
+  }));
+  // Nouvel index : matières de référence (dans leur ordre) qui reçoivent des cartes, puis les autres chapitres gardés.
+  const out = { matieres: [] };
+  refIndex.matieres.forEach((m) => {
+    const chs = m.chapitres.filter((f) => plan.some((p) => p.to.file === f));
+    const kept = keep.filter((k) => k.mat.id === m.id).map((k) => k.file);
+    if (chs.length || kept.length) out.matieres.push({ id: m.id, nom: m.nom, chapitres: [...chs, ...kept] });
+  });
+  ownMats.forEach((m) => {
+    if (out.matieres.some((x) => x.id === m.id)) return;
+    out.matieres.push({ ...m, chapitres: keep.filter((k) => k.mat.id === m.id).map((k) => k.file) });
+  });
+  console.log('== Plan');
+  plan.forEach((p) => console.log('  ' + p.from.file + ' → ' + p.to.mat.nom + ' / ' + p.to.nom + ' (' + p.to.file + ', ' + p.cards.length + ' cartes)'));
+  keep.forEach((k) => console.log('  gardé : ' + k.mat.nom + ' / ' + k.file));
+  drop.forEach((f) => console.log('  supprimé (vide) : ' + f));
+  console.log('== Nouvel index');
+  out.matieres.forEach((m) => console.log('  ' + m.nom + ' : ' + m.chapitres.join(', ')));
+  // Correspondance des identifiants de chapitre.
+  const idMap = new Map(plan.map((p) => [p.from.id, p.to.id]));
+  const prog = docs.get('progress.json');
+  let moved = 0;
+  let progOut = null;
+  if (prog) {
+    const pj = JSON.parse(prog.content);
+    const cards = pj.cards || {};
+    Object.keys(cards).forEach((k) => {
+      const [ch, rest] = [k.slice(0, k.indexOf('/')), k.slice(k.indexOf('/') + 1)];
+      if (!idMap.has(ch)) return;
+      const nk = idMap.get(ch) + '/' + rest;
+      if (!cards[nk] || (cards[nk].last || 0) < (cards[k].last || 0)) cards[nk] = cards[k];
+      delete cards[k];
+      moved++;
+    });
+    if (pj.settings && Array.isArray(pj.settings.inactive)) pj.settings.inactive = [...new Set(pj.settings.inactive.map((x) => idMap.get(x) || x))];
+    progOut = JSON.stringify(pj);
+  }
+  const ag = docs.get('agenda.json');
+  let agOut = null;
+  if (ag) {
+    const aj = JSON.parse(ag.content);
+    (aj.items || []).forEach((it) => { if (Array.isArray(it.chaps)) it.chaps = it.chaps.map((x) => idMap.get(x) || x); });
+    agOut = JSON.stringify(aj);
+  }
+  console.log('Progression déplacée :', moved, 'faces');
+  if (!apply) { console.log('(aperçu : rien n\'a été modifié)'); return; }
+  const now = new Date().toISOString();
+  const upsert = (p, content) => api('POST', '/rest/v1/docs?on_conflict=user_id,path', { user_id: target.id, path: p, content, version: ((docs.get(p) || {}).version || 0) + 1, updated_at: now }, { Prefer: 'resolution=merge-duplicates,return=minimal' });
+  for (const p of plan) await upsert('decks/' + p.to.file, JSON.stringify({ id: p.to.id, nom: p.to.nom, cartes: p.cards }, null, 2) + '\n');
+  await upsert('decks/index.json', JSON.stringify(out, null, 2) + '\n');
+  const newFiles = new Set(plan.map((p) => 'decks/' + p.to.file));
+  for (const f of [...plan.map((p) => 'decks/' + p.from.file), ...drop.map((f) => 'decks/' + f)]) {
+    if (newFiles.has(f)) continue;
+    await api('DELETE', '/rest/v1/docs?user_id=eq.' + target.id + '&path=eq.' + encodeURIComponent(f), undefined, { Prefer: 'return=minimal' });
+  }
+  if (progOut) await upsert('progress.json', progOut);
+  if (agOut) await upsert('agenda.json', agOut);
+  console.log('Réorganisation appliquée.');
+}
+
 try {
-  await ({ migrate, pull, push, inspect })[cmd]();
+  await ({ migrate, pull, push, inspect, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
