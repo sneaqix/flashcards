@@ -1,7 +1,7 @@
 // Synchronisation de la progression avec le dépôt privé, et chargement des cartes.
-import { isConflict } from './github.js?v=20261106211525';
-import * as S from './store.js?v=20261106211525';
-import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261106211525';
+import { isConflict } from './github.js?v=20261110223835';
+import * as S from './store.js?v=20261110223835';
+import { $, state, canSync, saveProgress, refreshIfIdle } from './ui.js?v=20261110223835';
 
 export function setChip(kind, detail) {
   const chip = $('syncChip');
@@ -60,12 +60,14 @@ export async function loadDecks() {
   const { gh, config } = state;
   let index = null;
   let viaApi = false;
-  if (gh && config.contentRepo) {
+  if (gh && (gh.kind === 'supabase' || config.contentRepo)) {
     try {
       const f = await gh.getFile(config.contentRepo, 'decks/index.json');
       if (f) { index = JSON.parse(f.text); viaApi = true; }
     } catch (e) { console.warn('Lecture via GitHub impossible, repli sur le site', e); }
   }
+  // Compte : ses propres cartes seulement (un nouveau compte part de zéro).
+  if (!index && gh && gh.kind === 'supabase') { index = { matieres: [] }; viaApi = true; }
   if (!index) {
     const res = await fetch('decks/index.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('index.json introuvable');
@@ -138,11 +140,12 @@ export async function createChapterFile(mat, nom) {
     JSON.stringify({ id, nom, cartes: [] }, null, 2) + '\n', null, 'Ajoute le chapitre ' + nom);
   for (let attempt = 0; attempt < 2; attempt++) {
     const f = await gh.getFile(config.contentRepo, 'decks/index.json');
-    const index = JSON.parse(f.text);
-    const m = index.matieres.find((x) => x.id === mat);
+    const index = f ? JSON.parse(f.text) : { matieres: [] };
+    let m = index.matieres.find((x) => x.id === mat);
+    if (!m) { const sm = state.matieres.find((x) => x.id === mat); m = { id: mat, nom: sm ? sm.nom : mat, chapitres: [] }; index.matieres.push(m); }
     if (!m.chapitres.includes(file)) m.chapitres.push(file);
     try {
-      await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f.sha, 'Ajoute le chapitre ' + nom + ' à l\'index');
+      await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f && f.sha, 'Ajoute le chapitre ' + nom + ' à l\'index');
       break;
     } catch (e) { if (!isConflict(e) || attempt === 1) throw e; }
   }
@@ -160,10 +163,10 @@ async function updateDeckIndex(mutate, message) {
   const { gh, config } = state;
   for (let attempt = 0; attempt < 3; attempt++) {
     const f = await gh.getFile(config.contentRepo, 'decks/index.json');
-    const index = JSON.parse(f.text);
+    const index = f ? JSON.parse(f.text) : { matieres: [] };
     mutate(index);
     try {
-      await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f.sha, message);
+      await gh.putFile(config.contentRepo, 'decks/index.json', JSON.stringify(index, null, 2) + '\n', f && f.sha, message);
       return index;
     } catch (e) {
       if (!isConflict(e) || attempt === 2) throw e;

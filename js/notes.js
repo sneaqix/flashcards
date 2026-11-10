@@ -1,7 +1,7 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261106211525';
-import { matColor } from './agenda.js?v=20261106211525';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261110223835';
+import { matColor } from './agenda.js?v=20261110223835';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -123,6 +123,13 @@ function openDetail(btn) {
 // Actualiser : dépose edt/notes-refresh, ce qui relance le workflow de l'emploi du temps et des notes.
 async function refresh() {
   if (!canSync()) { toast('Configure d\'abord la synchronisation GitHub.'); return; }
+  // Compte Supabase : le robot passe deux fois par jour ; on relit simplement la dernière version.
+  if (state.gh.kind === 'supabase') {
+    await load();
+    render();
+    toast('Notes relues. Elles sont mises à jour deux fois par jour.');
+    return;
+  }
   $('notesRefresh').disabled = true;
   try {
     let sha = null;

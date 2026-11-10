@@ -1,5 +1,5 @@
 // État partagé de l'appli et petits outils d'affichage.
-import * as S from './store.js?v=20261106211525';
+import * as S from './store.js?v=20261110223835';
 
 export const $ = (id) => document.getElementById(id);
 export const TABS = ['reviser', 'bachotage', 'cartes', 'classeur', 'calendrier', 'stats', 'notes', 'parametres'];
@@ -34,7 +34,9 @@ export function typeset(...els) {
   MathJax.typesetPromise(els).catch(() => {});
 }
 export function imageUrl(path) {
-  return state.imgCache.get(path) || path;
+  if (state.imgCache.has(path)) return state.imgCache.get(path);
+  if (state.gh && state.gh.kind === 'supabase' && path && !/^(https?:|data:|blob:)/.test(path)) return state.gh.imageUrl(path);
+  return path;
 }
 export function textHtml(text) {
   return escapeHtml(text || '').replace(/\n/g, '<br>');
@@ -78,8 +80,9 @@ export function activeChapters() {
   const off = new Set(state.progress.settings.inactive || []);
   return state.chapters.filter((c) => !off.has(c.id));
 }
-export function canSync() { return !!(state.gh && state.config.dataRepo); }
-export function canEdit() { return !!(state.gh && state.config.contentRepo); }
+// Compte Supabase : tout passe par lui ; sinon, ancien mode avec les dépôts GitHub.
+export function canSync() { return !!(state.gh && (state.gh.kind === 'supabase' || state.config.dataRepo)); }
+export function canEdit() { return !!(state.gh && (state.gh.kind === 'supabase' || state.config.contentRepo)); }
 export function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
 // Texte à trous : « Venice suffers from {{overtourism::surtourisme}}. »

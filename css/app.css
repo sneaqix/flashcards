@@ -1101,3 +1101,14 @@ button.nt:hover { border-color: var(--c); }
 #cardList button.pick[aria-pressed="true"] .pick-box { background: var(--accent); border-color: var(--accent); }
 #cardList button.pick[aria-pressed="true"] .pick-box::after { content: ''; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
 @media (max-width: 899px) { .move-bar { position: fixed; top: auto; left: 16px; right: 16px; bottom: calc(var(--tabs-h, 72px) + 10px); margin: 0; } #view-cartes:has(#moveBar:not([hidden])) #cardList { padding-bottom: 140px; } }
+
+/* ---------- Comptes ---------- */
+.auth-gate { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px 16px; overflow-y: auto; background: var(--bg); }
+body.gated { overflow: hidden; }
+body.gated .app, body.gated .tabs { visibility: hidden; }
+.auth-card { width: min(380px, 100%); display: grid; gap: 6px; padding: 28px 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: 0 10px 30px var(--shadow); }
+.auth-card h1 { margin: 4px 0 12px; font-size: 1.5rem; }
+.auth-card label { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+.auth-card .primary { margin-top: 14px; }
+.auth-card .linklike { justify-self: center; margin-top: 4px; }
+.auth-logo svg { width: 40px; height: 40px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

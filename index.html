@@ -17,10 +17,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="css/app.css?v=20261106211525">
-<link rel="stylesheet" href="css/themes.css?v=20261106211525">
+<link rel="stylesheet" href="css/app.css?v=20261110223835">
+<link rel="stylesheet" href="css/themes.css?v=20261110223835">
 </head>
 <body>
+<div id="authGate" class="auth-gate" hidden>
+  <form id="authForm" class="auth-card" novalidate>
+    <div class="auth-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="13" height="17" rx="2"/><path d="M8 7h5M8 11h5"/><path d="M19 7v13a1 1 0 0 1-1 1H8"/></svg></div>
+    <h1 id="authTitle">Se connecter</h1>
+    <label for="authUser">Identifiant</label>
+    <input id="authUser" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    <label for="authPass">Mot de passe</label>
+    <input id="authPass" type="password" autocomplete="current-password" required>
+    <div id="authPass2Row" hidden>
+      <label for="authPass2">Mot de passe (encore)</label>
+      <input id="authPass2" type="password" autocomplete="new-password">
+    </div>
+    <div id="authInviteRow" hidden>
+      <label for="authInvite">Code d'invitation</label>
+      <input id="authInvite" type="text" autocomplete="off" autocapitalize="none" spellcheck="false">
+    </div>
+    <button id="authSubmit" class="primary" type="submit">Se connecter</button>
+    <p class="status" id="authStatus" role="status"></p>
+    <button id="authSwitch" class="linklike" type="button">Créer un compte</button>
+  </form>
+</div>
 <div class="app">
   <header class="top">
     <h1><span class="h-app">Flashcards <span class="hl">prépa</span></span><span class="h-tab" id="hTab"></span></h1>
@@ -741,6 +762,30 @@
   <section id="view-parametres" class="view" hidden>
     <a class="panel stats-link" href="#stats"><span><b>Statistiques</b><span class="sub">Calendrier des révisions, rétention, temps, prévisions</span></span><span aria-hidden="true">›</span></a>
     <div class="acc-wrap">
+    <h2 class="acc-group">Compte</h2>
+    <div class="acc-list">
+      <details class="acc" data-acc="compte">
+        <summary><span class="acc-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="acc-t"><b>Compte</b><span class="acc-sum" id="sum-compte"></span></span><span class="acc-chev" aria-hidden="true"></span></summary>
+        <div class="acc-body form" id="accountBody">
+          <div id="accIn" hidden>
+            <p>Connecté en tant que <b id="accName"></b>. Tes cartes, ta progression, ton calendrier et ton classeur sont enregistrés sur ton compte.</p>
+            <label for="accPass">Nouveau mot de passe</label>
+            <input id="accPass" type="password" autocomplete="new-password">
+            <label for="accPass2">Nouveau mot de passe (encore)</label>
+            <input id="accPass2" type="password" autocomplete="new-password">
+            <div class="row">
+              <button id="accPassSave" class="ghost" type="button">Changer le mot de passe</button>
+              <button id="accLogout" class="ghost" type="button">Se déconnecter</button>
+            </div>
+            <p class="status" id="accStatus" role="status"></p>
+          </div>
+          <div id="accOut" hidden>
+            <p class="sub">Connecte-toi ou crée un compte pour retrouver tes cartes sur tous tes appareils.</p>
+            <button id="accLogin" class="primary" type="button">Se connecter ou créer un compte</button>
+          </div>
+        </div>
+      </details>
+    </div>
     <h2 class="acc-group">Révision</h2>
     <div class="acc-list">
       <details class="acc" data-acc="rythme">
@@ -964,6 +1009,6 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
-<script type="module" src="js/app.js?v=20261106211525"></script>
+<script type="module" src="js/app.js?v=20261110223835"></script>
 </body>
 </html>
