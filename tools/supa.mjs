@@ -269,7 +269,7 @@ async function share() {
       ag.items = ag.items || []; ag.deleted = ag.deleted || [];
       const have = new Set([...ag.items.map((x) => x.id), ...ag.deleted]);
       const add = shared.filter((it) => !have.has(it.id)).map((it) => ({ ...it, t: Date.now() }));
-      if (!add.length) { console.log(name + ' : emploi du temps copié, calendrier déjà à jour.'); break; }
+      if (!add.length) { console.log(name + ' : emploi du temps copié, calendrier déjà à jour (' + shared.length + ' à partager, ' + ag.items.length + ' éléments chez lui, dont ' + ag.items.filter((x) => x.src).length + ' partagés ; ' + ag.deleted.length + ' supprimés).'); break; }
       ag.items.push(...add);
       const content = JSON.stringify(ag);
       if (cur.length) {
