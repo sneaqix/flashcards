@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -245,8 +245,48 @@ async function reorganize(apply) {
   console.log('Réorganisation appliquée.');
 }
 
+// Partage de l'emploi du temps : après le robot, copie edt/edt.json et ajoute les colles et devoirs de l'ENT
+// dans le calendrier de chaque compte listé dans edt/share.json ({ "recipients": ["identifiant"] }).
+async function share() {
+  const cfg = (() => { try { return JSON.parse(fs.readFileSync(path.join(dataDir, 'edt/share.json'), 'utf8')); } catch (e) { return null; } })();
+  const list = (cfg && cfg.recipients) || [];
+  if (!list.length) { console.log('Aucun compte avec qui partager.'); return; }
+  const edt = fs.readFileSync(path.join(dataDir, 'edt/edt.json'), 'utf8');
+  const mine = JSON.parse(fs.readFileSync(path.join(dataDir, 'agenda.json'), 'utf8'));
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
+  const shared = (mine.items || []).filter((it) => (it.src === 'colloscope' || it.src === 'ent') && !it.done && (it.date || '') >= today);
+  for (const name of list) {
+    const rows = await api('GET', '/rest/v1/profiles?select=id,features&username=eq.' + encodeURIComponent(name.toLowerCase()));
+    if (!rows.length) { console.log('Compte introuvable :', name); continue; }
+    const { id: uid, features } = rows[0];
+    const now = new Date().toISOString();
+    await api('POST', '/rest/v1/docs?on_conflict=user_id,path', { user_id: uid, path: 'edt/edt.json', content: edt, updated_at: now }, { Prefer: 'resolution=merge-duplicates,return=minimal' });
+    if (!(features && features.edt)) await api('PATCH', '/rest/v1/profiles?id=eq.' + uid, { features: { ...(features || {}), edt: true } }, { Prefer: 'return=minimal' });
+    // Calendrier : on ajoute seulement ce qui manque (un élément supprimé par le compte ne revient pas).
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const cur = await api('GET', '/rest/v1/docs?select=content,version&user_id=eq.' + uid + '&path=eq.agenda.json');
+      const ag = cur.length ? JSON.parse(cur[0].content) : { version: 1, items: [], deleted: [] };
+      ag.items = ag.items || []; ag.deleted = ag.deleted || [];
+      const have = new Set([...ag.items.map((x) => x.id), ...ag.deleted]);
+      const add = shared.filter((it) => !have.has(it.id)).map((it) => ({ ...it, t: Date.now() }));
+      if (!add.length) { console.log(name + ' : emploi du temps copié, calendrier déjà à jour.'); break; }
+      ag.items.push(...add);
+      const content = JSON.stringify(ag);
+      if (cur.length) {
+        const r = await api('PATCH', '/rest/v1/docs?user_id=eq.' + uid + '&path=eq.agenda.json&version=eq.' + cur[0].version,
+          { content, version: cur[0].version + 1, updated_at: now }, { Prefer: 'return=representation' });
+        if (!r.length) continue; // modifié dans l'appli entre-temps : on relit
+      } else {
+        await api('POST', '/rest/v1/docs', { user_id: uid, path: 'agenda.json', content }, { Prefer: 'return=minimal' });
+      }
+      console.log(name + ' : emploi du temps copié, ' + add.length + ' élément(s) ajouté(s) au calendrier.');
+      break;
+    }
+  }
+}
+
 try {
-  await ({ migrate, pull, push, inspect, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ migrate, pull, push, inspect, share, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
