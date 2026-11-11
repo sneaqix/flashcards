@@ -1,7 +1,7 @@
 // Comptes : écran de connexion / inscription, section « Compte » des Réglages,
 // et pages réservées (Notes, Emploi du temps, Notifications) selon le compte.
-import { $, state, setStatus, toast } from './ui.js?v=20261110223835';
-import { SupaStore, readSession, signIn, signUp, signOut, changePassword } from './supa.js?v=20261110223835';
+import { $, state, setStatus, toast } from './ui.js?v=20261111105254';
+import { SupaStore, readSession, signIn, signUp, signOut, changePassword } from './supa.js?v=20261111105254';
 
 const LS_OWNER = 'fc.owner';
 // Données locales propres à un compte : effacées quand un autre compte se connecte sur cet appareil.

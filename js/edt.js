@@ -1,7 +1,8 @@
 // Emploi du temps de Mon Bureau Numérique (Skolengo), récupéré par le workflow edt.yml du dépôt privé.
 // L'appli lit edt/edt.json ; le jeton (edt/auth.json) se colle dans les Réglages.
-import { matColor, PALETTE } from './agenda.js?v=20261110223835';
-import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261110223835';
+import { matColor, PALETTE } from './agenda.js?v=20261111105254';
+import { $, state, escapeHtml, toast, canSync, setStatus, showView } from './ui.js?v=20261111105254';
+import { hasFeature } from './account.js?v=20261111105254';
 
 const DATA = 'edt/edt.json';
 const AUTH = 'edt/auth.json';
@@ -196,7 +197,18 @@ export function bindEdt() {
   $('edtPrev').addEventListener('click', () => step(-1));
   $('edtNext').addEventListener('click', () => step(1));
   $('edtToday').addEventListener('click', () => { thisWeek(); render(); });
-  $('edtRefresh').addEventListener('click', async () => { toast('Actualisation…'); await load(); render(); });
+  $('edtRefresh').addEventListener('click', async () => {
+    // Compte propriétaire : relance aussi le robot (réponse 1 à 2 minutes plus tard).
+    if (state.gh && state.gh.kind === 'supabase' && hasFeature('edtSync')) {
+      try {
+        await state.gh.rpc('request_refresh');
+        toast('Mise à jour demandée : réponse dans 1 à 2 minutes.');
+        setTimeout(async () => { await load(); if (!$('view-edt').hidden) render(); }, 120000);
+      } catch (e) { toast('Relance impossible : ' + e.message); }
+    } else toast('Actualisation…');
+    await load();
+    render();
+  });
   desk.addEventListener('change', () => { if (!$('view-edt').hidden) render(); });
   if ($('edtSave')) $('edtSave').addEventListener('click', saveToken);
   // Glisser à gauche / à droite sur téléphone : jour suivant / précédent.

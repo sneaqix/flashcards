@@ -1,7 +1,8 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261110223835';
-import { matColor } from './agenda.js?v=20261110223835';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261111105254';
+import { hasFeature } from './account.js?v=20261111105254';
+import { matColor } from './agenda.js?v=20261111105254';
 
 const LS = 'fc.notes';
 let data = readLocal();
@@ -123,11 +124,20 @@ function openDetail(btn) {
 // Actualiser : dépose edt/notes-refresh, ce qui relance le workflow de l'emploi du temps et des notes.
 async function refresh() {
   if (!canSync()) { toast('Configure d\'abord la synchronisation GitHub.'); return; }
-  // Compte Supabase : le robot passe deux fois par jour ; on relit simplement la dernière version.
+  // Compte Supabase : le propriétaire relance le robot (via la base) ; les autres relisent la dernière version.
   if (state.gh.kind === 'supabase') {
-    await load();
-    render();
-    toast('Notes relues. Elles sont mises à jour deux fois par jour.');
+    if (!hasFeature('edtSync')) { await load(); render(); toast('Notes relues.'); return; }
+    $('notesRefresh').disabled = true;
+    try {
+      const r = await state.gh.rpc('request_refresh');
+      toast(r === 'deja' ? 'Mise à jour déjà en cours : réponse dans 1 à 2 minutes.' : 'Mise à jour demandée : réponse dans 1 à 2 minutes.');
+      setTimeout(async () => { await load(); if (!$('view-notes').hidden) render(); }, 120000);
+    } catch (e) {
+      await load(); render();
+      toast('Relance impossible (' + e.message + ') : dernières notes relues.');
+    } finally {
+      $('notesRefresh').disabled = false;
+    }
     return;
   }
   $('notesRefresh').disabled = true;
