@@ -83,18 +83,30 @@ function Update-SkolengoToken {
     throw ('Le serveur de Mon Bureau Numérique refuse de renouveler le jeton (' + $_.Exception.Message + '). Colle un nouveau jeton dans l''appli : Réglages › Emploi du temps.')
   }
   $now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+  # Durée de validité : « expires_in » si le serveur la donne, sinon la date « exp » écrite dans le jeton.
+  $life = 0
+  if ($t.expires_in) { $life = [int]$t.expires_in }
+  if ($life -le 0) {
+    try {
+      $p = $t.access_token.Split('.')[1].Replace('-', '+').Replace('_', '/')
+      while ($p.Length % 4) { $p += '=' }
+      $exp = ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p)) | ConvertFrom-Json).exp
+      if ($exp) { $life = [int]($exp - $now) }
+    } catch { }
+  }
+  if ($life -le 0) { $life = 3600 }
   $ts = [ordered]@{
     access_token = $t.access_token
     refresh_token = $(if ($t.refresh_token) { $t.refresh_token } else { $auth.tokenSet.refresh_token })
     id_token = $(if ($t.id_token) { $t.id_token } else { $auth.tokenSet.id_token })
     token_type = $(if ($t.token_type) { $t.token_type } else { 'Bearer' })
     scope = $(if ($t.scope) { $t.scope } else { $auth.tokenSet.scope })
-    expires_at = $now + [int]$t.expires_in
+    expires_at = $now + $life
   }
   $auth.tokenSet = [pscustomobject]$ts
   $content = $auth | ConvertTo-Json -Depth 20 -Compress
   Invoke-Supa 'Post' '/rest/v1/rpc/put_doc' @{ p_path = 'edt/auth.json'; p_content = $content; p_version = [long]$row.version } $token | Out-Null
-  Write-Log ('Jeton Skolengo renouvelé, valable jusqu''à ' + (Get-Date).AddSeconds([int]$t.expires_in).ToString('HH:mm') + '.')
+  Write-Log ('Jeton Skolengo renouvelé, valable jusqu''à ' + (Get-Date).AddSeconds($life).ToString('HH:mm') + '.')
 }
 
 # ---------- Installation : copie du script et tâche planifiée ----------
