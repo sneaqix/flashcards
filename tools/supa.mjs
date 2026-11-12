@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -322,8 +322,35 @@ async function copyDecks() {
   console.log('Copié :', chapters, 'chapitres,', cards, 'cartes.');
 }
 
+// Place utilisée : taille des documents (par compte) et des fichiers stockés.
+async function usage() {
+  const profs = await api('GET', '/rest/v1/profiles?select=id,username&order=username');
+  let docTotal = 0, fileTotal = 0, fileCount = 0;
+  for (const p of profs) {
+    let size = 0, n = 0;
+    for (let offset = 0; ; offset += 500) {
+      const rows = await api('GET', '/rest/v1/docs?select=content&user_id=eq.' + p.id + '&limit=500&offset=' + offset);
+      rows.forEach((r) => { size += Buffer.byteLength(r.content); n++; });
+      if (rows.length < 500) break;
+    }
+    docTotal += size;
+    console.log('  ' + p.username + ' : ' + n + ' documents, ' + (size / 1024).toFixed(0) + ' Ko');
+  }
+  async function walkStore(bucket, prefix) {
+    const rows = await api('POST', '/storage/v1/object/list/' + bucket, { prefix, limit: 1000, offset: 0 });
+    for (const r of rows) {
+      if (r.id === null) await walkStore(bucket, prefix + r.name + '/');
+      else { fileTotal += (r.metadata && r.metadata.size) || 0; fileCount++; }
+    }
+  }
+  for (const b of ['files', 'images']) await walkStore(b, '');
+  console.log('Comptes :', profs.length);
+  console.log('Documents (base de données) : ' + (docTotal / 1048576).toFixed(2) + ' Mo');
+  console.log('Fichiers (stockage) : ' + fileCount + ' fichiers, ' + (fileTotal / 1048576).toFixed(2) + ' Mo');
+}
+
 try {
-  await ({ migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
