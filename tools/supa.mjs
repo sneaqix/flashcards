@@ -463,12 +463,22 @@ async function align() {
     const byQ = new Map();
     (d.cartes || []).forEach((c) => { const k = qnorm(c.q); if (!byQ.has(k)) byQ.set(k, c); });
     const used = new Set();
+    const fresh = [];
     const out = refD.cartes.map((c) => {
       const old = byQ.get(qnorm(c.q));
       if (old && !used.has(old)) { used.add(old); matched++; if (old.id !== c.id) keyMap.set(d.id + '/' + old.id, refD.id + '/' + c.id); }
-      else added++;
+      else fresh.push(c);
       return c;
     });
+    // Une seule carte sans équivalent de chaque côté : c'est la même, modifiée depuis.
+    const left = (d.cartes || []).filter((c) => !used.has(c));
+    if (fresh.length === 1 && left.length === 1) {
+      used.add(left[0]); matched++;
+      keyMap.set(d.id + '/' + left[0].id, refD.id + '/' + fresh[0].id);
+      console.log('    appariée malgré une question modifiée : « ' + String(left[0].q).slice(0, 60) + ' »');
+      fresh.length = 0;
+    }
+    added += fresh.length;
     const rest = (d.cartes || []).filter((c) => !used.has(c)).map((c) => (out.some((x) => x.id === c.id) ? { ...c, id: c.id + '-g' } : c));
     rest.forEach((c, i) => { kept++; const o = d.cartes.filter((x) => !used.has(x))[i]; if (o.id !== c.id) keyMap.set(d.id + '/' + o.id, d.id + '/' + c.id); });
     if (d.id !== refD.id) console.log('  attention : identifiant de chapitre différent', d.id, refD.id);
