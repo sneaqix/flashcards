@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -414,8 +414,33 @@ async function copySettings() {
   throw new Error('progression modifiée pendant la copie, réessaie');
 }
 
+// Types de cartes d'un compte comparés au compte de référence (même chapitre, même identifiant de carte).
+async function modes() {
+  const ref = process.env.REF_USERNAME || 'Louison-BLEGER';
+  const t = await userId();
+  const r = await api('GET', '/rest/v1/profiles?select=id&username=eq.' + encodeURIComponent(ref.toLowerCase()));
+  const load = async (uid) => new Map((await docsOf(uid, '&path=like.decks/*')).filter((x) => x.path !== 'decks/index.json').map((x) => [x.path, JSON.parse(x.content)]));
+  const mine = await load(t.id), theirs = await load(r[0].id);
+  const count = (m) => { const c = {}; m.forEach((d) => (d.cartes || []).forEach((k) => { const key = k.mode || 'classique'; c[key] = (c[key] || 0) + 1; })); return c; };
+  console.log('Types chez ' + username + ' :', JSON.stringify(count(mine)));
+  console.log('Types chez ' + ref + ' :', JSON.stringify(count(theirs)));
+  let same = 0, diff = 0, missing = 0;
+  const sample = [];
+  mine.forEach((d, p) => {
+    const ref = theirs.get(p);
+    (d.cartes || []).forEach((k) => {
+      const o = ref && (ref.cartes || []).find((x) => x.id === k.id);
+      if (!o) { missing++; return; }
+      if (JSON.stringify(o) === JSON.stringify(k)) same++;
+      else { diff++; if (sample.length < 3) sample.push({ ref: Object.keys(o), lui: Object.keys(k), mode: [o.mode, k.mode] }); }
+    });
+  });
+  console.log('Cartes identiques :', same, '· différentes :', diff, '· absentes chez ' + ref + ' :', missing);
+  sample.forEach((x) => console.log('  ex.', JSON.stringify(x)));
+}
+
 try {
-  await ({ 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
