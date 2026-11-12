@@ -35,7 +35,8 @@ const sha = (s) => crypto.createHash('sha1').update(s).digest('hex');
 const mime = (f) => (/\.pdf$/i.test(f) ? 'application/pdf' : /\.png$/i.test(f) ? 'image/png' : /\.jpe?g$/i.test(f) ? 'image/jpeg' : 'application/octet-stream');
 
 // Fichiers JSON suivis dans le dépôt privé (les cartes viennent du dossier de l'appli).
-const DATA_DOCS = (f) => /^(progress|agenda)\.json$/.test(f) || /^(carnets|classeur|edt|notifications)\/.+\.json$/.test(f);
+// edt/share.json reste dans le dépôt privé (réglage des robots), jamais dans le compte.
+const DATA_DOCS = (f) => f !== 'edt/share.json' && (/^(progress|agenda)\.json$/.test(f) || /^(carnets|classeur|edt|notifications)\/.+\.json$/.test(f));
 function walk(dir, base = dir) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -93,6 +94,7 @@ async function pull() {
   }
   const manifest = { uid, docs: {} };
   for (const r of rows) {
+    if (r.path === 'edt/share.json') continue;
     const f = fileOf(r.path);
     fs.mkdirSync(path.dirname(f), { recursive: true });
     fs.writeFileSync(f, r.content);
