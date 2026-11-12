@@ -35,8 +35,9 @@ const sha = (s) => crypto.createHash('sha1').update(s).digest('hex');
 const mime = (f) => (/\.pdf$/i.test(f) ? 'application/pdf' : /\.png$/i.test(f) ? 'image/png' : /\.jpe?g$/i.test(f) ? 'image/jpeg' : 'application/octet-stream');
 
 // Fichiers JSON suivis dans le dépôt privé (les cartes viennent du dossier de l'appli).
-// edt/share.json reste dans le dépôt privé (réglage des robots), jamais dans le compte.
-const DATA_DOCS = (f) => f !== 'edt/share.json' && (/^(progress|agenda)\.json$/.test(f) || /^(carnets|classeur|edt|notifications)\/.+\.json$/.test(f));
+// edt/share.json et edt/colloscope-groupes.json restent dans le dépôt privé (réglage des robots), jamais dans le compte.
+const REPO_ONLY = ['edt/share.json', 'edt/colloscope-groupes.json'];
+const DATA_DOCS = (f) => !REPO_ONLY.includes(f) && (/^(progress|agenda)\.json$/.test(f) || /^(carnets|classeur|edt|notifications)\/.+\.json$/.test(f));
 function walk(dir, base = dir) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -94,7 +95,7 @@ async function pull() {
   }
   const manifest = { uid, docs: {} };
   for (const r of rows) {
-    if (r.path === 'edt/share.json') continue;
+    if (REPO_ONLY.includes(r.path)) continue;
     const f = fileOf(r.path);
     fs.mkdirSync(path.dirname(f), { recursive: true });
     fs.writeFileSync(f, r.content);
@@ -249,15 +250,51 @@ async function reorganize(apply) {
 
 // Partage de l'emploi du temps : après le robot, copie edt/edt.json et ajoute les colles et devoirs de l'ENT
 // dans le calendrier de chaque compte listé dans edt/share.json ({ "recipients": ["identifiant"] }).
+// Colles d'un groupe (edt/colloscope-groupes.json : { "3": [{ id, date, start, end, mat, teacher, room }] }).
+const COLLE_NOM = { maths: 'maths', physique: 'physique', chimie: 'chimie', si: 'SI', anglais: 'anglais', francais: 'français' };
+const colleTitle = (mat) => 'Colle ' + (/^[aeiouyé]/i.test(COLLE_NOM[mat] || mat) ? 'd\'' : 'de ') + (COLLE_NOM[mat] || mat);
+function parisToIso(date, hm) {
+  for (const off of ['+01:00', '+02:00']) {
+    const d = new Date(date + 'T' + hm + ':00' + off);
+    const f = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(d);
+    const g = (t) => f.find((x) => x.type === t).value;
+    if (g('year') + '-' + g('month') + '-' + g('day') === date && g('hour') + ':' + g('minute') === hm) return d.toISOString();
+  }
+  return new Date(date + 'T' + hm + ':00+01:00').toISOString();
+}
+const colleLesson = (k) => ({ id: k.id, start: parisToIso(k.date, k.start), end: parisToIso(k.date, k.end), title: colleTitle(k.mat), mat: k.mat, colle: true, room: k.room || null, teachers: k.teacher ? [k.teacher] : [], canceled: false });
+const colleItem = (k) => ({
+  id: k.id, title: [k.teacher, k.room].filter(Boolean).join(' · '), type: 'colle', mat: k.mat, chaps: [], date: k.date, time: k.start, prio: 0, flag: false,
+  notes: 'De ' + k.start.replace(':', 'h') + ' à ' + k.end.replace(':', 'h') + (k.room ? ', salle ' + k.room : '') + '.',
+  subs: [], done: false, created: Date.now(), t: Date.now(), doneAt: null, src: 'colloscope',
+});
+
 async function share() {
-  const cfg = (() => { try { return JSON.parse(fs.readFileSync(path.join(dataDir, 'edt/share.json'), 'utf8')); } catch (e) { return null; } })();
-  const list = (cfg && cfg.recipients) || [];
+  const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8')); } catch (e) { return null; } };
+  const cfg = read('edt/share.json');
+  const list = ((cfg && cfg.recipients) || []).map((r) => (typeof r === 'string' ? { user: r, group: null } : r));
   if (!list.length) { console.log('Aucun compte avec qui partager.'); return; }
-  const edt = fs.readFileSync(path.join(dataDir, 'edt/edt.json'), 'utf8');
+  const groups = read('edt/colloscope-groupes.json') || {};
+  const own = read('edt/colles.json');
+  const ownGroup = own && own.group != null ? String(own.group) : null;
+  const edtText = fs.readFileSync(path.join(dataDir, 'edt/edt.json'), 'utf8');
   const mine = JSON.parse(fs.readFileSync(path.join(dataDir, 'agenda.json'), 'utf8'));
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
-  const shared = (mine.items || []).filter((it) => (it.src === 'colloscope' || it.src === 'ent') && !it.done && (it.date || '') >= today);
-  for (const name of list) {
+  const ent = (mine.items || []).filter((it) => it.src === 'ent' && !it.done && (it.date || '') >= today);
+  const ownColles = (mine.items || []).filter((it) => it.src === 'colloscope' && !it.done && (it.date || '') >= today);
+  for (const r of list) {
+    const name = r.user;
+    const group = r.group != null ? String(r.group) : ownGroup;
+    // Même groupe que moi : mon emploi du temps tel quel ; autre groupe : ses propres colles à la place des miennes.
+    let edt = edtText, shared = [...ownColles, ...ent];
+    if (group !== ownGroup) {
+      const gc = groups[group] || [];
+      if (!gc.length) console.log(name + ' : aucune colle connue pour le groupe ' + group);
+      const e = JSON.parse(edtText);
+      e.lessons = [...(e.lessons || []).filter((l) => !l.colle), ...gc.map(colleLesson)].sort((a, b) => a.start.localeCompare(b.start));
+      edt = JSON.stringify(e);
+      shared = [...gc.filter((k) => k.date >= today).map(colleItem), ...ent];
+    }
     const rows = await api('GET', '/rest/v1/profiles?select=id,features&username=eq.' + encodeURIComponent(name.toLowerCase()));
     if (!rows.length) { console.log('Compte introuvable :', name); continue; }
     const { id: uid, features } = rows[0];
