@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -386,8 +386,36 @@ async function usage() {
   console.log('Fichiers (stockage) : ' + fileCount + ' fichiers, ' + (fileTotal / 1048576).toFixed(2) + ' Mo');
 }
 
+// Copie des réglages de rythme (nouvelles cartes, révisions, planification) d'un compte vers un autre.
+async function copySettings() {
+  const src = process.env.REF_USERNAME || 'Louison-BLEGER';
+  const target = await userId();
+  const srcRows = await api('GET', '/rest/v1/profiles?select=id&username=eq.' + encodeURIComponent(src.toLowerCase()));
+  const sp = await api('GET', '/rest/v1/docs?select=content&user_id=eq.' + srcRows[0].id + '&path=eq.progress.json');
+  const from = JSON.parse(sp[0].content).settings || {};
+  const KEYS = ['newPerDay', 'maxReviews', 'subjects', 'retention', 'maxIvl', 'learnSteps', 'relearnSteps'];
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const cur = await api('GET', '/rest/v1/docs?select=content,version&user_id=eq.' + target.id + '&path=eq.progress.json');
+    const p = cur.length ? JSON.parse(cur[0].content) : { version: 3, cards: {}, logs: {}, settings: {} };
+    p.settings = p.settings || {};
+    KEYS.forEach((k) => { if (from[k] !== undefined) p.settings[k] = from[k]; });
+    p.settings.updated = Date.now();
+    const content = JSON.stringify(p);
+    if (cur.length) {
+      const r = await api('PATCH', '/rest/v1/docs?user_id=eq.' + target.id + '&path=eq.progress.json&version=eq.' + cur[0].version,
+        { content, version: cur[0].version + 1, updated_at: new Date().toISOString() }, { Prefer: 'return=representation' });
+      if (!r.length) continue;
+    } else {
+      await api('POST', '/rest/v1/docs', { user_id: target.id, path: 'progress.json', content }, { Prefer: 'return=minimal' });
+    }
+    console.log('Réglages copiés :', KEYS.filter((k) => from[k] !== undefined).map((k) => k + '=' + JSON.stringify(from[k])).join(', '));
+    return;
+  }
+  throw new Error('progression modifiée pendant la copie, réessaie');
+}
+
 try {
-  await ({ usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
