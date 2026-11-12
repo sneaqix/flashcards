@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -439,8 +439,76 @@ async function modes() {
   sample.forEach((x) => console.log('  ex.', JSON.stringify(x)));
 }
 
+// Remplace les cartes d'un compte par celles du compte de référence (mêmes chapitres), en gardant
+// la progression : chaque carte est retrouvée par sa question, sa progression suit son nouvel identifiant.
+// EXTRA=apply pour appliquer (sinon aperçu). Les cartes sans équivalent sont gardées en fin de chapitre.
+const qnorm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/<[^>]+>/g, ' ').replace(/\{\{([^:}]*)::[^}]*\}\}/g, '$1').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+async function align() {
+  const apply = process.env.EXTRA === 'apply';
+  const ref = process.env.REF_USERNAME || 'Louison-BLEGER';
+  const t = await userId();
+  const r = await api('GET', '/rest/v1/profiles?select=id&username=eq.' + encodeURIComponent(ref.toLowerCase()));
+  const refDocs = new Map((await docsOf(r[0].id, '&path=like.decks/*')).map((x) => [x.path, JSON.parse(x.content)]));
+  const rows = await docsOf(t.id);
+  const docs = new Map(rows.map((x) => [x.path, x]));
+  const index = JSON.parse(docs.get('decks/index.json').content);
+  const keyMap = new Map(); // ancienne clé de carte -> nouvelle
+  const writes = [];
+  let matched = 0, added = 0, kept = 0;
+  for (const m of index.matieres) for (const f of m.chapitres) {
+    const p = 'decks/' + f;
+    const refD = refDocs.get(p), row = docs.get(p);
+    if (!refD || !row) continue;
+    const d = JSON.parse(row.content);
+    const byQ = new Map();
+    (d.cartes || []).forEach((c) => { const k = qnorm(c.q); if (!byQ.has(k)) byQ.set(k, c); });
+    const used = new Set();
+    const out = refD.cartes.map((c) => {
+      const old = byQ.get(qnorm(c.q));
+      if (old && !used.has(old)) { used.add(old); matched++; if (old.id !== c.id) keyMap.set(d.id + '/' + old.id, refD.id + '/' + c.id); }
+      else added++;
+      return c;
+    });
+    const rest = (d.cartes || []).filter((c) => !used.has(c)).map((c) => (out.some((x) => x.id === c.id) ? { ...c, id: c.id + '-g' } : c));
+    rest.forEach((c, i) => { kept++; const o = d.cartes.filter((x) => !used.has(x))[i]; if (o.id !== c.id) keyMap.set(d.id + '/' + o.id, d.id + '/' + c.id); });
+    if (d.id !== refD.id) console.log('  attention : identifiant de chapitre différent', d.id, refD.id);
+    console.log('  ' + f + ' : ' + (refD.cartes.length) + ' cartes de référence, ' + rest.length + ' gardées en plus');
+    writes.push({ path: p, row, content: JSON.stringify({ ...d, id: refD.id, nom: refD.nom, cartes: [...out, ...rest] }, null, 2) + '\n' });
+  }
+  console.log('Retrouvées par la question :', matched, '· nouvelles :', added, '· sans équivalent (gardées) :', kept);
+  // Progression : les deux faces (« » et « ~r ») suivent la carte.
+  const prow = docs.get('progress.json');
+  const prog = prow ? JSON.parse(prow.content) : null;
+  let moved = 0;
+  if (prog) {
+    const cards = prog.cards || {};
+    const next = {};
+    Object.entries(cards).forEach(([k, v]) => {
+      const rev = k.endsWith('~r');
+      const base = rev ? k.slice(0, -2) : k;
+      const nk = keyMap.has(base) ? keyMap.get(base) + (rev ? '~r' : '') : k;
+      if (nk !== k) moved++;
+      if (!next[nk] || (next[nk].last || 0) < (v.last || 0)) next[nk] = v;
+    });
+    prog.cards = next;
+    console.log('Progression : ' + Object.keys(cards).length + ' faces, dont ' + moved + ' changent de clé.');
+  }
+  if (!apply) { console.log('(aperçu : rien n\'a été modifié)'); return; }
+  for (const w of writes) {
+    const res = await api('PATCH', '/rest/v1/docs?user_id=eq.' + t.id + '&path=eq.' + encodeURIComponent(w.path) + '&version=eq.' + w.row.version,
+      { content: w.content, version: w.row.version + 1, updated_at: new Date().toISOString() }, { Prefer: 'return=representation' });
+    if (!res.length) throw new Error('chapitre modifié entre-temps : ' + w.path + ' (relance)');
+  }
+  if (prog) {
+    const res = await api('PATCH', '/rest/v1/docs?user_id=eq.' + t.id + '&path=eq.progress.json&version=eq.' + prow.version,
+      { content: JSON.stringify(prog), version: prow.version + 1, updated_at: new Date().toISOString() }, { Prefer: 'return=representation' });
+    if (!res.length) throw new Error('progression modifiée entre-temps (relance)');
+  }
+  console.log('Appliqué.');
+}
+
 try {
-  await ({ modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
