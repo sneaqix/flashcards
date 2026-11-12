@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -285,8 +285,43 @@ async function share() {
   }
 }
 
+// Copie de chapitres d'un compte vers un autre (copie unique, sans la progression).
+// EXTRA = matières à copier, séparées par des virgules (ex. « maths,physique,chimie,si »).
+async function copyDecks() {
+  const src = process.env.REF_USERNAME || 'Louison-BLEGER';
+  const mats = String(process.env.EXTRA || '').split(',').map((x) => x.trim()).filter(Boolean);
+  if (!mats.length) throw new Error('Indique les matières à copier (EXTRA).');
+  const target = await userId();
+  const srcRows = await api('GET', '/rest/v1/profiles?select=id&username=eq.' + encodeURIComponent(src.toLowerCase()));
+  if (!srcRows.length) throw new Error('Compte source introuvable : ' + src);
+  const from = new Map((await docsOf(srcRows[0].id, '&path=like.decks/*')).map((r) => [r.path, r.content]));
+  const mine = new Map((await docsOf(target.id, '&path=like.decks/*')).map((r) => [r.path, r]));
+  const srcIndex = JSON.parse(from.get('decks/index.json'));
+  const idx = mine.has('decks/index.json') ? JSON.parse(mine.get('decks/index.json').content) : { matieres: [] };
+  const now = new Date().toISOString();
+  let chapters = 0, cards = 0;
+  for (const m of srcIndex.matieres.filter((x) => mats.includes(x.id))) {
+    let tm = idx.matieres.find((x) => x.id === m.id);
+    if (!tm) { tm = { ...m, chapitres: [] }; idx.matieres.push(tm); }
+    for (const f of m.chapitres) {
+      const content = from.get('decks/' + f);
+      if (!content) continue;
+      const n = (JSON.parse(content).cartes || []).length;
+      if (!n) continue;
+      if (mine.has('decks/' + f)) { console.log('  déjà présent, non écrasé :', f); continue; }
+      await api('POST', '/rest/v1/docs', { user_id: target.id, path: 'decks/' + f, content, updated_at: now }, { Prefer: 'return=minimal' });
+      if (!tm.chapitres.includes(f)) tm.chapitres.push(f);
+      chapters++; cards += n;
+      console.log('  ' + m.nom + ' / ' + f + ' (' + n + ' cartes)');
+    }
+  }
+  const body = { user_id: target.id, path: 'decks/index.json', content: JSON.stringify(idx, null, 2) + '\n', version: ((mine.get('decks/index.json') || {}).version || 0) + 1, updated_at: now };
+  await api('POST', '/rest/v1/docs?on_conflict=user_id,path', body, { Prefer: 'resolution=merge-duplicates,return=minimal' });
+  console.log('Copié :', chapters, 'chapitres,', cards, 'cartes.');
+}
+
 try {
-  await ({ migrate, pull, push, inspect, share, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
