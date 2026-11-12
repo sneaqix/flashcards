@@ -1,10 +1,10 @@
 // Onglet Calendrier : devoirs, DS, colles et tâches, en vue Semaine (inspiré de Rappels d'Apple).
 // Données dans le dépôt privé (agenda.json), fusionnées entre appareils comme les annotations.
-import { isConflict } from './github.js?v=20261111105254';
-import * as S from './store.js?v=20261111105254';
-import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261111105254';
-import { startPractice } from './practice.js?v=20261111105254';
-import { openClasseurDoc } from './classeur.js?v=20261111105254';
+import { isConflict } from './github.js?v=20261112135907';
+import * as S from './store.js?v=20261112135907';
+import { $, state, escapeHtml, toast, plural, canSync, newId, showView, route } from './ui.js?v=20261112135907';
+import { startPractice } from './practice.js?v=20261112135907';
+import { openClasseurDoc } from './classeur.js?v=20261112135907';
 
 export const TYPES = { devoir: 'Devoir', ds: 'DS', colle: 'Colle', tache: 'Tâche' };
 const PRIOS = ['', '!', '!!', '!!!'];

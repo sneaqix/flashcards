@@ -1,21 +1,21 @@
 // Onglet Statistiques.
-import * as S from './store.js?v=20261111105254';
-import { $, state, escapeHtml, plural, activeChapters, typeset, faceContent } from './ui.js?v=20261111105254';
-import { openFromElsewhere } from './editor.js?v=20261111105254';
+import * as S from './store.js?v=20261112135907';
+import { $, state, escapeHtml, plural, activeChapters, typeset, faceContent } from './ui.js?v=20261112135907';
+import { openFromElsewhere } from './editor.js?v=20261112135907';
 
 const W = 360; // largeur logique des graphiques (ils s'adaptent à l'écran)
 
-function lastDays(n) {
+export function lastDays(n) {
   const t = S.today();
   const days = [];
   for (let i = n - 1; i >= 0; i--) days.push(S.addDays(t, -i));
   return days;
 }
-function shortDate(isoDay) {
+export function shortDate(isoDay) {
   const [, m, d] = isoDay.split('-');
   return d + '/' + m;
 }
-function fmtMin(ms) {
+export function fmtMin(ms) {
   const min = Math.round(ms / 60000);
   return min >= 60 ? Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0') : min + ' min';
 }
@@ -30,7 +30,7 @@ function streak(p) {
 }
 
 // Graphique en barres verticales. series : [{ values, cls }] empilées ; labels(i) : texte sous la barre ou null.
-function barChart({ series, labels, height = 150, title = '', tip, showValues = false }) {
+export function barChart({ series, labels, height = 150, title = '', tip, showValues = false }) {
   const n = series[0].values.length;
   const totals = Array.from({ length: n }, (_, i) => series.reduce((s, x) => s + x.values[i], 0));
   const max = Math.max(4, ...totals);
@@ -62,7 +62,7 @@ function barChart({ series, labels, height = 150, title = '', tip, showValues = 
   }
   return svg + '</svg>';
 }
-function legend(items) {
+export function legend(items) {
   return '<div class="chart-legend">' + items.map(([cls, label]) => '<span><i class="sw ' + cls + '"></i>' + escapeHtml(label) + '</span>').join('') + '</div>';
 }
 

@@ -1,7 +1,7 @@
 // Comptes : écran de connexion / inscription, section « Compte » des Réglages,
 // et pages réservées (Notes, Emploi du temps, Notifications) selon le compte.
-import { $, state, setStatus, toast } from './ui.js?v=20261111105254';
-import { SupaStore, readSession, signIn, signUp, signOut, changePassword } from './supa.js?v=20261111105254';
+import { $, state, setStatus, toast } from './ui.js?v=20261112135907';
+import { SupaStore, readSession, signIn, signUp, signOut, changePassword } from './supa.js?v=20261112135907';
 
 const LS_OWNER = 'fc.owner';
 // Données locales propres à un compte : effacées quand un autre compte se connecte sur cet appareil.
@@ -50,6 +50,9 @@ export function hasFeature(name) {
 export function applyFeatures() {
   const notes = hasFeature('notes');
   document.querySelectorAll('a[href="#notes"]').forEach((a) => { a.hidden = !notes; });
+  // Page Camarades : comptes administrateurs seulement (jamais en ancien mode GitHub).
+  const admin = isSupabase() && hasFeature('admin');
+  document.querySelectorAll('a[href="#classe"]').forEach((a) => { a.hidden = !admin; });
   const notifs = hasFeature('notifs');
   const np = $('notifPanel');
   if (np) np.hidden = !notifs;

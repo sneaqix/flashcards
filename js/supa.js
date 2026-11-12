@@ -1,7 +1,7 @@
 // Comptes et données sur Supabase (sans bibliothèque : appels directs à son API).
 // SupaStore imite l'objet GitHub (getFile, putFile, getBinary, deleteFile) : le reste de l'appli
 // lit et écrit ses « fichiers » JSON de la même façon, mais dans la table docs du compte connecté.
-import { GitHubError } from './github.js?v=20261111105254';
+import { GitHubError } from './github.js?v=20261112135907';
 
 export const SUPABASE_URL = 'https://nqrnqpoklbcfncyxagcz.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_filQAlr3dYL3jmKZ3UlrGQ_H2FdZGUF';

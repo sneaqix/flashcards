@@ -1,8 +1,8 @@
 // Page Notes : notes de Mon Bureau Numérique lues par l'API de Skolengo (workflow edt.yml du dépôt privé)
 // (edt/notes.json et edt/notes-history.json).
-import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261111105254';
-import { hasFeature } from './account.js?v=20261111105254';
-import { matColor } from './agenda.js?v=20261111105254';
+import { $, state, escapeHtml, toast, canSync } from './ui.js?v=20261112135907';
+import { hasFeature } from './account.js?v=20261112135907';
+import { matColor } from './agenda.js?v=20261112135907';
 
 const LS = 'fc.notes';
 let data = readLocal();
