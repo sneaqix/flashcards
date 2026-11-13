@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align', 'grep'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align', 'grep', 'edit-card'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -530,8 +530,28 @@ async function grepCards() {
   });
 }
 
+// Modifie une carte : EXTRA = {"path":"decks/…json","id":"…","find":"…","replace":"…"} (dans q, r, attendu, choix).
+async function editCard() {
+  const e = JSON.parse(process.env.EXTRA || '{}');
+  const t = await userId();
+  const rows = await api('GET', '/rest/v1/docs?select=content,version&user_id=eq.' + t.id + '&path=eq.' + encodeURIComponent(e.path));
+  if (!rows.length) throw new Error('chapitre absent : ' + e.path);
+  const d = JSON.parse(rows[0].content);
+  const c = (d.cartes || []).find((x) => x.id === e.id);
+  if (!c) throw new Error('carte absente : ' + e.id);
+  const before = JSON.stringify(c);
+  const rep = (v) => (typeof v === 'string' ? v.split(e.find).join(e.replace) : v);
+  ['q', 'r', 'attendu'].forEach((k) => { if (c[k] !== undefined) c[k] = rep(c[k]); });
+  if (Array.isArray(c.choix)) c.choix = c.choix.map(rep);
+  if (JSON.stringify(c) === before) { console.log('Rien à changer pour ' + username + '.'); return; }
+  const r = await api('PATCH', '/rest/v1/docs?user_id=eq.' + t.id + '&path=eq.' + encodeURIComponent(e.path) + '&version=eq.' + rows[0].version,
+    { content: JSON.stringify(d, null, 2) + '\n', version: rows[0].version + 1, updated_at: new Date().toISOString() }, { Prefer: 'return=representation' });
+  if (!r.length) throw new Error('chapitre modifié entre-temps, relance');
+  console.log('Carte corrigée pour ' + username + ' : ' + JSON.stringify(c));
+}
+
 try {
-  await ({ grep: grepCards, align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ 'edit-card': editCard, grep: grepCards, align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);

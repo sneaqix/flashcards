@@ -1008,7 +1008,14 @@
 
 <script>
 window.MathJax = {
-  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    // Intégrales sur une surface / un volume fermés (absentes de MathJax 3).
+    macros: {
+      oiint: '\\mathop{\\mathchoice{\\Large\\unicode{x222F}}{\\unicode{x222F}}{\\unicode{x222F}}{\\unicode{x222F}}}\\nolimits',
+      oiiint: '\\mathop{\\mathchoice{\\Large\\unicode{x2230}}{\\unicode{x2230}}{\\unicode{x2230}}{\\unicode{x2230}}}\\nolimits'
+    }
+  },
   svg: { fontCache: 'global' },
   startup: {
     typeset: false,
