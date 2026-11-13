@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align', 'grep'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -517,8 +517,21 @@ async function align() {
   console.log('Appliqué.');
 }
 
+// Recherche dans les cartes d'un compte (EXTRA = expression régulière, insensible à la casse).
+async function grepCards() {
+  const t = await userId();
+  const re = new RegExp(process.env.EXTRA || '.', 'i');
+  const rows = await docsOf(t.id, '&path=like.decks/*');
+  rows.filter((r) => r.path !== 'decks/index.json').forEach((r) => {
+    const d = JSON.parse(r.content);
+    (d.cartes || []).forEach((c) => {
+      if (re.test(c.q) || re.test(c.r) || re.test(JSON.stringify(c.choix || ''))) console.log('CARTE ' + r.path + ' #' + c.id + '\n  ' + JSON.stringify(c));
+    });
+  });
+}
+
 try {
-  await ({ align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ grep: grepCards, align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
