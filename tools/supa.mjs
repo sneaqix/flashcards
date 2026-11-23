@@ -14,7 +14,7 @@ const URL_ = process.env.SUPABASE_URL || 'https://nqrnqpoklbcfncyxagcz.supabase.
 const KEY = process.env.SUPABASE_SECRET_KEY;
 const [cmd, appArg, dataArg, username] = process.argv.slice(2);
 if (!KEY) { console.log('SUPABASE_SECRET_KEY absent : rien à faire.'); process.exit(cmd === 'migrate' ? 1 : 0); }
-if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align', 'grep', 'edit-card'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
+if (!['migrate', 'pull', 'push', 'inspect', 'reorganize', 'reorganize-apply', 'share', 'copy-decks', 'usage', 'copy-settings', 'modes', 'align', 'grep', 'edit-card', 'add-chapter'].includes(cmd) || !username) { console.log('Usage : migrate|pull|push <appli> <données> <identifiant>'); process.exit(1); }
 const appDir = path.resolve(appArg), dataDir = path.resolve(dataArg);
 const manifestPath = path.join(dataDir, '.supa-pull.json');
 
@@ -550,8 +550,42 @@ async function editCard() {
   console.log('Carte corrigée pour ' + username + ' : ' + JSON.stringify(c));
 }
 
+// Ajoute un chapitre à un ou plusieurs comptes (identifiants séparés par des virgules).
+// EXTRA = {"mat":"physique","file":"physique/th1.json","src":"admin/th1.json"} (src dans le dépôt privé).
+async function addChapter() {
+  const e = JSON.parse(process.env.EXTRA || '{}');
+  const deck = fs.readFileSync(path.join(dataDir, e.src), 'utf8');
+  const nCards = JSON.parse(deck).cartes.length;
+  for (const name of username.split(',').map((x) => x.trim()).filter(Boolean)) {
+    const rows = await api('GET', '/rest/v1/profiles?select=id&username=eq.' + encodeURIComponent(name.toLowerCase()));
+    if (!rows.length) { console.log(name + ' : compte introuvable'); continue; }
+    const uid = rows[0].id;
+    const now = new Date().toISOString();
+    const have = await api('GET', '/rest/v1/docs?select=version&user_id=eq.' + uid + '&path=eq.' + encodeURIComponent('decks/' + e.file));
+    if (have.length) { console.log(name + ' : chapitre déjà présent, non écrasé'); continue; }
+    await api('POST', '/rest/v1/docs', { user_id: uid, path: 'decks/' + e.file, content: deck, updated_at: now }, { Prefer: 'return=minimal' });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const cur = await api('GET', '/rest/v1/docs?select=content,version&user_id=eq.' + uid + '&path=eq.decks%2Findex.json');
+      const idx = cur.length ? JSON.parse(cur[0].content) : { matieres: [] };
+      let m = idx.matieres.find((x) => x.id === e.mat);
+      if (!m) { m = { id: e.mat, nom: e.matNom || e.mat, chapitres: [] }; idx.matieres.push(m); }
+      if (!m.chapitres.includes(e.file)) m.chapitres.push(e.file);
+      const content = JSON.stringify(idx, null, 2) + '\n';
+      if (cur.length) {
+        const r = await api('PATCH', '/rest/v1/docs?user_id=eq.' + uid + '&path=eq.decks%2Findex.json&version=eq.' + cur[0].version,
+          { content, version: cur[0].version + 1, updated_at: now }, { Prefer: 'return=representation' });
+        if (!r.length) continue;
+      } else {
+        await api('POST', '/rest/v1/docs', { user_id: uid, path: 'decks/index.json', content }, { Prefer: 'return=minimal' });
+      }
+      console.log(name + ' : chapitre ajouté (' + nCards + ' cartes)');
+      break;
+    }
+  }
+}
+
 try {
-  await ({ 'edit-card': editCard, grep: grepCards, align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
+  await ({ 'add-chapter': addChapter, 'edit-card': editCard, grep: grepCards, align, modes, 'copy-settings': copySettings, usage, migrate, pull, push, inspect, share, 'copy-decks': copyDecks, reorganize: () => reorganize(false), 'reorganize-apply': () => reorganize(true) })[cmd]();
 } catch (e) {
   console.log('Erreur :', e.message);
   process.exit(1);
